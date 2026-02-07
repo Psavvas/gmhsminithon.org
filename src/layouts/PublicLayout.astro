@@ -352,13 +352,13 @@ const currentPath = Astro.url.pathname;
 			justify-content: center;
 			gap: 1.5rem;
 			padding: 2rem;
-			background: linear-gradient(135deg, rgba(28, 42, 58, 0.98), rgba(44, 70, 114, 0.98));
+			background: linear-gradient(135deg, rgba(44, 70, 114, 0.98), rgba(106, 170, 228, 0.95));
 			backdrop-filter: blur(20px);
 			display: none;
 			opacity: 0;
 			z-index: 1001;
 			box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-			transition: opacity 0.3s ease;
+			transition: opacity 0.3s ease, display 0.3s ease allow-discrete;
 		}
 
 		.nav-links a {

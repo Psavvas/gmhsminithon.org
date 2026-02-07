@@ -490,8 +490,8 @@ const galleryImages = [
 		}
 
 		.hero-actions .button {
-			width: 100%;
-			max-width: 100%;
+			width: auto;
+			min-width: 200px;
 		}
 
 		.page-content {
@@ -509,6 +509,15 @@ const galleryImages = [
 
 		.photo-card {
 			border-radius: 20px;
+			width: 100%;
+			max-width: 100%;
+			overflow: hidden;
+		}
+
+		.photo-card img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
 		}
 
 		.event-link {
