@@ -1,6 +1,7 @@
 {
   "currentYear": 2026,
-  "currentTotal": 45678.50,
+  "currentTotal": 3751,
+  "goalTotal": 13000,
   "history": [
     {
       "year": 2025,
@@ -19,5 +20,5 @@
       "total": 38900.50
     }
   ],
-  "donorDriveLink": "https://www.fourdiamonds.org/minithon"
+  "donorDriveLink": "https://fourdiamonds.donordrive.com/GMHSMT"
 }

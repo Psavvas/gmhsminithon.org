@@ -15,6 +15,23 @@ const currentTotal = fundraisingData.currentTotal.toLocaleString('en-US', {
 	maximumFractionDigits: 0
 });
 
+const goalTotal = fundraisingData.goalTotal ?? 0;
+const goalTotalFormatted = goalTotal.toLocaleString('en-US', {
+	style: 'currency',
+	currency: 'USD',
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0
+});
+const goalProgress = goalTotal > 0 ? Math.min(fundraisingData.currentTotal / goalTotal, 1) : 0;
+const goalProgressPercent = Math.round(goalProgress * 100);
+const remainingTotal = Math.max(goalTotal - fundraisingData.currentTotal, 0);
+const remainingFormatted = remainingTotal.toLocaleString('en-US', {
+	style: 'currency',
+	currency: 'USD',
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0
+});
+
 const today = new Date();
 const upcomingEvents = eventsData
 	.filter((event) => new Date(event.date) >= today)
@@ -28,15 +45,27 @@ const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
 
 // Gallery images for carousel
 const galleryImages = [
-	{ src: '/gallery/event-1.jpg', alt: 'Mini-THON Event', caption: 'Making a difference together' },
-	{ src: '/gallery/volunteers.jpg', alt: 'Our Volunteers', caption: 'Dedicated volunteers working for the cause' },
-	{ src: '/gallery/kids.jpg', alt: 'For The Kids', caption: 'Supporting families fighting pediatric cancer' },
-	{ src: '/gallery/event-2.jpg', alt: 'Fundraising', caption: 'Community fundraising events' },
+	{ src: '/genericCarousel/BurnsPark.jpg', alt: 'Mini-THON Event', caption: 'Making a difference together' },
+	{ src: '/genericCarousel/GiauPass.jpg', alt: 'Our Volunteers', caption: 'Dedicated volunteers working for the cause' },
+	{ src: '/genericCarousel/KarlovyVary.jpg', alt: 'For The Kids', caption: 'Supporting families fighting pediatric cancer' },
+	{ src: '/genericCarousel/NaplesBasilica.jpg', alt: 'Fundraising', caption: 'Community fundraising events' },
+	{ src: '/genericCarousel/StarlingBrighton2025.jpg', alt: 'Event Setup', caption: 'Preparing for an event' },
+];
+
+const heroBackgroundImages = [
+	{ src: '/bannerCarousel/FanetteIsland.jpg', alt: 'Mini-THON Event' },
+	{ src: '/bannerCarousel/MaltaSalt.jpg', alt: 'Our Volunteers' },
+	{ src: '/bannerCarousel/NeuschwansteinWinter.jpg', alt: 'For The Kids' },
+	{ src: '/bannerCarousel/SalarUyuni.jpg', alt: 'Fundraising' },
+	{ src: '/bannerCarousel/StMichaelsCornwall.jpg', alt: 'Setting up and event' },
+	{ src: '/bannerCarousel/WhanganuiPark.jpg', alt: 'A general meeting' },
 ];
 ---
 
 <PublicLayout title="GMHS Mini-THON">
 	<section class="hero">
+		<div class="hero-background" data-hero-bg-layer="0"></div>
+		<div class="hero-background" data-hero-bg-layer="1"></div>
 		<div class="hero-content">
 			<p class="eyebrow">Great Mills High School</p>
 			<h1>Mini-THON</h1>
@@ -49,12 +78,6 @@ const galleryImages = [
 	</section>
 
 	<div class="page-content">
-		<!-- Photo Gallery Carousel -->
-		<section class="gallery-section">
-			<h2 class="section-title">Our Impact</h2>
-			<ImageCarousel images={galleryImages} autoplay={true} interval={5000} />
-		</section>
-
 		<section class="split">
 			<div class="split-card">
 				<h2>About us</h2>
@@ -64,7 +87,7 @@ const galleryImages = [
 				<a href="/about" class="text-link">Read our story</a>
 			</div>
 			<div class="split-card photo-card">
-				<img src="/sidePicture.jpeg" alt="Mini-THON volunteers supporting pediatric cancer families" loading="lazy" />
+				<ImageCarousel images={galleryImages} autoplay={true} interval={5000} />
 			</div>
 		</section>
 
@@ -90,11 +113,33 @@ const galleryImages = [
 				</ul>
 				<a href="/events" class="text-link">View all events</a>
 			</div>
-			<div class="grid-card highlight">
-				<h2>Fundraising at a glance</h2>
-				<p class="big-figure">{currentTotal}</p>
-				<p class="muted">Raised in {fundraisingData.currentYear} to support families.</p>
-				<a href="/fundraising" class="button primary">Support the cause</a>
+			<div class="grid-card highlight fundraising-card">
+				<div class="fundraising-card-body">
+					<h2>Yearly fundraising</h2>
+					<p class="big-figure">{currentTotal}</p>
+					<p class="muted">Raised in {fundraisingData.currentYear} to support pediatric cancer research & treatement.</p>
+					<div class="fundraising-progress">
+						<div class="progress-header">
+							<span class="progress-label">Goal: {goalTotalFormatted}</span>
+							<span class="progress-value">{goalProgressPercent}%</span>
+						</div>
+						<div
+							class="progress-slider"
+							role="progressbar"
+							aria-label="Fundraising progress"
+							aria-valuemin="0"
+							aria-valuemax="100"
+							aria-valuenow={goalProgressPercent}
+						>
+							<div class="progress-track" style={`--progress: ${goalProgressPercent}%`}>
+								<div class="progress-fill"></div>
+								<div class="progress-thumb"></div>
+							</div>
+						</div>
+						<p class="progress-caption">{remainingFormatted} to reach goal.</p>
+					</div>
+				</div>
+				<a href={fundraisingData.donorDriveLink} class="button primary">Make a donation</a>
 			</div>
 		</section>
 
@@ -111,7 +156,7 @@ const galleryImages = [
 				</a>
 				<a href={clubInfo.socialMedia.instagram} class="link-card" target="_blank" rel="noopener noreferrer">
 					<h3>Follow us</h3>
-					<p>Get the latest stories, highlights, and event updates. Follow us @instagramHandle</p>
+					<p>Get the latest stories, highlights, and event updates. Follow us @gmhsminithon</p>
 				</a>
 				<a href="/sponsors" class="link-card">
 					<h3>Sponsor Us</h3>
@@ -122,6 +167,41 @@ const galleryImages = [
 		</section>
 	</div>
 </PublicLayout>
+
+<script define:vars={{ heroBackgroundImages }}>
+	const layers = Array.from(document.querySelectorAll('[data-hero-bg-layer]'));
+	if (layers.length < 2) {
+		return;
+	}
+
+	const images = heroBackgroundImages.map((image) => image.src);
+	const overlay = 'linear-gradient(120deg, rgba(12, 20, 35, 0.85), rgba(44, 70, 114, 0.65))';
+	let currentIndex = 0;
+	let activeLayer = 0;
+
+	function setLayerBackground(layer, src) {
+		layer.style.backgroundImage = `${overlay}, url('${src}')`;
+	}
+
+	setLayerBackground(layers[activeLayer], images[currentIndex]);
+	layers[activeLayer].classList.add('is-active');
+	layers.forEach((layer) => layer.classList.add('no-transition'));
+	requestAnimationFrame(() => {
+		layers.forEach((layer) => layer.classList.remove('no-transition'));
+	});
+
+	setInterval(() => {
+		const nextIndex = (currentIndex + 1) % images.length;
+		const nextLayer = activeLayer === 0 ? 1 : 0;
+
+		setLayerBackground(layers[nextLayer], images[nextIndex]);
+		layers[nextLayer].classList.add('is-active');
+		layers[activeLayer].classList.remove('is-active');
+
+		activeLayer = nextLayer;
+		currentIndex = nextIndex;
+	}, 5000);
+</script>
 
 <style>
 	.hero {
@@ -135,12 +215,6 @@ const galleryImages = [
 		box-shadow: var(--shadow-soft);
 		margin-top: 0;
 		margin-bottom: 3.5rem;
-		animation: fade-rise 0.8s ease both;
-		background-image:
-			linear-gradient(120deg, rgba(12, 20, 35, 0.85), rgba(44, 70, 114, 0.65)),
-			url('/banner.jpeg');
-		background-size: cover;
-		background-position: center;
 		overflow: hidden;
 		width: 100%;
 		min-height: 100svh;
@@ -148,10 +222,41 @@ const galleryImages = [
 		box-sizing: border-box;
 	}
 
+	.hero-background {
+		position: absolute;
+		inset: 0;
+		background-size: cover;
+		background-position: center;
+		opacity: 0;
+		transition: opacity 0.8s ease;
+		z-index: 0;
+	}
+
+	.hero-background.no-transition {
+		transition: none;
+	}
+
+	.hero-background.is-active {
+		opacity: 1;
+	}
+
+	.hero::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(120deg, rgba(12, 20, 35, 0.35), rgba(44, 70, 114, 0.25));
+		pointer-events: none;
+		z-index: 1;
+	}
+
 	.hero-content {
 		max-width: 620px;
 		padding-bottom: 1rem;
 		align-self: end;
+		position: relative;
+		z-index: 2;
+		animation: fade-rise 0.8s ease both;
 	}
 
 	.hero-content h1 {
@@ -186,18 +291,6 @@ const galleryImages = [
 
 	section {
 		margin-bottom: 3.5rem;
-	}
-
-	.gallery-section {
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.05s;
-	}
-
-	.section-title {
-		font-size: clamp(2rem, 4vw, 2.5rem);
-		margin-bottom: 2rem;
-		text-align: center;
-		color: var(--ink-900);
 	}
 
 	.split {
@@ -235,6 +328,15 @@ const galleryImages = [
 		max-width: 100%;
 	}
 
+	.photo-card :global(.carousel-container),
+	.photo-card :global(.carousel-track) {
+		height: 100%;
+	}
+
+	.photo-card :global(.carousel-track) {
+		aspect-ratio: auto;
+	}
+
 	.photo-card img {
 		width: 100%;
 		height: 100%;
@@ -245,9 +347,10 @@ const galleryImages = [
 	}
 
 	.grid-section {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		display: flex;
+		flex-wrap: wrap;
 		gap: 2rem;
+		align-items: stretch;
 		animation: fade-rise 0.8s ease both;
 		animation-delay: 0.2s;
 	}
@@ -258,6 +361,7 @@ const galleryImages = [
 		padding: 2rem;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
+		flex: 1 1 280px;
 	}
 
 	.grid-card.highlight {
@@ -266,10 +370,36 @@ const galleryImages = [
 		border: none;
 	}
 
+	.fundraising-card {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+		padding: 1.5rem;
+		min-height: 100%;
+	}
+
+	.fundraising-card-body {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		flex: 1;
+	}
+
 	.grid-card.highlight h2,
 	.grid-card.highlight .muted {
 		color: var(--white);
 	}
+
+	.fundraising-card .muted {
+		margin-bottom: 0;
+	}
+
+	.fundraising-card .button {
+		align-self: stretch;
+		text-align: center;
+		padding: 0.75rem 1.5rem;
+	}
+
 
 	.event-list {
 		list-style: none;
@@ -335,6 +465,77 @@ const galleryImages = [
 		font-size: 2.6rem;
 		font-weight: 600;
 		margin: 1rem 0 0.5rem;
+	}
+
+	.fundraising-card .big-figure {
+		font-size: 2.3rem;
+		margin: 0.75rem 0 0.35rem;
+	}
+
+	.fundraising-progress {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	.fundraising-card .fundraising-progress {
+		gap: 0.5rem;
+	}
+
+	.progress-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+	}
+
+	.progress-label {
+		font-size: 0.95rem;
+		opacity: 0.9;
+	}
+
+	.progress-value {
+		font-size: 1.05rem;
+	}
+
+	.progress-slider {
+		width: 100%;
+	}
+
+	.progress-track {
+		position: relative;
+		height: 14px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.2);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+		--progress: 0%;
+	}
+
+	.progress-fill {
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--progress);
+		background: linear-gradient(90deg, rgba(106, 170, 228, 0.95), rgba(255, 255, 255, 0.95));
+		border-radius: 999px;
+	}
+
+	.progress-thumb {
+		position: absolute;
+		top: 50%;
+		left: var(--progress);
+		transform: translate(-50%, -50%);
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		background: var(--white);
+		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+		border: 2px solid rgba(106, 170, 228, 0.9);
+	}
+
+	.progress-caption {
+		margin: 0;
+		font-size: 0.95rem;
+		opacity: 0.85;
 	}
 
 	.muted {
@@ -428,7 +629,7 @@ const galleryImages = [
 	}
 
 	.text-link::after {
-		content: '->';
+		content: '→';
 		transition: transform 0.2s ease;
 	}
 
@@ -439,7 +640,7 @@ const galleryImages = [
 	.page-content {
 		max-width: 1160px;
 		margin: 0 auto;
-		padding: 3rem 1.5rem 4rem;
+		padding: 3rem 1.5rem 2rem;
 		overflow-x: hidden;
 		width: 100%;
 		box-sizing: border-box;
@@ -465,13 +666,8 @@ const galleryImages = [
 
 	@media (max-width: 768px) {
 		.hero {
-			padding: 2.5rem 1.5rem;
+			padding: calc(2.5rem + var(--nav-offset, 0px)) 1.5rem 2.5rem;
 			min-height: auto;
-			background-image:
-				linear-gradient(120deg, rgba(12, 20, 35, 0.92), rgba(44, 70, 114, 0.88)),
-				url('/banner.jpeg');
-			background-position: center center;
-			background-size: cover;
 		}
 
 		.hero-content {
@@ -495,7 +691,7 @@ const galleryImages = [
 		}
 
 		.page-content {
-			padding: 2rem 1rem 3rem;
+			padding: 2rem 1rem 2rem;
 		}
 
 		.split {
@@ -508,6 +704,7 @@ const galleryImages = [
 		}
 
 		.photo-card {
+			padding: 0;
 			border-radius: 20px;
 			width: 100%;
 			max-width: 100%;
@@ -530,7 +727,51 @@ const galleryImages = [
 		}
 
 		.grid-section {
-			grid-template-columns: 1fr;
+			flex-direction: column;
+			margin-bottom: 4.5rem;
+		}
+
+		.fundraising-card {
+			min-height: auto;
+			padding: 1.25rem;
+		}
+
+		.fundraising-card .big-figure {
+			font-size: 2rem;
+		}
+
+		.fundraising-card .button {
+			width: 100%;
+			max-width: 100%;
+			box-sizing: border-box;
+			padding: 0.7rem 1.2rem;
+		}
+
+		.link-section {
+			margin-top: 1rem;
+		}
+
+		.progress-header {
+			flex-wrap: wrap;
+			gap: 0.35rem 1rem;
+		}
+
+		.progress-label {
+			font-size: 0.9rem;
+		}
+
+		.progress-value {
+			font-size: 0.95rem;
+			margin-left: auto;
+		}
+
+		.progress-track {
+			height: 12px;
+		}
+
+		.progress-thumb {
+			width: 18px;
+			height: 18px;
 		}
 
 		.links-grid {
