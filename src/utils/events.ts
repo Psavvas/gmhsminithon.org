@@ -14,6 +14,8 @@ export interface Event {
 
 /**
  * Get all events for the current year
+ * Note: "current year" is determined dynamically at runtime based on the server's date
+ * For example, in 2026 this will return only events from 2026
  */
 export function getCurrentYearEvents(): Event[] {
   const currentYear = new Date().getFullYear();
