@@ -1,0 +1,211 @@
+---
+import MemberLayout from '../../layouts/MemberLayout.astro';
+import { checkMemberAuth } from '../../utils/auth';
+import { getCurrentYearEvents, formatDate, eventToSlug } from '../../utils/events';
+
+// Check authentication
+if (!checkMemberAuth(Astro.request)) {
+  return Astro.redirect('/members/login');
+}
+
+const events = getCurrentYearEvents();
+const currentYear = new Date().getFullYear();
+---
+
+<MemberLayout title="Volunteer Opportunities - Mini-THON">
+	<h1>Volunteer Opportunities</h1>
+	
+	<section class="intro">
+		<p>Sign up for volunteer shifts for our upcoming events! Each event has specific volunteer needs listed below.</p>
+	</section>
+
+	{events.length === 0 ? (
+		<section class="no-events">
+			<p>No volunteer opportunities scheduled for {currentYear} yet. Check back soon!</p>
+		</section>
+	) : (
+		<div class="events-grid">
+			{events.map(event => (
+				<article class="event-card">
+					<div class="event-header">
+						<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+						<time datetime={event.date}>{formatDate(event.date)}</time>
+					</div>
+					<h2>{event.title}</h2>
+					
+					<div class="public-info">
+						<h3>Event Details</h3>
+						<p>{event.public_description}</p>
+					</div>
+
+					<div class="member-info">
+						<h3>🔒 Member Information</h3>
+						<div class="internal-description" set:html={event.internal_description.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')} />
+					</div>
+
+					{event.media.links && event.media.links.length > 0 && (
+						<div class="event-links">
+							<h4>Related Links</h4>
+							<ul>
+								{event.media.links.map(link => (
+									<li>
+										<a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
+				</article>
+			))}
+		</div>
+	)}
+</MemberLayout>
+
+<style>
+	h1 {
+		font-size: 2.5rem;
+		color: #041E42;
+		margin-bottom: 2rem;
+	}
+
+	.intro {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		margin-bottom: 2rem;
+		font-size: 1.1rem;
+		line-height: 1.8;
+	}
+
+	.no-events {
+		background: white;
+		padding: 3rem 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		text-align: center;
+		font-size: 1.2rem;
+		color: #666;
+	}
+
+	.events-grid {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.event-card {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-left: 4px solid #6A4C93;
+	}
+
+	.event-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.event-type {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		border-radius: 12px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.event-type.gaming {
+		background: #E3F2FD;
+		color: #1976D2;
+	}
+
+	.event-type.dine-to-donate {
+		background: #FFF3E0;
+		color: #F57C00;
+	}
+
+	.event-type.fundraiser {
+		background: #F3E5F5;
+		color: #7B1FA2;
+	}
+
+	time {
+		color: #666;
+		font-size: 0.95rem;
+	}
+
+	.event-card h2 {
+		font-size: 1.8rem;
+		color: #041E42;
+		margin-bottom: 1.5rem;
+	}
+
+	.public-info,
+	.member-info {
+		margin-bottom: 1.5rem;
+	}
+
+	.public-info h3,
+	.member-info h3 {
+		font-size: 1.2rem;
+		color: #041E42;
+		margin-bottom: 0.75rem;
+	}
+
+	.public-info p,
+	.internal-description {
+		line-height: 1.8;
+		color: #333;
+	}
+
+	.member-info {
+		background: #FFF9E6;
+		padding: 1.5rem;
+		border-radius: 8px;
+		border-left: 4px solid #FDB927;
+	}
+
+	.member-info h3 {
+		color: #8B4513;
+	}
+
+	.event-links {
+		background: #F8F9FA;
+		padding: 1rem;
+		border-radius: 8px;
+	}
+
+	.event-links h4 {
+		font-size: 1rem;
+		color: #041E42;
+		margin-bottom: 0.5rem;
+	}
+
+	.event-links ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.event-links li {
+		margin-bottom: 0.25rem;
+	}
+
+	.event-links a {
+		color: #6A4C93;
+		text-decoration: none;
+		word-break: break-all;
+		font-size: 0.95rem;
+	}
+
+	.event-links a:hover {
+		color: #041E42;
+		text-decoration: underline;
+	}
+</style>

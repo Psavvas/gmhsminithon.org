@@ -1,0 +1,44 @@
+{
+  "mission": "Mini-THON is a student-led philanthropic organization dedicated to raising money and awareness for Four Diamonds and Penn State Hershey Children's Hospital. We support children and families affected by pediatric cancer.",
+  "history": "Our Mini-THON chapter was founded in 2018 by a group of passionate students who wanted to make a difference in the lives of children fighting cancer. Since then, we've raised over $220,000 for Four Diamonds.",
+  "meetings": {
+    "general": "Wednesdays during Gold Lunch in the Auditorium",
+    "board": "First Monday of each month at 3:30 PM in Room 215"
+  },
+  "socialMedia": {
+    "instagram": "https://instagram.com/ourminithon",
+    "groupme": "Join our GroupMe for updates!",
+    "groupmeCode": "ABC123XYZ"
+  },
+  "officers": [
+    {
+      "role": "President",
+      "name": "Sarah Johnson",
+      "email": "president@minithon.school.edu"
+    },
+    {
+      "role": "Vice President",
+      "name": "Michael Chen",
+      "email": "vp@minithon.school.edu"
+    },
+    {
+      "role": "Treasurer",
+      "name": "Emily Rodriguez",
+      "email": "treasurer@minithon.school.edu"
+    },
+    {
+      "role": "Secretary",
+      "name": "James Williams",
+      "email": "secretary@minithon.school.edu"
+    },
+    {
+      "role": "Events Coordinator",
+      "name": "Amanda Thompson",
+      "email": "events@minithon.school.edu"
+    }
+  ],
+  "contact": {
+    "email": "info@minithon.school.edu",
+    "phone": "(555) 123-4567"
+  }
+}

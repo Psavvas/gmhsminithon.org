@@ -1,98 +1,230 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
+import PublicLayout from '../layouts/PublicLayout.astro';
+import fundraisingData from '../data/fundraising.json';
+import clubInfo from '../data/clubInfo.json';
 
 export const prerender = true;
+
+const currentTotal = fundraisingData.currentTotal.toLocaleString('en-US', { 
+	style: 'currency', 
+	currency: 'USD',
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0
+});
 ---
 
-<Layout title="Welcome to Astro.">
-	<main>
-		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
-		<p class="instructions">
-			Check out the <code>src/pages</code> directory to get started.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
-		</p>
-		<ul role="list" class="link-card-grid">
-			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
-			/>
-			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
-			/>
-			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Chat"
-				body="Come say hi to our amazing Discord community. ❤️"
-			/>
-		</ul>
-	</main>
-</Layout>
+<PublicLayout title="Mini-THON - Fighting Pediatric Cancer">
+	<div class="hero">
+		<div class="hero-content">
+			<h1>Mini-THON</h1>
+			<p class="tagline">For The Kids</p>
+			<div class="fundraising-banner">
+				<span class="label">{fundraisingData.currentYear} Fundraising Total:</span>
+				<span class="amount">{currentTotal}</span>
+			</div>
+		</div>
+	</div>
+
+	<section class="mission">
+		<h2>Our Mission</h2>
+		<p>{clubInfo.mission}</p>
+	</section>
+
+	<section class="quick-links">
+		<h2>Get Involved</h2>
+		<div class="links-grid">
+			<a href={fundraisingData.donorDriveLink} class="link-card donate" target="_blank" rel="noopener noreferrer">
+				<h3>Donate Now</h3>
+				<p>Support our cause through DonorDrive</p>
+			</a>
+			<a href="/get-involved" class="link-card join">
+				<h3>Join Our Club</h3>
+				<p>Wednesdays during Gold Lunch</p>
+			</a>
+			<a href={clubInfo.socialMedia.instagram} class="link-card social" target="_blank" rel="noopener noreferrer">
+				<h3>Follow Us</h3>
+				<p>Stay updated on Instagram</p>
+			</a>
+			<a href="/events" class="link-card events">
+				<h3>View Events</h3>
+				<p>See our upcoming fundraisers</p>
+			</a>
+		</div>
+	</section>
+
+	<section class="cta">
+		<h2>Making a Difference</h2>
+		<p>Every dollar raised goes directly to Four Diamonds and Penn State Hershey Children's Hospital to support families fighting pediatric cancer.</p>
+		<a href="/about" class="button">Learn More About Us</a>
+	</section>
+</PublicLayout>
 
 <style>
-	:root {
-		--astro-gradient: linear-gradient(0deg, #4f39fa, #da62c4);
+	.hero {
+		background: linear-gradient(135deg, #041E42 0%, #6A4C93 50%, #E292AA 100%);
+		color: white;
+		padding: 4rem 2rem;
+		border-radius: 8px;
+		margin-bottom: 3rem;
+		text-align: center;
 	}
 
-	h1 {
-		margin: 2rem 0;
-	}
-
-	main {
-		margin: auto;
-		padding: 1em;
-		max-width: 60ch;
-	}
-
-	.text-gradient {
+	.hero-content h1 {
+		font-size: 3.5rem;
+		margin-bottom: 0.5rem;
 		font-weight: 900;
-		background-image: var(--astro-gradient);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-size: 100% 200%;
-		background-position-y: 100%;
-		border-radius: 0.4rem;
-		animation: pulse 4s ease-in-out infinite;
 	}
 
-	@keyframes pulse {
-		0%,
-		100% {
-			background-position-y: 0%;
-		}
-		50% {
-			background-position-y: 80%;
-		}
+	.tagline {
+		font-size: 1.5rem;
+		font-style: italic;
+		margin-bottom: 2rem;
+		opacity: 0.9;
 	}
 
-	.instructions {
-		line-height: 1.6;
-		margin: 1rem 0;
-		background: #4f39fa;
-		padding: 1rem;
-		border-radius: 0.4rem;
-		color: var(--color-bg);
+	.fundraising-banner {
+		background: rgba(255, 255, 255, 0.2);
+		backdrop-filter: blur(10px);
+		padding: 1.5rem 2rem;
+		border-radius: 8px;
+		display: inline-block;
+		margin-top: 1rem;
 	}
 
-	.instructions code {
-		font-size: 0.875em;
-		border: 0.1em solid var(--color-border);
-		border-radius: 4px;
-		padding: 0.15em 0.25em;
+	.fundraising-banner .label {
+		display: block;
+		font-size: 1rem;
+		margin-bottom: 0.5rem;
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 
-	.link-card-grid {
+	.fundraising-banner .amount {
+		display: block;
+		font-size: 2.5rem;
+		font-weight: bold;
+		color: #FDB927;
+	}
+
+	section {
+		margin-bottom: 3rem;
+	}
+
+	h2 {
+		font-size: 2rem;
+		margin-bottom: 1.5rem;
+		color: #041E42;
+	}
+
+	.mission {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	}
+
+	.mission p {
+		font-size: 1.2rem;
+		line-height: 1.8;
+		color: #333;
+	}
+
+	.links-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		gap: 1rem;
-		padding: 0;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.link-card {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		text-decoration: none;
+		color: inherit;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		transition: all 0.3s ease;
+		border-left: 4px solid transparent;
+	}
+
+	.link-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+	}
+
+	.link-card.donate {
+		border-left-color: #E292AA;
+	}
+
+	.link-card.join {
+		border-left-color: #041E42;
+	}
+
+	.link-card.social {
+		border-left-color: #FDB927;
+	}
+
+	.link-card.events {
+		border-left-color: #6A4C93;
+	}
+
+	.link-card h3 {
+		margin-bottom: 0.5rem;
+		color: #041E42;
+	}
+
+	.link-card p {
+		color: #666;
+		margin: 0;
+	}
+
+	.cta {
+		background: linear-gradient(135deg, #041E42 0%, #6A4C93 100%);
+		color: white;
+		padding: 3rem 2rem;
+		border-radius: 8px;
+		text-align: center;
+	}
+
+	.cta h2 {
+		color: white;
+	}
+
+	.cta p {
+		font-size: 1.2rem;
+		margin-bottom: 2rem;
+		max-width: 800px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.button {
+		display: inline-block;
+		background: #FDB927;
+		color: #041E42;
+		padding: 1rem 2rem;
+		border-radius: 4px;
+		text-decoration: none;
+		font-weight: bold;
+		transition: all 0.3s;
+	}
+
+	.button:hover {
+		background: #E292AA;
+		color: white;
+		transform: scale(1.05);
+	}
+
+	@media (max-width: 768px) {
+		.hero-content h1 {
+			font-size: 2.5rem;
+		}
+
+		.fundraising-banner .amount {
+			font-size: 2rem;
+		}
+
+		.links-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

@@ -1,0 +1,302 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+import clubInfo from '../data/clubInfo.json';
+import fundraisingData from '../data/fundraising.json';
+
+export const prerender = true;
+---
+
+<PublicLayout title="Get Involved - Mini-THON">
+	<h1>Get Involved</h1>
+	
+	<section class="intro">
+		<p>There are many ways to support Mini-THON and help us fight pediatric cancer. Whether you're a student, business owner, or parent, you can make a difference!</p>
+	</section>
+
+	<section id="students" class="audience-section">
+		<h2>For Students</h2>
+		<div class="content-card">
+			<h3>Join Our Club!</h3>
+			<p><strong>When:</strong> {clubInfo.meetings.general}</p>
+			<p>No experience needed! We welcome all students who want to make a difference in the lives of children fighting cancer.</p>
+			
+			<h3>What We Do</h3>
+			<ul>
+				<li>Organize fundraising events throughout the year</li>
+				<li>Raise awareness about pediatric cancer</li>
+				<li>Build leadership and teamwork skills</li>
+				<li>Make lasting friendships while helping others</li>
+			</ul>
+
+			<h3>Stay Connected</h3>
+			<div class="social-links">
+				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="button instagram">
+					Follow on Instagram
+				</a>
+				<div class="groupme-info">
+					<p><strong>GroupMe:</strong> {clubInfo.socialMedia.groupme}</p>
+					<p class="code">Join Code: {clubInfo.socialMedia.groupmeCode}</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="businesses" class="audience-section">
+		<h2>For Businesses</h2>
+		<div class="content-card">
+			<h3>Become a Sponsor</h3>
+			<p>Support our mission and gain visibility in the community! We offer three sponsorship tiers:</p>
+			
+			<div class="tiers">
+				<div class="tier gold">
+					<h4>Gold Sponsor</h4>
+					<ul>
+						<li>Logo on event materials</li>
+						<li>Social media recognition</li>
+						<li>Premium placement on website</li>
+						<li>Recognition at main event</li>
+					</ul>
+				</div>
+				<div class="tier silver">
+					<h4>Silver Sponsor</h4>
+					<ul>
+						<li>Logo on website</li>
+						<li>Social media shoutout</li>
+						<li>Recognition at events</li>
+					</ul>
+				</div>
+				<div class="tier bronze">
+					<h4>Bronze Sponsor</h4>
+					<ul>
+						<li>Name on website</li>
+						<li>Social media mention</li>
+					</ul>
+				</div>
+			</div>
+
+			<h3>Interested in Sponsoring?</h3>
+			<p>Contact us to learn more about sponsorship opportunities and how your business can help fight pediatric cancer.</p>
+			<a href={`mailto:${clubInfo.contact.email}?subject=Sponsorship Inquiry`} class="button">Contact Us About Sponsorship</a>
+		</div>
+	</section>
+
+	<section id="parents" class="audience-section">
+		<h2>For Parents & Community Members</h2>
+		<div class="content-card">
+			<h3>Make a Donation</h3>
+			<p>Every dollar you donate goes directly to Four Diamonds and Penn State Hershey Children's Hospital to support families fighting pediatric cancer.</p>
+			
+			<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button donate">
+				Donate via DonorDrive
+			</a>
+
+			<h3>Attend Our Events</h3>
+			<p>Support our fundraising events throughout the year! Check out our <a href="/events">Events page</a> to see what's coming up.</p>
+
+			<h3>Questions?</h3>
+			<p>Contact us at <a href={`mailto:${clubInfo.contact.email}`}>{clubInfo.contact.email}</a> or call {clubInfo.contact.phone}</p>
+		</div>
+	</section>
+</PublicLayout>
+
+<style>
+	h1 {
+		font-size: 2.5rem;
+		color: #041E42;
+		margin-bottom: 2rem;
+	}
+
+	section {
+		margin-bottom: 3rem;
+	}
+
+	.intro {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		font-size: 1.1rem;
+		line-height: 1.8;
+	}
+
+	.audience-section h2 {
+		font-size: 2rem;
+		color: #041E42;
+		margin-bottom: 1rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 3px solid #E292AA;
+	}
+
+	.content-card {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	}
+
+	.content-card h3 {
+		color: #041E42;
+		font-size: 1.5rem;
+		margin-top: 1.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.content-card h3:first-child {
+		margin-top: 0;
+	}
+
+	.content-card p {
+		line-height: 1.8;
+		margin-bottom: 1rem;
+	}
+
+	.content-card ul {
+		margin-left: 1.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.content-card li {
+		margin-bottom: 0.5rem;
+		line-height: 1.6;
+	}
+
+	.content-card a {
+		color: #041E42;
+	}
+
+	.content-card a:hover {
+		color: #E292AA;
+	}
+
+	.social-links {
+		display: flex;
+		gap: 2rem;
+		align-items: center;
+		flex-wrap: wrap;
+		margin-top: 1rem;
+	}
+
+	.groupme-info {
+		background: #F8F9FA;
+		padding: 1rem;
+		border-radius: 4px;
+		border-left: 4px solid #00AFF0;
+	}
+
+	.groupme-info p {
+		margin: 0.25rem 0;
+	}
+
+	.groupme-info .code {
+		font-family: monospace;
+		font-weight: bold;
+		color: #041E42;
+	}
+
+	.button {
+		display: inline-block;
+		padding: 0.75rem 1.5rem;
+		border-radius: 4px;
+		text-decoration: none;
+		font-weight: bold;
+		transition: all 0.3s;
+		margin-top: 1rem;
+		margin-right: 1rem;
+	}
+
+	.button.instagram {
+		background: linear-gradient(135deg, #833AB4 0%, #E292AA 100%);
+		color: white;
+	}
+
+	.button.instagram:hover {
+		transform: scale(1.05);
+		box-shadow: 0 4px 12px rgba(131, 58, 180, 0.3);
+	}
+
+	.button.donate {
+		background: #E292AA;
+		color: white;
+		font-size: 1.1rem;
+	}
+
+	.button.donate:hover {
+		background: #041E42;
+		transform: scale(1.05);
+	}
+
+	.button:not(.instagram):not(.donate) {
+		background: #041E42;
+		color: white;
+	}
+
+	.button:not(.instagram):not(.donate):hover {
+		background: #6A4C93;
+		transform: scale(1.05);
+	}
+
+	.tiers {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+		margin: 1.5rem 0;
+	}
+
+	.tier {
+		padding: 1.5rem;
+		border-radius: 8px;
+		border: 2px solid;
+	}
+
+	.tier.gold {
+		border-color: #FFD700;
+		background: linear-gradient(135deg, #FFF9E6 0%, #FFFBF0 100%);
+	}
+
+	.tier.silver {
+		border-color: #C0C0C0;
+		background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
+	}
+
+	.tier.bronze {
+		border-color: #CD7F32;
+		background: linear-gradient(135deg, #FFF4E6 0%, #FFF8F0 100%);
+	}
+
+	.tier h4 {
+		margin-bottom: 1rem;
+		font-size: 1.3rem;
+	}
+
+	.tier.gold h4 {
+		color: #B8860B;
+	}
+
+	.tier.silver h4 {
+		color: #708090;
+	}
+
+	.tier.bronze h4 {
+		color: #8B4513;
+	}
+
+	.tier ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.tier li {
+		padding: 0.5rem 0;
+		padding-left: 1.5rem;
+		position: relative;
+	}
+
+	.tier li::before {
+		content: "✓";
+		position: absolute;
+		left: 0;
+		font-weight: bold;
+		color: #4CAF50;
+	}
+</style>

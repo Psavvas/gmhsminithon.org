@@ -1,0 +1,185 @@
+---
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { getAllEvents, formatDate, eventToSlug } from '../../utils/events';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const events = getAllEvents();
+  return events.map(event => ({
+    params: { slug: eventToSlug(event.title) },
+    props: { event },
+  }));
+}
+
+const { event } = Astro.props;
+---
+
+<PublicLayout title={`${event.title} - Mini-THON`}>
+	<article class="event-detail">
+		<header class="event-header">
+			<div class="event-meta">
+				<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+				<time datetime={event.date}>{formatDate(event.date)}</time>
+			</div>
+			<h1>{event.title}</h1>
+		</header>
+
+		<section class="event-content">
+			<div class="description" set:html={event.public_description.replace(/\n/g, '<br>')} />
+			
+			{event.media.links && event.media.links.length > 0 && (
+				<div class="event-links">
+					<h2>Related Links</h2>
+					<ul>
+						{event.media.links.map(link => (
+							<li>
+								<a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
+		</section>
+
+		<footer class="event-footer">
+			<a href="/events" class="back-link">← Back to Events</a>
+		</footer>
+	</article>
+</PublicLayout>
+
+<style>
+	.event-detail {
+		background: white;
+		padding: 3rem 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.event-header {
+		margin-bottom: 2rem;
+		padding-bottom: 2rem;
+		border-bottom: 2px solid #E292AA;
+	}
+
+	.event-meta {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.event-type {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		border-radius: 12px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.event-type.gaming {
+		background: #E3F2FD;
+		color: #1976D2;
+	}
+
+	.event-type.dine-to-donate {
+		background: #FFF3E0;
+		color: #F57C00;
+	}
+
+	.event-type.fundraiser {
+		background: #F3E5F5;
+		color: #7B1FA2;
+	}
+
+	time {
+		color: #666;
+		font-size: 1rem;
+		font-weight: 500;
+	}
+
+	h1 {
+		font-size: 2.5rem;
+		color: #041E42;
+		margin: 0;
+	}
+
+	.event-content {
+		margin-bottom: 2rem;
+	}
+
+	.description {
+		font-size: 1.1rem;
+		line-height: 1.8;
+		color: #333;
+		margin-bottom: 2rem;
+	}
+
+	.event-links {
+		background: #F8F9FA;
+		padding: 1.5rem;
+		border-radius: 8px;
+		border-left: 4px solid #041E42;
+	}
+
+	.event-links h2 {
+		font-size: 1.3rem;
+		color: #041E42;
+		margin-bottom: 1rem;
+	}
+
+	.event-links ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.event-links li {
+		margin-bottom: 0.5rem;
+	}
+
+	.event-links a {
+		color: #041E42;
+		text-decoration: none;
+		word-break: break-all;
+	}
+
+	.event-links a:hover {
+		color: #E292AA;
+		text-decoration: underline;
+	}
+
+	.event-footer {
+		padding-top: 2rem;
+		border-top: 2px solid #F0F0F0;
+	}
+
+	.back-link {
+		color: #041E42;
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.3s;
+	}
+
+	.back-link:hover {
+		color: #E292AA;
+		transform: translateX(-4px);
+		display: inline-block;
+	}
+
+	@media (max-width: 768px) {
+		.event-detail {
+			padding: 2rem 1rem;
+		}
+
+		h1 {
+			font-size: 2rem;
+		}
+	}
+</style>

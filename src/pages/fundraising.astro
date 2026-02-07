@@ -1,0 +1,234 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+import fundraisingData from '../data/fundraising.json';
+
+export const prerender = true;
+
+const currentTotal = fundraisingData.currentTotal.toLocaleString('en-US', { 
+	style: 'currency', 
+	currency: 'USD',
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2
+});
+
+const allTimeTotal = fundraisingData.history.reduce((sum, year) => sum + year.total, fundraisingData.currentTotal);
+const formattedAllTime = allTimeTotal.toLocaleString('en-US', { 
+	style: 'currency', 
+	currency: 'USD',
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0
+});
+---
+
+<PublicLayout title="Fundraising - Mini-THON">
+	<h1>Fundraising</h1>
+	
+	<section class="current-year">
+		<h2>{fundraisingData.currentYear} Fundraising</h2>
+		<div class="total-display">
+			<span class="label">Current Total</span>
+			<span class="amount">{currentTotal}</span>
+		</div>
+		<p>Every dollar raised goes directly to Four Diamonds and Penn State Hershey Children's Hospital to support families fighting pediatric cancer.</p>
+		<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="donate-button">
+			Donate Now
+		</a>
+	</section>
+
+	<section class="all-time">
+		<h2>Our Impact</h2>
+		<div class="impact-stat">
+			<span class="stat-label">All-Time Fundraising Total</span>
+			<span class="stat-amount">{formattedAllTime}</span>
+		</div>
+	</section>
+
+	<section class="history">
+		<h2>Historical Totals</h2>
+		<div class="history-grid">
+			{fundraisingData.history.map(year => (
+				<div class="year-card">
+					<span class="year">{year.year}</span>
+					<span class="total">
+						{year.total.toLocaleString('en-US', { 
+							style: 'currency', 
+							currency: 'USD',
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}
+					</span>
+				</div>
+			))}
+		</div>
+	</section>
+
+	<section class="about-four-diamonds">
+		<h2>About Four Diamonds</h2>
+		<p>Four Diamonds conquers childhood cancer by assisting children treated at Penn State Health Children's Hospital and their families through superior care, comprehensive support, and innovative research.</p>
+		<p>Since 1972, Four Diamonds has raised more than $200 million to ensure that no family ever receives a bill from Penn State Health Children's Hospital for cancer treatment. The Fund also supports pediatric cancer research to help find a cure.</p>
+	</section>
+</PublicLayout>
+
+<style>
+	h1 {
+		font-size: 2.5rem;
+		color: #041E42;
+		margin-bottom: 2rem;
+	}
+
+	section {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		margin-bottom: 2rem;
+	}
+
+	h2 {
+		font-size: 1.8rem;
+		color: #041E42;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 3px solid #E292AA;
+	}
+
+	p {
+		line-height: 1.8;
+		color: #333;
+		margin-bottom: 1rem;
+	}
+
+	.current-year {
+		text-align: center;
+	}
+
+	.total-display {
+		background: linear-gradient(135deg, #041E42 0%, #6A4C93 100%);
+		padding: 2rem;
+		border-radius: 8px;
+		margin: 2rem 0;
+	}
+
+	.total-display .label {
+		display: block;
+		color: white;
+		font-size: 1.2rem;
+		margin-bottom: 0.5rem;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+
+	.total-display .amount {
+		display: block;
+		color: #FDB927;
+		font-size: 3rem;
+		font-weight: bold;
+	}
+
+	.donate-button {
+		display: inline-block;
+		background: #E292AA;
+		color: white;
+		padding: 1rem 2rem;
+		border-radius: 4px;
+		text-decoration: none;
+		font-weight: bold;
+		font-size: 1.1rem;
+		transition: all 0.3s;
+		margin-top: 1rem;
+	}
+
+	.donate-button:hover {
+		background: #041E42;
+		transform: scale(1.05);
+	}
+
+	.all-time {
+		background: linear-gradient(135deg, #E292AA 0%, #FDB927 100%);
+		color: white;
+		text-align: center;
+	}
+
+	.all-time h2 {
+		color: white;
+		border-bottom-color: rgba(255, 255, 255, 0.3);
+	}
+
+	.impact-stat {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.stat-label {
+		font-size: 1.3rem;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+
+	.stat-amount {
+		font-size: 3.5rem;
+		font-weight: bold;
+		text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+	}
+
+	.history-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.year-card {
+		background: #F8F9FA;
+		padding: 1.5rem;
+		border-radius: 8px;
+		text-align: center;
+		border-left: 4px solid #041E42;
+		transition: all 0.3s;
+	}
+
+	.year-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+	}
+
+	.year-card .year {
+		display: block;
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #041E42;
+		margin-bottom: 0.5rem;
+	}
+
+	.year-card .total {
+		display: block;
+		font-size: 1.2rem;
+		color: #6A4C93;
+		font-weight: 600;
+	}
+
+	.about-four-diamonds {
+		background: linear-gradient(135deg, #041E42 0%, #6A4C93 100%);
+		color: white;
+	}
+
+	.about-four-diamonds h2 {
+		color: white;
+		border-bottom-color: rgba(255, 255, 255, 0.3);
+	}
+
+	.about-four-diamonds p {
+		color: white;
+		font-size: 1.1rem;
+	}
+
+	@media (max-width: 768px) {
+		.total-display .amount {
+			font-size: 2rem;
+		}
+
+		.stat-amount {
+			font-size: 2.5rem;
+		}
+	}
+</style>

@@ -1,0 +1,23 @@
+{
+  "currentYear": 2026,
+  "currentTotal": 45678.50,
+  "history": [
+    {
+      "year": 2025,
+      "total": 52341.25
+    },
+    {
+      "year": 2024,
+      "total": 48750.00
+    },
+    {
+      "year": 2023,
+      "total": 41200.75
+    },
+    {
+      "year": 2022,
+      "total": 38900.50
+    }
+  ],
+  "donorDriveLink": "https://www.fourdiamonds.org/minithon"
+}
