@@ -1,5 +1,6 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
+import ImageCarousel from '../components/ImageCarousel.astro';
 import fundraisingData from '../data/fundraising.json';
 import clubInfo from '../data/clubInfo.json';
 import eventsData from '../data/events.json';
@@ -24,6 +25,14 @@ const formatDate = (dateString: string) =>
 	new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
+
+// Gallery images for carousel
+const galleryImages = [
+	{ src: '/gallery/event-1.jpg', alt: 'Mini-THON Event', caption: 'Making a difference together' },
+	{ src: '/gallery/volunteers.jpg', alt: 'Our Volunteers', caption: 'Dedicated volunteers working for the cause' },
+	{ src: '/gallery/kids.jpg', alt: 'For The Kids', caption: 'Supporting families fighting pediatric cancer' },
+	{ src: '/gallery/event-2.jpg', alt: 'Fundraising', caption: 'Community fundraising events' },
+];
 ---
 
 <PublicLayout title="Mini-THON - Fighting Pediatric Cancer">
@@ -40,6 +49,12 @@ const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
 	</section>
 
 	<div class="page-content">
+		<!-- Photo Gallery Carousel -->
+		<section class="gallery-section">
+			<h2 class="section-title">Our Impact</h2>
+			<ImageCarousel images={galleryImages} autoplay={true} interval={5000} />
+		</section>
+
 		<section class="split">
 			<div class="split-card">
 				<h2>About us</h2>
@@ -92,7 +107,7 @@ const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
 				</a>
 				<a href="/get-involved" class="link-card">
 					<h3>Join the club</h3>
-					<p>Students join our club meeting {clubInfo.meetings.general}</p>
+					<p>GMHS students can join our club meeting {clubInfo.meetings.general}</p>
 				</a>
 				<a href={clubInfo.socialMedia.instagram} class="link-card" target="_blank" rel="noopener noreferrer">
 					<h3>Follow us</h3>
@@ -171,6 +186,18 @@ const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
 
 	section {
 		margin-bottom: 3.5rem;
+	}
+
+	.gallery-section {
+		animation: fade-rise 0.8s ease both;
+		animation-delay: 0.05s;
+	}
+
+	.section-title {
+		font-size: clamp(2rem, 4vw, 2.5rem);
+		margin-bottom: 2rem;
+		text-align: center;
+		color: var(--ink-900);
 	}
 
 	.split {
