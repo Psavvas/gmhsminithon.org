@@ -151,7 +151,7 @@ const currentPath = Astro.url.pathname;
 		backdrop-filter: blur(14px);
 		position: sticky;
 		top: 0;
-		z-index: 100;
+		z-index: 1000;
 	}
 
 	.nav-container {
@@ -230,6 +230,8 @@ const currentPath = Astro.url.pathname;
 		padding: 0;
 		cursor: pointer;
 		transition: background 0.2s ease;
+		position: relative;
+		z-index: 1002;
 	}
 
 	.nav-toggle:hover {
@@ -344,7 +346,7 @@ const currentPath = Astro.url.pathname;
 			background: rgba(28, 42, 58, 0.98);
 			backdrop-filter: blur(20px);
 			display: none;
-			z-index: 999;
+			z-index: 1001;
 		}
 
 		.nav-links a {
