@@ -17,8 +17,9 @@ export const prerender = true;
 		<h2>For Students</h2>
 		<div class="content-card">
 			<h3>Join Our Club!</h3>
+			<p class="gmhs-note"><strong>Open to GMHS Students Only</strong></p>
 			<p><strong>When:</strong> {clubInfo.meetings.general}</p>
-			<p>No experience needed! We welcome all students who want to make a difference in the lives of children fighting cancer.</p>
+			<p>No experience needed! We welcome all GMHS students who want to make a difference in the lives of children fighting cancer.</p>
 			
 			<h3>What We Do</h3>
 			<ul>
@@ -160,6 +161,16 @@ export const prerender = true;
 		line-height: 1.8;
 		margin-bottom: 1rem;
 		color: var(--ink-700);
+	}
+
+	.gmhs-note {
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.15), rgba(106, 170, 228, 0.08));
+		padding: 0.75rem 1.25rem;
+		border-radius: 12px;
+		border-left: 4px solid var(--brand-sky);
+		font-size: 1rem;
+		color: var(--brand-ink) !important;
+		margin: 1rem 0;
 	}
 
 	.content-card ul {

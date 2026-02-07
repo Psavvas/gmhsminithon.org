@@ -154,6 +154,7 @@ const currentPath = Astro.url.pathname;
 		position: sticky;
 		top: 0;
 		z-index: 1000;
+		transition: all 0.3s ease;
 	}
 
 	.nav-container {
@@ -287,6 +288,8 @@ const currentPath = Astro.url.pathname;
 		margin: 0 auto;
 		padding: 3rem 2rem 4rem;
 		width: 100%;
+		box-sizing: border-box;
+		overflow-x: hidden;
 	}
 
 	footer {
@@ -334,6 +337,10 @@ const currentPath = Astro.url.pathname;
 			display: flex;
 		}
 
+		main {
+			padding: 2rem 1rem 3rem;
+		}
+
 		.nav-links {
 			position: fixed;
 			right: 0;
@@ -345,10 +352,13 @@ const currentPath = Astro.url.pathname;
 			justify-content: center;
 			gap: 1.5rem;
 			padding: 2rem;
-			background: rgba(28, 42, 58, 0.98);
+			background: linear-gradient(135deg, rgba(44, 70, 114, 0.98), rgba(106, 170, 228, 0.95));
 			backdrop-filter: blur(20px);
 			display: none;
+			opacity: 0;
 			z-index: 1001;
+			box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+			transition: opacity 0.3s ease;
 		}
 
 		.nav-links a {
@@ -356,11 +366,12 @@ const currentPath = Astro.url.pathname;
 			width: auto;
 			text-align: center;
 			padding: 0.75rem 1.5rem;
+			white-space: nowrap;
 		}
 
 		.navbar.nav-open .nav-links {
 			display: flex;
-			animation: slideIn 0.3s ease both;
+			opacity: 1;
 		}
 
 		.navbar.nav-open .nav-toggle-bar:nth-child(1) {
@@ -394,14 +405,10 @@ const currentPath = Astro.url.pathname;
 		.nav-container {
 			padding: 0 1rem;
 		}
-	}
 
-	@keyframes slideIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
+		.nav-links a {
+			font-size: 1.1rem;
+			padding: 0.65rem 1.2rem;
 		}
 	}
 </style>

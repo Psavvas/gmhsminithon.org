@@ -3,31 +3,31 @@
     {
       "name": "ABC Corporation",
       "tier": "Gold",
-      "logo": "/sponsors/abc-corp.png",
+      "logo": "/sponsors/abc-corporation.png",
       "website": "https://abccorp.example.com"
     },
     {
       "name": "Tech Innovators Inc",
       "tier": "Gold",
-      "logo": "/sponsors/tech-innovators.png",
+      "logo": "/sponsors/tech-innovators-inc.png",
       "website": "https://techinnovators.example.com"
     },
     {
       "name": "Local Bank & Trust",
       "tier": "Silver",
-      "logo": "/sponsors/local-bank.png",
+      "logo": "/sponsors/local-bank-and-trust.png",
       "website": "https://localbank.example.com"
     },
     {
       "name": "Community Health Services",
       "tier": "Silver",
-      "logo": "/sponsors/community-health.png",
+      "logo": "/sponsors/community-health-services.png",
       "website": "https://communityhealth.example.com"
     },
     {
       "name": "Smith Family Restaurant",
       "tier": "Silver",
-      "logo": "/sponsors/smith-restaurant.png",
+      "logo": "/sponsors/smith-family-restaurant.png",
       "website": "https://smithrestaurant.example.com"
     },
     {
@@ -39,19 +39,19 @@
     {
       "name": "Downtown Coffee Shop",
       "tier": "Bronze",
-      "logo": "/sponsors/downtown-coffee.png",
+      "logo": "/sponsors/downtown-coffee-shop.png",
       "website": ""
     },
     {
       "name": "Green Thumb Nursery",
       "tier": "Bronze",
-      "logo": "/sponsors/green-thumb.png",
+      "logo": "/sponsors/green-thumb-nursery.png",
       "website": ""
     },
     {
       "name": "Peak Performance Gym",
       "tier": "Bronze",
-      "logo": "/sponsors/peak-gym.png",
+      "logo": "/sponsors/peak-performance-gym.png",
       "website": ""
     }
   ]
