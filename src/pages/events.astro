@@ -1,0 +1,151 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+import { getCurrentYearEvents, formatDate, eventToSlug } from '../utils/events';
+
+export const prerender = true;
+
+const events = getCurrentYearEvents();
+const currentYear = new Date().getFullYear();
+---
+
+<PublicLayout title="Events - Mini-THON">
+	<h1>{currentYear} Events</h1>
+	
+	<section class="intro">
+		<p>Join us for exciting fundraising events throughout the year! All proceeds go to Four Diamonds and Penn State Hershey Children's Hospital.</p>
+	</section>
+
+	{events.length === 0 ? (
+		<section class="no-events">
+			<p>No events scheduled for {currentYear} yet. Check back soon!</p>
+		</section>
+	) : (
+		<div class="events-grid">
+			{events.map(event => (
+				<article class="event-card">
+					<div class="event-header">
+						<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+						<time datetime={event.date}>{formatDate(event.date)}</time>
+					</div>
+					<h2>{event.title}</h2>
+					<p class="description">{event.public_description}</p>
+					<a href={`/events/${eventToSlug(event.title)}`} class="read-more">
+						Learn More →
+					</a>
+				</article>
+			))}
+		</div>
+	)}
+</PublicLayout>
+
+<style>
+	h1 {
+		font-size: 2.5rem;
+		color: #041E42;
+		margin-bottom: 2rem;
+	}
+
+	.intro {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		margin-bottom: 2rem;
+		font-size: 1.1rem;
+		line-height: 1.8;
+	}
+
+	.no-events {
+		background: white;
+		padding: 3rem 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		text-align: center;
+		font-size: 1.2rem;
+		color: #666;
+	}
+
+	.events-grid {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.event-card {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		transition: all 0.3s;
+		border-left: 4px solid #E292AA;
+	}
+
+	.event-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+	}
+
+	.event-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.event-type {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		border-radius: 12px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.event-type.gaming {
+		background: #E3F2FD;
+		color: #1976D2;
+	}
+
+	.event-type.dine-to-donate {
+		background: #FFF3E0;
+		color: #F57C00;
+	}
+
+	.event-type.fundraiser {
+		background: #F3E5F5;
+		color: #7B1FA2;
+	}
+
+	time {
+		color: #666;
+		font-size: 0.95rem;
+	}
+
+	.event-card h2 {
+		font-size: 1.8rem;
+		color: #041E42;
+		margin-bottom: 1rem;
+	}
+
+	.description {
+		line-height: 1.8;
+		color: #333;
+		margin-bottom: 1rem;
+	}
+
+	.read-more {
+		display: inline-block;
+		color: #041E42;
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.3s;
+		margin-top: 0.5rem;
+	}
+
+	.read-more:hover {
+		color: #E292AA;
+		transform: translateX(4px);
+	}
+</style>

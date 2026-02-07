@@ -1,0 +1,160 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+import clubInfo from '../data/clubInfo.json';
+
+export const prerender = true;
+---
+
+<PublicLayout title="About Us - Mini-THON">
+	<h1>About Mini-THON</h1>
+	
+	<section class="description">
+		<h2>What is Mini-THON?</h2>
+		<p>{clubInfo.mission}</p>
+	</section>
+
+	<section class="history">
+		<h2>Our History</h2>
+		<p>{clubInfo.history}</p>
+	</section>
+
+	<section class="leadership">
+		<h2>Leadership Team</h2>
+		<div class="officers-grid">
+			{clubInfo.officers.map(officer => (
+				<div class="officer-card">
+					<h3>{officer.role}</h3>
+					<p class="name">{officer.name}</p>
+					<a href={`mailto:${officer.email}`} class="email">{officer.email}</a>
+				</div>
+			))}
+		</div>
+	</section>
+
+	<section class="contact">
+		<h2>Contact Us</h2>
+		<div class="contact-info">
+			<p><strong>Email:</strong> <a href={`mailto:${clubInfo.contact.email}`}>{clubInfo.contact.email}</a></p>
+			<p><strong>Phone:</strong> {clubInfo.contact.phone}</p>
+			<p><strong>Meeting Time:</strong> {clubInfo.meetings.general}</p>
+		</div>
+	</section>
+
+	<section class="social">
+		<h2>Connect With Us</h2>
+		<div class="social-links">
+			<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="social-button">
+				Follow us on Instagram
+			</a>
+		</div>
+	</section>
+</PublicLayout>
+
+<style>
+	h1 {
+		font-size: 2.5rem;
+		color: #041E42;
+		margin-bottom: 2rem;
+	}
+
+	section {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		margin-bottom: 2rem;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	}
+
+	h2 {
+		font-size: 1.8rem;
+		color: #041E42;
+		margin-bottom: 1rem;
+		border-bottom: 3px solid #E292AA;
+		padding-bottom: 0.5rem;
+	}
+
+	p {
+		line-height: 1.8;
+		color: #333;
+		font-size: 1.1rem;
+		margin-bottom: 1rem;
+	}
+
+	.officers-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		gap: 1.5rem;
+		margin-top: 1.5rem;
+	}
+
+	.officer-card {
+		background: #F8F9FA;
+		padding: 1.5rem;
+		border-radius: 8px;
+		border-left: 4px solid #041E42;
+		transition: transform 0.3s;
+	}
+
+	.officer-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	}
+
+	.officer-card h3 {
+		color: #041E42;
+		margin-bottom: 0.5rem;
+		font-size: 1.2rem;
+	}
+
+	.officer-card .name {
+		font-weight: 600;
+		color: #6A4C93;
+		margin-bottom: 0.5rem;
+		font-size: 1rem;
+	}
+
+	.officer-card .email {
+		color: #666;
+		font-size: 0.9rem;
+		text-decoration: none;
+	}
+
+	.officer-card .email:hover {
+		color: #E292AA;
+	}
+
+	.contact-info p {
+		margin-bottom: 1rem;
+	}
+
+	.contact-info a {
+		color: #041E42;
+		text-decoration: none;
+	}
+
+	.contact-info a:hover {
+		color: #E292AA;
+	}
+
+	.social-links {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.social-button {
+		display: inline-block;
+		background: linear-gradient(135deg, #833AB4 0%, #E292AA 100%);
+		color: white;
+		padding: 1rem 2rem;
+		border-radius: 4px;
+		text-decoration: none;
+		font-weight: bold;
+		transition: all 0.3s;
+	}
+
+	.social-button:hover {
+		transform: scale(1.05);
+		box-shadow: 0 4px 12px rgba(131, 58, 180, 0.3);
+	}
+</style>

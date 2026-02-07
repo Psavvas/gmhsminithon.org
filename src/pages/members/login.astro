@@ -1,0 +1,157 @@
+---
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { verifyPassword, setMemberAuthCookie, checkMemberAuth } from '../../utils/auth';
+
+// Check if already logged in
+if (checkMemberAuth(Astro.request)) {
+  return Astro.redirect('/members');
+}
+
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const password = data.get('password')?.toString() || '';
+    
+    if (verifyPassword(password)) {
+      // Set auth cookie and redirect
+      Astro.response.headers.set('Set-Cookie', setMemberAuthCookie());
+      return Astro.redirect('/members');
+    } else {
+      errorMessage = 'Incorrect password. Please try again.';
+    }
+  } catch (error) {
+    errorMessage = 'An error occurred. Please try again.';
+  }
+}
+---
+
+<PublicLayout title="Member Login - Mini-THON">
+	<div class="login-container">
+		<h1>Member Portal Login</h1>
+		<p class="subtitle">Enter the member password to access the private portal</p>
+		
+		<form method="POST" class="login-form">
+			{errorMessage && (
+				<div class="error-message">{errorMessage}</div>
+			)}
+			
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input 
+					type="password" 
+					id="password" 
+					name="password" 
+					required 
+					autocomplete="current-password"
+					placeholder="Enter member password"
+				/>
+			</div>
+			
+			<button type="submit" class="submit-button">Login</button>
+		</form>
+		
+		<div class="help-text">
+			<p>Don't have the password? Contact a club officer or check the latest club announcements.</p>
+			<p><strong>Demo password:</strong> minithon2026</p>
+		</div>
+	</div>
+</PublicLayout>
+
+<style>
+	.login-container {
+		max-width: 500px;
+		margin: 0 auto;
+		background: white;
+		padding: 3rem 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	}
+
+	h1 {
+		font-size: 2rem;
+		color: #041E42;
+		margin-bottom: 0.5rem;
+		text-align: center;
+	}
+
+	.subtitle {
+		text-align: center;
+		color: #666;
+		margin-bottom: 2rem;
+	}
+
+	.login-form {
+		margin-bottom: 2rem;
+	}
+
+	.error-message {
+		background: #FFEBEE;
+		color: #C62828;
+		padding: 1rem;
+		border-radius: 4px;
+		margin-bottom: 1.5rem;
+		border-left: 4px solid #C62828;
+	}
+
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+
+	label {
+		display: block;
+		margin-bottom: 0.5rem;
+		color: #041E42;
+		font-weight: 600;
+	}
+
+	input[type="password"] {
+		width: 100%;
+		padding: 0.75rem;
+		border: 2px solid #E0E0E0;
+		border-radius: 4px;
+		font-size: 1rem;
+		transition: border-color 0.3s;
+	}
+
+	input[type="password"]:focus {
+		outline: none;
+		border-color: #6A4C93;
+	}
+
+	.submit-button {
+		width: 100%;
+		background: linear-gradient(135deg, #6A4C93 0%, #041E42 100%);
+		color: white;
+		padding: 1rem;
+		border: none;
+		border-radius: 4px;
+		font-size: 1.1rem;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.3s;
+	}
+
+	.submit-button:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(106, 76, 147, 0.3);
+	}
+
+	.help-text {
+		background: #F8F9FA;
+		padding: 1.5rem;
+		border-radius: 4px;
+		border-left: 4px solid #FDB927;
+	}
+
+	.help-text p {
+		margin: 0.5rem 0;
+		color: #666;
+		font-size: 0.95rem;
+	}
+
+	.help-text strong {
+		color: #041E42;
+	}
+</style>

@@ -1,0 +1,213 @@
+---
+import MemberLayout from '../../layouts/MemberLayout.astro';
+import { checkMemberAuth } from '../../utils/auth';
+import { getCurrentYearEvents } from '../../utils/events';
+
+// Check authentication
+if (!checkMemberAuth(Astro.request)) {
+  return Astro.redirect('/members/login');
+}
+
+const upcomingEvents = getCurrentYearEvents().slice(0, 3);
+---
+
+<MemberLayout title="Member Dashboard - Mini-THON">
+	<h1>Welcome to the Member Portal</h1>
+	
+	<section class="announcements">
+		<h2>📢 Important Announcements</h2>
+		<div class="announcement-card urgent">
+			<h3>Main Event Planning Meeting</h3>
+			<p>Mandatory meeting for all members on May 25th at 3:30 PM in the Auditorium to discuss final logistics for the main event.</p>
+		</div>
+		<div class="announcement-card">
+			<h3>Volunteer Sign-Ups Open</h3>
+			<p>Sign up for volunteer shifts for upcoming events! Check the Volunteer Opportunities page for details.</p>
+		</div>
+	</section>
+
+	<section class="quick-actions">
+		<h2>Quick Actions</h2>
+		<div class="actions-grid">
+			<a href="/members/volunteer-opportunities" class="action-card">
+				<span class="icon">🤝</span>
+				<h3>Volunteer Opportunities</h3>
+				<p>View and sign up for upcoming events</p>
+			</a>
+			<a href="/members/meeting-info" class="action-card">
+				<span class="icon">📅</span>
+				<h3>Meeting Info</h3>
+				<p>Meeting times and GroupMe info</p>
+			</a>
+			<a href="/" class="action-card">
+				<span class="icon">🌐</span>
+				<h3>Public Site</h3>
+				<p>Return to the main website</p>
+			</a>
+		</div>
+	</section>
+
+	{upcomingEvents.length > 0 && (
+		<section class="upcoming-events">
+			<h2>Upcoming Events</h2>
+			<div class="events-list">
+				{upcomingEvents.map(event => (
+					<div class="event-preview">
+						<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+						<h3>{event.title}</h3>
+						<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+					</div>
+				))}
+			</div>
+			<a href="/members/volunteer-opportunities" class="view-all">View All Events →</a>
+		</section>
+	)}
+</MemberLayout>
+
+<style>
+	h1 {
+		font-size: 2.5rem;
+		color: #041E42;
+		margin-bottom: 2rem;
+	}
+
+	section {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		margin-bottom: 2rem;
+	}
+
+	h2 {
+		font-size: 1.8rem;
+		color: #041E42;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 3px solid #6A4C93;
+	}
+
+	.announcement-card {
+		background: #F8F9FA;
+		padding: 1.5rem;
+		border-radius: 8px;
+		margin-bottom: 1rem;
+		border-left: 4px solid #6A4C93;
+	}
+
+	.announcement-card.urgent {
+		background: #FFF9E6;
+		border-left-color: #FDB927;
+	}
+
+	.announcement-card h3 {
+		color: #041E42;
+		margin-bottom: 0.5rem;
+	}
+
+	.announcement-card p {
+		color: #333;
+		margin: 0;
+		line-height: 1.6;
+	}
+
+	.actions-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.action-card {
+		background: linear-gradient(135deg, #6A4C93 0%, #041E42 100%);
+		color: white;
+		padding: 2rem;
+		border-radius: 8px;
+		text-decoration: none;
+		transition: all 0.3s;
+		text-align: center;
+	}
+
+	.action-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 16px rgba(106, 76, 147, 0.3);
+	}
+
+	.action-card .icon {
+		font-size: 3rem;
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	.action-card h3 {
+		color: white;
+		margin-bottom: 0.5rem;
+	}
+
+	.action-card p {
+		color: rgba(255, 255, 255, 0.9);
+		margin: 0;
+	}
+
+	.events-list {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.event-preview {
+		background: #F8F9FA;
+		padding: 1.5rem;
+		border-radius: 8px;
+		border-left: 4px solid #E292AA;
+	}
+
+	.event-type {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		border-radius: 12px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin-bottom: 0.5rem;
+	}
+
+	.event-type.gaming {
+		background: #E3F2FD;
+		color: #1976D2;
+	}
+
+	.event-type.dine-to-donate {
+		background: #FFF3E0;
+		color: #F57C00;
+	}
+
+	.event-type.fundraiser {
+		background: #F3E5F5;
+		color: #7B1FA2;
+	}
+
+	.event-preview h3 {
+		color: #041E42;
+		margin-bottom: 0.5rem;
+	}
+
+	.event-preview .date {
+		color: #666;
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	.view-all {
+		display: inline-block;
+		margin-top: 1rem;
+		color: #6A4C93;
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.3s;
+	}
+
+	.view-all:hover {
+		color: #041E42;
+		transform: translateX(4px);
+	}
+</style>
