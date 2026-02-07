@@ -71,30 +71,38 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 
 <style>
 	h1 {
-		font-size: 2.5rem;
-		color: #041E42;
+		font-size: clamp(2.2rem, 4vw, 3rem);
+		color: var(--ink-900);
 		margin-bottom: 2rem;
+		animation: fade-rise 0.6s ease both;
 	}
 
 	section {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-		margin-bottom: 2rem;
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
+		margin-bottom: 2.5rem;
+		animation: fade-rise 0.8s ease both;
 	}
 
+	section:nth-child(2) { animation-delay: 0.1s; }
+	section:nth-child(3) { animation-delay: 0.2s; }
+	section:nth-child(4) { animation-delay: 0.3s; }
+	section:nth-child(5) { animation-delay: 0.4s; }
+
 	h2 {
-		font-size: 1.8rem;
-		color: #041E42;
+		font-size: clamp(1.5rem, 3vw, 1.8rem);
+		color: var(--ink-900);
 		margin-bottom: 1.5rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 3px solid #E292AA;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid var(--brand-sky);
 	}
 
 	p {
 		line-height: 1.8;
-		color: #333;
+		color: var(--ink-700);
 		margin-bottom: 1rem;
 	}
 
@@ -103,54 +111,63 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 	}
 
 	.total-display {
-		background: linear-gradient(135deg, #041E42 0%, #6A4C93 100%);
-		padding: 2rem;
-		border-radius: 8px;
+		background: linear-gradient(160deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
+		padding: 2.5rem;
+		border-radius: 16px;
 		margin: 2rem 0;
+		box-shadow: 0 8px 24px rgba(44, 70, 114, 0.2);
 	}
 
 	.total-display .label {
 		display: block;
-		color: white;
+		color: var(--white);
 		font-size: 1.2rem;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0.75rem;
 		text-transform: uppercase;
-		letter-spacing: 1px;
+		letter-spacing: 1.5px;
+		font-weight: 500;
 	}
 
 	.total-display .amount {
 		display: block;
-		color: #FDB927;
-		font-size: 3rem;
-		font-weight: bold;
+		color: var(--brand-sky);
+		font-size: clamp(2.5rem, 5vw, 3.5rem);
+		font-weight: 700;
 	}
 
 	.donate-button {
-		display: inline-block;
-		background: #E292AA;
-		color: white;
-		padding: 1rem 2rem;
-		border-radius: 4px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--brand-sky);
+		color: var(--brand-ink);
+		padding: 1rem 2.5rem;
+		border-radius: 999px;
 		text-decoration: none;
-		font-weight: bold;
-		font-size: 1.1rem;
-		transition: all 0.3s;
-		margin-top: 1rem;
+		font-weight: 600;
+		font-size: 1.15rem;
+		letter-spacing: 0.02em;
+		transition: all 0.3s ease;
+		margin-top: 1.5rem;
+		box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
 	}
 
 	.donate-button:hover {
-		background: #041E42;
-		transform: scale(1.05);
+		background: var(--brand-ink);
+		color: var(--white);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
 	}
 
 	.all-time {
-		background: linear-gradient(135deg, #E292AA 0%, #FDB927 100%);
-		color: white;
+		background: linear-gradient(160deg, rgba(106, 170, 228, 0.95), rgba(106, 170, 228, 0.8));
+		color: var(--white);
 		text-align: center;
+		border: none;
 	}
 
 	.all-time h2 {
-		color: white;
+		color: var(--white);
 		border-bottom-color: rgba(255, 255, 255, 0.3);
 	}
 
@@ -163,13 +180,14 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 	.stat-label {
 		font-size: 1.3rem;
 		text-transform: uppercase;
-		letter-spacing: 1px;
+		letter-spacing: 1.5px;
+		font-weight: 500;
 	}
 
 	.stat-amount {
-		font-size: 3.5rem;
-		font-weight: bold;
-		text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+		font-size: clamp(2.8rem, 6vw, 4rem);
+		font-weight: 700;
+		text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
 	}
 
 	.history-grid {
@@ -179,35 +197,65 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 	}
 
 	.year-card {
-		background: #F8F9FA;
-		padding: 1.5rem;
-		border-radius: 8px;
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
+		padding: 1.75rem;
+		border-radius: 16px;
 		text-align: center;
-		border-left: 4px solid #041E42;
-		transition: all 0.3s;
+		border: 1px solid var(--border-soft);
+		border-left: 4px solid var(--brand-ink);
+		transition: all 0.3s ease;
 	}
 
 	.year-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		box-shadow: var(--shadow-card);
+		border-left-color: var(--brand-sky);
 	}
 
 	.year-card .year {
 		display: block;
-		font-size: 1.5rem;
-		font-weight: bold;
-		color: #041E42;
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: var(--brand-ink);
 		margin-bottom: 0.5rem;
 	}
 
 	.year-card .total {
 		display: block;
-		font-size: 1.2rem;
-		color: #6A4C93;
+		font-size: 1.25rem;
+		color: var(--ink-700);
 		font-weight: 600;
 	}
 
 	.about-four-diamonds {
+		background: linear-gradient(135deg, rgba(44, 70, 114, 0.05), rgba(106, 170, 228, 0.05));
+	}
+
+	@keyframes fade-rise {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (max-width: 768px) {
+		section {
+			padding: 1.5rem;
+		}
+
+		.total-display {
+			padding: 2rem 1.5rem;
+		}
+
+		.history-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
 		background: linear-gradient(135deg, #041E42 0%, #6A4C93 100%);
 		color: white;
 	}
