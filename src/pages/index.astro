@@ -205,6 +205,7 @@ const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
 		aspect-ratio: 4 / 3;
 		min-height: 260px;
 		width: 100%;
+		max-width: 100%;
 	}
 
 	.photo-card img {
@@ -213,6 +214,7 @@ const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
 		object-fit: cover;
 		display: block;
 		max-width: 100%;
+		flex-shrink: 0;
 	}
 
 	.grid-section {
@@ -411,6 +413,8 @@ const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
 		max-width: 1160px;
 		margin: 0 auto;
 		padding: 3rem 1.5rem 4rem;
+		overflow-x: hidden;
+		width: 100%;
 	}
 
 	@keyframes fade-rise {
