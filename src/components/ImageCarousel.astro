@@ -6,7 +6,7 @@ export interface Props {
 }
 
 const { images, autoplay = true, interval = 5000 } = Astro.props;
-const carouselId = `carousel-${Math.random().toString(36).substr(2, 9)}`;
+const carouselId = `carousel-${crypto.randomUUID()}`;
 ---
 
 <div class="carousel-container" id={carouselId}>
@@ -52,7 +52,10 @@ const carouselId = `carousel-${Math.random().toString(36).substr(2, 9)}`;
 
 <script define:vars={{ carouselId, autoplay, interval }}>
 	const container = document.getElementById(carouselId);
-	if (!container) return;
+	if (!container) {
+		console.error(`Carousel container with id "${carouselId}" not found`);
+		return;
+	}
 	
 	const slides = container.querySelectorAll('.carousel-slide');
 	const prevButton = container.querySelector('.carousel-button.prev');
