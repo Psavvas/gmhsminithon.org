@@ -48,67 +48,82 @@ export const prerender = true;
 
 <style>
 	h1 {
-		font-size: 2.5rem;
-		color: #041E42;
+		font-size: clamp(2.2rem, 4vw, 3rem);
+		color: var(--ink-900);
 		margin-bottom: 2rem;
+		animation: fade-rise 0.6s ease both;
 	}
 
 	section {
-		margin-bottom: 3rem;
+		margin-bottom: 2.5rem;
+		animation: fade-rise 0.8s ease both;
 	}
 
+	section:nth-child(2) { animation-delay: 0.1s; }
+	section:nth-child(3) { animation-delay: 0.2s; }
+	section:nth-child(4) { animation-delay: 0.3s; }
+	section:nth-child(5) { animation-delay: 0.4s; }
+
 	.intro {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 	}
 
 	.intro p {
-		font-size: 1.1rem;
+		font-size: 1.05rem;
 		line-height: 1.8;
-		color: #333;
+		color: var(--ink-700);
 		margin-bottom: 1rem;
 	}
 
 	.sponsor-cta {
-		display: inline-block;
-		background: #E292AA;
-		color: white;
-		padding: 0.75rem 1.5rem;
-		border-radius: 4px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--brand-sky);
+		color: var(--brand-ink);
+		padding: 0.9rem 1.8rem;
+		border-radius: 999px;
 		text-decoration: none;
-		font-weight: bold;
-		transition: all 0.3s;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
 	}
 
 	.sponsor-cta:hover {
-		background: #041E42;
-		transform: scale(1.05);
+		background: var(--brand-ink);
+		color: var(--white);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
 	}
 
 	.sponsor-tier {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 	}
 
 	h2 {
-		font-size: 1.8rem;
+		font-size: clamp(1.5rem, 3vw, 1.8rem);
 		margin-bottom: 1.5rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 3px solid;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid;
 	}
 
 	.tier-gold {
-		color: #FFD700;
-		border-bottom-color: #FFD700;
+		color: #D4AF37;
+		border-bottom-color: #D4AF37;
 	}
 
 	.tier-silver {
-		color: #C0C0C0;
-		border-bottom-color: #C0C0C0;
+		color: #9AA0A6;
+		border-bottom-color: #9AA0A6;
 	}
 
 	.tier-bronze {
@@ -118,20 +133,22 @@ export const prerender = true;
 
 	.sponsors-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 		gap: 1.5rem;
 	}
 
 	.sponsor-card {
-		background: #F8F9FA;
-		padding: 1.5rem;
-		border-radius: 8px;
-		transition: all 0.3s;
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.05), rgba(106, 170, 228, 0.02));
+		padding: 1.75rem;
+		border-radius: 16px;
+		border: 1px solid var(--border-soft);
+		transition: all 0.3s ease;
 	}
 
 	.sponsor-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		box-shadow: var(--shadow-card);
+		border-color: var(--brand-sky);
 	}
 
 	.sponsor-link,
@@ -147,9 +164,10 @@ export const prerender = true;
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 1rem;
-		background: white;
-		border-radius: 4px;
+		background: var(--white);
+		border-radius: 12px;
 		padding: 1rem;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	}
 
 	.sponsor-logo img {
@@ -160,25 +178,51 @@ export const prerender = true;
 
 	.sponsor-card h3 {
 		text-align: center;
-		color: #041E42;
-		font-size: 1.1rem;
+		color: var(--brand-ink);
+		font-size: 1.15rem;
+		font-weight: 600;
 	}
 
 	.thank-you {
-		background: linear-gradient(135deg, #041E42 0%, #6A4C93 100%);
-		color: white;
+		background: linear-gradient(160deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
+		color: var(--white);
 		padding: 3rem 2rem;
-		border-radius: 8px;
+		border-radius: 20px;
 		text-align: center;
+		box-shadow: var(--shadow-card);
 	}
 
 	.thank-you h2 {
-		color: white;
+		color: var(--white);
 		border-bottom: none;
+		margin-bottom: 1rem;
 	}
 
 	.thank-you p {
 		font-size: 1.2rem;
 		margin: 0;
+		color: var(--white);
+	}
+
+	@keyframes fade-rise {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.intro,
+		.sponsor-tier {
+			padding: 1.5rem;
+		}
+
+		.sponsors-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

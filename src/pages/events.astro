@@ -40,29 +40,35 @@ const currentYear = new Date().getFullYear();
 
 <style>
 	h1 {
-		font-size: 2.5rem;
-		color: #041E42;
+		font-size: clamp(2.2rem, 4vw, 3rem);
+		color: var(--ink-900);
 		margin-bottom: 2rem;
+		animation: fade-rise 0.6s ease both;
 	}
 
 	.intro {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 		margin-bottom: 2rem;
-		font-size: 1.1rem;
+		font-size: 1.05rem;
 		line-height: 1.8;
+		color: var(--ink-700);
+		animation: fade-rise 0.8s ease both;
+		animation-delay: 0.1s;
 	}
 
 	.no-events {
-		background: white;
+		background: var(--surface-raised);
 		padding: 3rem 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 		text-align: center;
 		font-size: 1.2rem;
-		color: #666;
+		color: var(--ink-500);
 	}
 
 	.events-grid {
@@ -71,17 +77,25 @@ const currentYear = new Date().getFullYear();
 	}
 
 	.event-card {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-		transition: all 0.3s;
-		border-left: 4px solid #E292AA;
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
+		border-left: 4px solid var(--brand-sky);
+		transition: all 0.3s ease;
+		animation: fade-rise 0.8s ease both;
 	}
+
+	.event-card:nth-child(1) { animation-delay: 0.2s; }
+	.event-card:nth-child(2) { animation-delay: 0.3s; }
+	.event-card:nth-child(3) { animation-delay: 0.4s; }
+	.event-card:nth-child(4) { animation-delay: 0.5s; }
 
 	.event-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+		box-shadow: 0 12px 30px rgba(28, 42, 58, 0.12);
+		border-left-color: var(--brand-ink);
 	}
 
 	.event-header {
@@ -95,57 +109,78 @@ const currentYear = new Date().getFullYear();
 
 	.event-type {
 		display: inline-block;
-		padding: 0.25rem 0.75rem;
-		border-radius: 12px;
-		font-size: 0.85rem;
+		padding: 0.35rem 0.85rem;
+		border-radius: 999px;
+		font-size: 0.8rem;
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
 
 	.event-type.gaming {
-		background: #E3F2FD;
-		color: #1976D2;
+		background: rgba(106, 170, 228, 0.15);
+		color: var(--brand-ink);
 	}
 
 	.event-type.dine-to-donate {
-		background: #FFF3E0;
-		color: #F57C00;
+		background: rgba(255, 152, 0, 0.15);
+		color: #E65100;
 	}
 
 	.event-type.fundraiser {
-		background: #F3E5F5;
-		color: #7B1FA2;
+		background: rgba(156, 39, 176, 0.15);
+		color: #6A1B9A;
 	}
 
 	time {
-		color: #666;
+		color: var(--ink-500);
 		font-size: 0.95rem;
+		font-weight: 500;
 	}
 
 	.event-card h2 {
-		font-size: 1.8rem;
-		color: #041E42;
+		font-size: clamp(1.5rem, 3vw, 1.8rem);
+		color: var(--ink-900);
 		margin-bottom: 1rem;
 	}
 
 	.description {
 		line-height: 1.8;
-		color: #333;
+		color: var(--ink-700);
 		margin-bottom: 1rem;
 	}
 
 	.read-more {
-		display: inline-block;
-		color: #041E42;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		color: var(--brand-ink);
 		text-decoration: none;
 		font-weight: 600;
-		transition: all 0.3s;
+		transition: all 0.3s ease;
 		margin-top: 0.5rem;
 	}
 
 	.read-more:hover {
-		color: #E292AA;
-		transform: translateX(4px);
+		color: var(--brand-sky);
+		gap: 0.6rem;
+	}
+
+	@keyframes fade-rise {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.intro,
+		.event-card {
+			padding: 1.5rem;
+		}
 	}
 </style>
