@@ -3,6 +3,16 @@ import PublicLayout from '../layouts/PublicLayout.astro';
 import sponsorsData from '../data/sponsors.json';
 
 export const prerender = true;
+
+const tierOrder = ['Gold', 'Silver', 'Bronze'];
+const tierSections = tierOrder
+	.map((name) => ({
+		name,
+		sponsors: sponsorsData.sponsors.filter(
+			(sponsor) => (sponsor.tier || '').toLowerCase() === name.toLowerCase()
+		)
+	}))
+	.filter((tier) => tier.sponsors.length > 0);
 ---
 
 <PublicLayout title="Our Sponsors - Mini-THON">
@@ -13,7 +23,7 @@ export const prerender = true;
 		<p><a href="/get-involved#businesses" class="sponsor-cta">Interested in becoming a sponsor?</a></p>
 	</section>
 
-	{sponsorsData.tiers.map(tier => (
+	{tierSections.map(tier => (
 		<section class="sponsor-tier">
 			<h2 class={`tier-${tier.name.toLowerCase()}`}>{tier.name} Sponsors</h2>
 			<div class="sponsors-grid">
