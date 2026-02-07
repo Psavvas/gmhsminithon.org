@@ -1,13 +1,26 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
+import ImageCarousel from '../components/ImageCarousel.astro';
 import clubInfo from '../data/clubInfo.json';
 
 export const prerender = true;
+
+// Team images for carousel
+const teamImages = [
+	{ src: '/gallery/team.jpg', alt: 'Our Team', caption: 'Our dedicated leadership team' },
+	{ src: '/gallery/volunteers.jpg', alt: 'Volunteers', caption: 'Making a difference together' },
+	{ src: '/gallery/event-3.jpg', alt: 'Community', caption: 'Building a stronger community' },
+];
 ---
 
 <PublicLayout title="About Us - Mini-THON">
 	<h1>About Mini-THON</h1>
 	
+	<!-- Team Carousel -->
+	<section class="carousel-section">
+		<ImageCarousel images={teamImages} autoplay={true} interval={5000} />
+	</section>
+
 	<section class="description">
 		<h2>What is Mini-THON?</h2>
 		<p>{clubInfo.mission}</p>
@@ -66,6 +79,13 @@ export const prerender = true;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
 		animation: fade-rise 0.8s ease both;
+	}
+
+	.carousel-section {
+		background: transparent;
+		padding: 0;
+		border: none;
+		box-shadow: none;
 	}
 
 	section:nth-child(2) { animation-delay: 0.1s; }

@@ -1,5 +1,6 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
+import ImageCarousel from '../components/ImageCarousel.astro';
 import sponsorsData from '../data/sponsors.json';
 
 export const prerender = true;
@@ -13,6 +14,13 @@ const tierSections = tierOrder
 		)
 	}))
 	.filter((tier) => tier.sponsors.length > 0);
+
+// Sponsor showcase images for carousel
+const sponsorShowcase = [
+	{ src: '/gallery/event-2.jpg', alt: 'Community Support', caption: 'Our sponsors make a difference' },
+	{ src: '/gallery/team.jpg', alt: 'Partnership', caption: 'Building strong community partnerships' },
+	{ src: '/gallery/event-3.jpg', alt: 'Together', caption: 'Together we fight pediatric cancer' },
+];
 ---
 
 <PublicLayout title="Our Sponsors - Mini-THON">
@@ -21,6 +29,11 @@ const tierSections = tierOrder
 	<section class="intro">
 		<p>We are grateful to our generous sponsors who make our mission possible. Their support helps us raise money and awareness for Four Diamonds and Penn State Hershey Children's Hospital.</p>
 		<p><a href="/get-involved#businesses" class="sponsor-cta">Interested in becoming a sponsor?</a></p>
+	</section>
+
+	<!-- Sponsor Showcase Carousel -->
+	<section class="showcase-section">
+		<ImageCarousel images={sponsorShowcase} autoplay={true} interval={4000} />
 	</section>
 
 	{tierSections.map(tier => (
@@ -70,9 +83,14 @@ const tierSections = tierOrder
 	}
 
 	section:nth-child(2) { animation-delay: 0.1s; }
-	section:nth-child(3) { animation-delay: 0.2s; }
-	section:nth-child(4) { animation-delay: 0.3s; }
-	section:nth-child(5) { animation-delay: 0.4s; }
+	section:nth-child(3) { animation-delay: 0.15s; }
+	section:nth-child(4) { animation-delay: 0.2s; }
+	section:nth-child(5) { animation-delay: 0.25s; }
+	section:nth-child(6) { animation-delay: 0.3s; }
+
+	.showcase-section {
+		margin-bottom: 3rem;
+	}
 
 	.intro {
 		background: var(--surface-raised);

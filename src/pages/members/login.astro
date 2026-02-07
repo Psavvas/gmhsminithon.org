@@ -35,7 +35,8 @@ if (Astro.request.method === 'POST') {
 <PublicLayout title="Member Login - Mini-THON">
 	<div class="login-container">
 		<h1>Member Portal Login</h1>
-		<p class="subtitle">Enter the member password to access the private portal</p>
+		<p class="subtitle">For GMHS Mini-THON members only</p>
+		<p class="info-note">Enter the member password to access the private portal</p>
 		
 		<form method="POST" class="login-form">
 			{errorMessage && (
@@ -83,8 +84,17 @@ if (Astro.request.method === 'POST') {
 
 	.subtitle {
 		text-align: center;
+		color: var(--brand-ink);
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		font-size: 1.05rem;
+	}
+
+	.info-note {
+		text-align: center;
 		color: #666;
 		margin-bottom: 2rem;
+		font-size: 0.95rem;
 	}
 
 	.login-form {
