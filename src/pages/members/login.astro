@@ -14,10 +14,15 @@ if (Astro.request.method === 'POST') {
     const data = await Astro.request.formData();
     const password = data.get('password')?.toString() || '';
     
-    if (verifyPassword(password)) {
-      // Set auth cookie and redirect
-      Astro.response.headers.set('Set-Cookie', setMemberAuthCookie());
-      return Astro.redirect('/members');
+		if (verifyPassword(password)) {
+			// Set auth cookie and redirect in a single response.
+			return new Response(null, {
+				status: 302,
+				headers: {
+					Location: '/members',
+					'Set-Cookie': setMemberAuthCookie()
+				}
+			});
     } else {
       errorMessage = 'Incorrect password. Please try again.';
     }
