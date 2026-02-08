@@ -42,9 +42,9 @@ const teamImages = [
 				height={1600}
 				sizes="(max-width: 900px) 92vw, 520px"
 				class="static-photo"
-				loading="lazy"
+				loading="eager"
 				decoding="async"
-				fetchpriority="auto"
+				fetchpriority="high"
 			/>
 		</section>
 	</div>
@@ -52,7 +52,7 @@ const teamImages = [
 	<div class="continued-grid">
 		<!-- Team Carousel -->
 		<section class="carousel-section">
-			<ImageCarousel images={teamImages} autoplay={true} interval={5000} />
+			<ImageCarousel images={teamImages} autoplay={true} interval={5000} priority={true} />
 		</section>
 
 		<section class="about-continued">

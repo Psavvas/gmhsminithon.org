@@ -5,9 +5,10 @@ export interface Props {
 	images: Array<{ src: string; alt: string; caption?: string }>;
 	autoplay?: boolean;
 	interval?: number;
+	priority?: boolean;
 }
 
-const { images, autoplay = true, interval = 5000 } = Astro.props;
+const { images, autoplay = true, interval = 5000, priority = false } = Astro.props;
 const carouselId = `carousel-${crypto.randomUUID()}`;
 ---
 
@@ -22,9 +23,9 @@ const carouselId = `carousel-${crypto.randomUUID()}`;
 					width={1200}
 					height={675}
 					sizes="(max-width: 900px) 92vw, 520px"
-					loading="lazy"
+					loading={priority ? 'eager' : 'lazy'}
 					decoding="async"
-					fetchpriority="auto"
+					fetchpriority={priority && index === 0 ? 'high' : 'auto'}
 				/>
 				{image.caption && (
 					<div class="carousel-caption">
