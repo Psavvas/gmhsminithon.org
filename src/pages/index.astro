@@ -32,6 +32,9 @@ const remainingFormatted = remainingTotal.toLocaleString('en-US', {
 	maximumFractionDigits: 0
 });
 
+const getEventPreview = (description: string | string[]) =>
+	Array.isArray(description) ? description[0] ?? '' : description;
+
 const today = new Date();
 const upcomingEvents = eventsData
 	.filter((event) => new Date(event.date) >= today)
@@ -41,7 +44,10 @@ const upcomingEvents = eventsData
 const formatDate = (dateString: string) =>
 	new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-const aboutParagraphs = clubInfo.about.split('\n\n').filter(Boolean);
+const missionLead = Array.isArray(clubInfo.mission) ? clubInfo.mission[0] ?? '' : clubInfo.mission;
+const aboutParagraphs = Array.isArray(clubInfo.about)
+	? clubInfo.about
+	: clubInfo.about.split('\n\n').filter(Boolean);
 
 // Gallery images for carousel
 const galleryImages = [
@@ -69,7 +75,7 @@ const heroBackgroundImages = [
 		<div class="hero-content">
 			<p class="eyebrow">Great Mills High School</p>
 			<h1>Mini-THON</h1>
-			<p class="lead">{clubInfo.mission}</p>
+			<p class="lead">{missionLead}</p>
 			<div class="hero-actions">
 				<a href={fundraisingData.donorDriveLink} class="button primary" target="_blank" rel="noopener noreferrer">Donate now</a>
 				<a href="/get-involved" class="button ghost">Get involved</a>
@@ -102,7 +108,7 @@ const heroBackgroundImages = [
 									<span class="event-date">{formatDate(event.date)}</span>
 									<div>
 										<p class="event-title">{event.title}</p>
-										<p class="event-desc">{event.public_description}</p>
+										<p class="event-desc">{getEventPreview(event.public_description)}</p>
 									</div>
 								</a>
 							</li>

@@ -1,26 +1,26 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
-import ImageCarousel from '../components/ImageCarousel.astro';
 import sponsorsData from '../data/sponsors.json';
 
 export const prerender = true;
 
-const tierOrder = ['Gold', 'Silver', 'Bronze'];
+const tierOrder = [
+	{ name: 'Diamond', diamonds: 6 },
+	{ name: 'Platinum', diamonds: 5 },
+	{ name: 'Gold', diamonds: 4 },
+	{ name: 'Silver', diamonds: 3 },
+	{ name: 'Bronze', diamonds: 2 },
+	{ name: 'Supporter', diamonds: 1 },
+];
+const tiersWithoutLogos = new Set(['supporter', 'bronze']);
 const tierSections = tierOrder
-	.map((name) => ({
-		name,
+	.map((tier) => ({
+		...tier,
 		sponsors: sponsorsData.sponsors.filter(
-			(sponsor) => (sponsor.tier || '').toLowerCase() === name.toLowerCase()
+			(sponsor) => (sponsor.tier || '').toLowerCase() === tier.name.toLowerCase()
 		)
 	}))
 	.filter((tier) => tier.sponsors.length > 0);
-
-// Sponsor showcase images for carousel
-const sponsorShowcase = [
-	{ src: '/gallery/event-2.jpg', alt: 'Community Support', caption: 'Our sponsors make a difference' },
-	{ src: '/gallery/team.jpg', alt: 'Partnership', caption: 'Building strong community partnerships' },
-	{ src: '/gallery/event-3.jpg', alt: 'Together', caption: 'Together we fight pediatric cancer' },
-];
 ---
 
 <PublicLayout title="Our Sponsors - Mini-THON">
@@ -31,29 +31,40 @@ const sponsorShowcase = [
 		<p><a href="/get-involved#businesses" class="sponsor-cta">Interested in becoming a sponsor?</a></p>
 	</section>
 
-	<!-- Sponsor Showcase Carousel -->
-	<section class="showcase-section">
-		<ImageCarousel images={sponsorShowcase} autoplay={true} interval={4000} />
-	</section>
-
 	{tierSections.map(tier => (
 		<section class="sponsor-tier">
-			<h2 class={`tier-${tier.name.toLowerCase()}`}>{tier.name} Sponsors</h2>
+			<h2 class={`tier-${tier.name.toLowerCase()} tier-heading`}>
+				<span>{tier.name} Sponsors</span>
+				<span class="tier-diamonds" aria-hidden="true">
+					{Array.from({ length: tier.diamonds }).map(() => (
+						<img
+							src="/masthead-diamond-blue.svg"
+							alt=""
+							class="tier-diamond-icon"
+							loading="lazy"
+						/>
+					))}
+				</span>
+			</h2>
 			<div class="sponsors-grid">
 				{tier.sponsors.map(sponsor => (
 					<div class="sponsor-card">
 						{sponsor.website ? (
 							<a href={sponsor.website} target="_blank" rel="noopener noreferrer" class="sponsor-link">
-								<div class="sponsor-logo">
-									<img src={sponsor.logo} alt={sponsor.name} onerror="this.style.display='none'" />
-								</div>
+								{!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
+									<div class="sponsor-logo">
+										<img src={sponsor.logo} alt={sponsor.name} onerror="this.style.display='none'" />
+									</div>
+								)}
 								<h3>{sponsor.name}</h3>
 							</a>
 						) : (
 							<div class="sponsor-no-link">
-								<div class="sponsor-logo">
-									<img src={sponsor.logo} alt={sponsor.name} onerror="this.style.display='none'" />
-								</div>
+								{!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
+									<div class="sponsor-logo">
+										<img src={sponsor.logo} alt={sponsor.name} onerror="this.style.display='none'" />
+									</div>
+								)}
 								<h3>{sponsor.name}</h3>
 							</div>
 						)}
@@ -144,9 +155,44 @@ const sponsorShowcase = [
 		border-bottom: 2px solid;
 	}
 
+	.tier-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.tier-diamonds {
+		display: inline-flex;
+		gap: 0.35rem;
+		align-items: center;
+	}
+
+	.tier-diamond-icon {
+		width: 18px;
+		height: 18px;
+		fill: currentColor;
+	}
+
+	.tier-supporter {
+		color: #5B6B7A;
+		border-bottom-color: #5B6B7A;
+	}
+
 	.tier-gold {
 		color: #D4AF37;
 		border-bottom-color: #D4AF37;
+	}
+
+	.tier-platinum {
+		color: #7E8B9B;
+		border-bottom-color: #7E8B9B;
+	}
+
+	.tier-diamond {
+		color: #2F6B99;
+		border-bottom-color: #2F6B99;
 	}
 
 	.tier-silver {

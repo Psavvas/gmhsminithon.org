@@ -4,8 +4,8 @@ export interface Event {
   title: string;
   date: string;
   event_type: string;
-  public_description: string;
-  internal_description: string;
+  public_description: string | string[];
+  internal_description: string | string[];
   media: {
     images: string[];
     links: string[];

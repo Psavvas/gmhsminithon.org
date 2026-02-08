@@ -3,8 +3,12 @@
     "title": "Game Night Fundraiser",
     "date": "2026-03-15",
     "event_type": "gaming",
-    "public_description": "Join us for an exciting night of video games, board games, and fun! All proceeds go to Four Diamonds Fund to help fight pediatric cancer. Entry is $10 per person.",
-    "internal_description": "**Volunteer needs:** 5 volunteers for setup at 5 PM, 8 volunteers for game stations, 2 for check-in desk. Bring extension cords and game controllers from storage room.",
+    "public_description": [
+      "Join us for an exciting night of video games, board games, and fun! All proceeds go to Four Diamonds Fund to help fight pediatric cancer. Entry is $10 per person."
+    ],
+    "internal_description": [
+      "**Volunteer needs:** 5 volunteers for setup at 5 PM, 8 volunteers for game stations, 2 for check-in desk. Bring extension cords and game controllers from storage room."
+    ],
     "media": {
       "images": [],
       "links": []
@@ -14,8 +18,12 @@
     "title": "Dine to Donate at Pizza Palace",
     "date": "2026-04-10",
     "event_type": "dine-to-donate",
-    "public_description": "Support Mini-THON by dining at Pizza Palace! Mention Mini-THON when ordering and 20% of your bill will be donated to the cause. Dine-in or takeout available from 4 PM to 9 PM.",
-    "internal_description": "**Volunteer needs:** 4 volunteers to hand out flyers during lunch periods (Mon-Wed before event). 2 volunteers to be present at restaurant 7-9 PM to thank supporters.",
+    "public_description": [
+      "Support Mini-THON by dining at Pizza Palace! Mention Mini-THON when ordering and 20% of your bill will be donated to the cause. Dine-in or takeout available from 4 PM to 9 PM."
+    ],
+    "internal_description": [
+      "**Volunteer needs:** 4 volunteers to hand out flyers during lunch periods (Mon-Wed before event). 2 volunteers to be present at restaurant 7-9 PM to thank supporters."
+    ],
     "media": {
       "images": [],
       "links": ["https://pizzapalace.example.com"]
@@ -25,8 +33,12 @@
     "title": "Spring Walkathon",
     "date": "2026-05-20",
     "event_type": "fundraiser",
-    "public_description": "Our annual Spring Walkathon returns! Walk to raise money for Four Diamonds. Collect pledges from family and friends, then join us for a 2-mile walk around the community. Registration opens April 1st.",
-    "internal_description": "**Volunteer needs:** 10 volunteers for route markers and water stations. Leadership team meeting April 15 to finalize route. Bring coolers and first aid kits. Check-in table needs 3 volunteers starting at 8 AM.",
+    "public_description": [
+      "Our annual Spring Walkathon returns! Walk to raise money for Four Diamonds. Collect pledges from family and friends, then join us for a 2-mile walk around the community. Registration opens April 1st."
+    ],
+    "internal_description": [
+      "**Volunteer needs:** 10 volunteers for route markers and water stations. Leadership team meeting April 15 to finalize route. Bring coolers and first aid kits. Check-in table needs 3 volunteers starting at 8 AM."
+    ],
     "media": {
       "images": [],
       "links": []
@@ -36,8 +48,12 @@
     "title": "Mini-THON Main Event",
     "date": "2026-06-05",
     "event_type": "fundraiser",
-    "public_description": "Our biggest event of the year! A 12-hour celebration featuring games, dancing, food, and entertainment. This is what we've been working toward all year. Registration required - spots are limited!",
-    "internal_description": "**Volunteer needs:** ALL MEMBERS REQUIRED. Setup crew starts Friday 6/4 at 3 PM. Day-of shifts assigned by committee chairs. Breakdown crew needed until midnight. Mandatory meeting 5/25 for final logistics.",
+    "public_description": [
+      "Our biggest event of the year! A 12-hour celebration featuring games, dancing, food, and entertainment. This is what we've been working toward all year. Registration required - spots are limited!"
+    ],
+    "internal_description": [
+      "**Volunteer needs:** ALL MEMBERS REQUIRED. Setup crew starts Friday 6/4 at 3 PM. Day-of shifts assigned by committee chairs. Breakdown crew needed until midnight. Mandatory meeting 5/25 for final logistics."
+    ],
     "media": {
       "images": [],
       "links": []
@@ -47,8 +63,12 @@
     "title": "Back to School Kickoff",
     "date": "2025-09-15",
     "event_type": "fundraiser",
-    "public_description": "Join Mini-THON for our Back to School Kickoff event last year! This event has already passed.",
-    "internal_description": "This is a past event from 2025.",
+    "public_description": [
+      "Join Mini-THON for our Back to School Kickoff event last year! This event has already passed."
+    ],
+    "internal_description": [
+      "This is a past event from 2025."
+    ],
     "media": {
       "images": [],
       "links": []

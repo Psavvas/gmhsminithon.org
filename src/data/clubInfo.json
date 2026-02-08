@@ -1,7 +1,16 @@
 {
-  "mission": "Four Diamonds Mini-THON® is a student-led philanthropic organization dedicated to raising money and awareness for Four Diamonds and Penn State Hershey Children's Hospital. We support children and families affected by pediatric cancer.",
-  "about": "Mini-THON is a student-led philanthropic organization dedicated to raising money and awareness for Four Diamonds and Penn State Hershey Children's Hospital. We support children and families affected by pediatric cancer. Our mission extends beyond fundraising to build a community of compassionate students who understand the impact of pediatric cancer on families.\n\nThrough year-round events, fundraising, and community outreach, we bring students, families, and local partners together to support Four Diamonds and Penn State Hershey Children's Hospital. Every project is driven by the same goal: better days and brighter outcomes for kids facing pediatric cancer.",
-  "history": "Our Mini-THON chapter was founded in 2018 by a group of passionate students who wanted to make a difference in the lives of children fighting cancer. Since then, we've raised over $220,000 for Four Diamonds.",
+  "mission": [
+    "Four Diamonds Mini-THON® is a student-led philanthropic organization dedicated to raising money and awareness for Four Diamonds and Penn State Hershey Children's Hospital. We support children and families affected by pediatric cancer."
+  ],
+  "about": [
+    "Mini-THON is a student-led philanthropic organization dedicated to raising money and awareness for Four Diamonds and Penn State Hershey Children's Hospital. We support children and families affected by pediatric cancer. Our mission extends beyond fundraising to build a community of compassionate students who understand the impact of pediatric cancer on families.",
+    "Through year-round events, fundraising, and community outreach, we bring students, families, and local partners together to support Four Diamonds and Penn State Hershey Children's Hospital. Every project is driven by the same goal: better days and brighter outcomes for kids facing pediatric cancer."
+  ],
+  "aboutContinued": [
+    "What sets our organization apart is the deep personal commitment of our members. We don't just fundraise—we build lasting relationships with the families we support and create memorable experiences that unite our school community around a shared purpose.",
+    "We invite you to join us on this meaningful journey. Whether you're interested in helping with events, fundraising, community outreach, or simply supporting a cause that matters, there's a place for you in Mini-THON.",
+    "Our Mini-THON chapter was founded in 2018 by a group of passionate students who wanted to make a difference in the lives of children fighting cancer. Since then, we've raised over $220,000 for Four Diamonds."
+  ],
   "meetings": {
     "general": "Wednesdays during Gold Lunch in the Auditorium",
     "board": "First Monday of each month at 3:30 PM in Room 215"
@@ -36,6 +45,11 @@
       "role": "Events Coordinator",
       "name": "Amanda Thompson",
       "email": "events@minithon.school.edu"
+    },
+    {
+      "role": "Adult Cordinator",
+      "name": "Brian Weisner",
+      "email": "bdweisner@smcps.org"
     }
   ],
   "contact": {

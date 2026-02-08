@@ -6,6 +6,9 @@ export const prerender = true;
 
 const events = getCurrentYearEvents();
 const currentYear = new Date().getFullYear();
+
+const getEventPreview = (description: string | string[]) =>
+	Array.isArray(description) ? description[0] ?? '' : description;
 ---
 
 <PublicLayout title="Events - Mini-THON">
@@ -28,7 +31,7 @@ const currentYear = new Date().getFullYear();
 						<time datetime={event.date}>{formatDate(event.date)}</time>
 					</div>
 					<h2>{event.title}</h2>
-					<p class="description">{event.public_description}</p>
+					<p class="description">{getEventPreview(event.public_description)}</p>
 					<a href={`/events/${eventToSlug(event.title)}`} class="read-more">
 						Learn More →
 					</a>

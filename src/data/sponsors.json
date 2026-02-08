@@ -2,25 +2,25 @@
   "sponsors": [
     {
       "name": "ABC Corporation",
-      "tier": "Gold",
+      "tier": "Diamond",
       "logo": "/sponsors/abc-corporation.png",
       "website": "https://abccorp.example.com"
     },
     {
       "name": "Tech Innovators Inc",
-      "tier": "Gold",
+      "tier": "Platinum",
       "logo": "/sponsors/tech-innovators-inc.png",
       "website": "https://techinnovators.example.com"
     },
     {
       "name": "Local Bank & Trust",
-      "tier": "Silver",
+      "tier": "Gold",
       "logo": "/sponsors/local-bank-and-trust.png",
       "website": "https://localbank.example.com"
     },
     {
       "name": "Community Health Services",
-      "tier": "Silver",
+      "tier": "Gold",
       "logo": "/sponsors/community-health-services.png",
       "website": "https://communityhealth.example.com"
     },
@@ -44,13 +44,13 @@
     },
     {
       "name": "Green Thumb Nursery",
-      "tier": "Bronze",
+      "tier": "Supporter",
       "logo": "/sponsors/green-thumb-nursery.png",
       "website": ""
     },
     {
       "name": "Peak Performance Gym",
-      "tier": "Bronze",
+      "tier": "Supporter",
       "logo": "/sponsors/peak-performance-gym.png",
       "website": ""
     }

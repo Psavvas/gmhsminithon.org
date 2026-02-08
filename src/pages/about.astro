@@ -1,35 +1,66 @@
 ---
+import { Image } from 'astro:assets';
 import PublicLayout from '../layouts/PublicLayout.astro';
 import ImageCarousel from '../components/ImageCarousel.astro';
 import clubInfo from '../data/clubInfo.json';
 
 export const prerender = true;
 
+const aboutParagraphs = Array.isArray(clubInfo.about)
+	? clubInfo.about
+	: clubInfo.about.split('\n\n').filter(Boolean);
+
+const aboutContinuedParagraphs = Array.isArray(clubInfo.aboutContinued)
+	? clubInfo.aboutContinued
+	: clubInfo.aboutContinued.split('\n\n').filter(Boolean);
+
 // Team images for carousel
 const teamImages = [
-	{ src: '/gallery/team.jpg', alt: 'Our Team', caption: 'Our dedicated leadership team' },
-	{ src: '/gallery/volunteers.jpg', alt: 'Volunteers', caption: 'Making a difference together' },
-	{ src: '/gallery/event-3.jpg', alt: 'Community', caption: 'Building a stronger community' },
+	{ src: '/genericCarousel/BurnsPark.jpg', alt: 'Mini-THON Event', caption: 'Making a difference together' },
+	{ src: '/genericCarousel/GiauPass.jpg', alt: 'Our Volunteers', caption: 'Dedicated volunteers working for the cause' },
+	{ src: '/genericCarousel/KarlovyVary.jpg', alt: 'For The Kids', caption: 'Supporting families fighting pediatric cancer' },
+	{ src: '/genericCarousel/NaplesBasilica.jpg', alt: 'Fundraising', caption: 'Community fundraising events' },
+	{ src: '/genericCarousel/StarlingBrighton2025.jpg', alt: 'Event Setup', caption: 'Preparing for an event' },
 ];
 ---
 
 <PublicLayout title="About Us - Mini-THON">
-	<h1>About Mini-THON</h1>
+	<h1>For the Kids™</h1>
 	
-	<!-- Team Carousel -->
-	<section class="carousel-section">
-		<ImageCarousel images={teamImages} autoplay={true} interval={5000} />
-	</section>
+	<div class="intro-grid">
+		<section class="description">
+			{aboutParagraphs.map((paragraph) => (
+				<p>{paragraph}</p>
+			))}
+		</section>
 
-	<section class="description">
-		<h2>What is Mini-THON?</h2>
-		<p>{clubInfo.mission}</p>
-	</section>
+		<section class="static-image">
+			<Image
+				src="/sidePicture.jpeg"
+				alt="Mini-THON team"
+				width={1200}
+				height={1600}
+				sizes="(max-width: 900px) 92vw, 520px"
+				class="static-photo"
+				loading="lazy"
+				decoding="async"
+				fetchpriority="auto"
+			/>
+		</section>
+	</div>
 
-	<section class="history">
-		<h2>Our History</h2>
-		<p>{clubInfo.history}</p>
-	</section>
+	<div class="continued-grid">
+		<!-- Team Carousel -->
+		<section class="carousel-section">
+			<ImageCarousel images={teamImages} autoplay={true} interval={5000} />
+		</section>
+
+		<section class="about-continued">
+			{aboutContinuedParagraphs.map((paragraph) => (
+				<p>{paragraph}</p>
+			))}
+		</section>
+	</div>
 
 	<section class="leadership">
 		<h2>Leadership Team</h2>
@@ -41,24 +72,6 @@ const teamImages = [
 					<a href={`mailto:${officer.email}`} class="email">{officer.email}</a>
 				</div>
 			))}
-		</div>
-	</section>
-
-	<section class="contact">
-		<h2>Contact Us</h2>
-		<div class="contact-info">
-			<p><strong>Email:</strong> <a href={`mailto:${clubInfo.contact.email}`}>{clubInfo.contact.email}</a></p>
-			<p><strong>Phone:</strong> {clubInfo.contact.phone}</p>
-			<p><strong>Meeting Time:</strong> {clubInfo.meetings.general}</p>
-		</div>
-	</section>
-
-	<section class="social">
-		<h2>Connect With Us</h2>
-		<div class="social-links">
-			<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="social-button">
-				Follow us on Instagram
-			</a>
 		</div>
 	</section>
 </PublicLayout>
@@ -81,18 +94,87 @@ const teamImages = [
 		animation: fade-rise 0.8s ease both;
 	}
 
+	.intro-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		gap: 2rem;
+		align-items: stretch;
+		margin-bottom: 2rem;
+	}
+
+	.continued-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		grid-template-areas: "carousel text";
+		gap: 2rem;
+		align-items: stretch;
+		margin-bottom: 2rem;
+	}
+
+	.intro-grid > section {
+		margin-bottom: 0;
+	}
+
+	.continued-grid > section {
+		margin-bottom: 0;
+	}
+
+	.description {
+		background: transparent;
+		border: none;
+		box-shadow: none;
+		padding: 0;
+	}
+
 	.carousel-section {
+		grid-area: carousel;
+		background: transparent;
+		padding: 0;
+		border: none;
+		box-shadow: none;
+		height: 100%;
+	}
+
+	.static-image {
+		background: transparent;
+		padding: 0;
+		border: none;
+		box-shadow: none;
+		height: 100%;
+	}
+
+	.static-image img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
+	}
+
+	.about-continued {
+		grid-area: text;
 		background: transparent;
 		padding: 0;
 		border: none;
 		box-shadow: none;
 	}
 
-	section:nth-child(2) { animation-delay: 0.1s; }
-	section:nth-child(3) { animation-delay: 0.2s; }
-	section:nth-child(4) { animation-delay: 0.3s; }
-	section:nth-child(5) { animation-delay: 0.4s; }
-	section:nth-child(6) { animation-delay: 0.5s; }
+	.continued-grid .carousel-section :global(.carousel-container) {
+		height: 100%;
+	}
+
+	.continued-grid .carousel-section :global(.carousel-track) {
+		height: 100%;
+		aspect-ratio: auto;
+	}
+
+	.description { animation-delay: 0.1s; }
+	.static-image { animation-delay: 0.2s; }
+	.carousel-section { animation-delay: 0.3s; }
+	.about-continued { animation-delay: 0.4s; }
+	.leadership { animation-delay: 0.5s; }
 
 	h2 {
 		font-size: clamp(1.5rem, 3vw, 1.8rem);
@@ -155,49 +237,6 @@ const teamImages = [
 		color: var(--brand-sky);
 	}
 
-	.contact-info p {
-		margin-bottom: 1rem;
-	}
-
-	.contact-info a {
-		color: var(--brand-ink);
-		text-decoration: none;
-		font-weight: 500;
-		transition: color 0.2s ease;
-	}
-
-	.contact-info a:hover {
-		color: var(--brand-sky);
-	}
-
-	.social-links {
-		display: flex;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
-
-	.social-button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		padding: 1rem 2rem;
-		border-radius: 999px;
-		text-decoration: none;
-		font-weight: 600;
-		letter-spacing: 0.02em;
-		transition: all 0.3s ease;
-		box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
-	}
-
-	.social-button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
-		background: var(--brand-ink);
-		color: var(--white);
-	}
-
 	@keyframes fade-rise {
 		from {
 			opacity: 0;
@@ -210,6 +249,38 @@ const teamImages = [
 	}
 
 	@media (max-width: 768px) {
+		.intro-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.continued-grid {
+			grid-template-columns: 1fr;
+			grid-template-areas:
+				"carousel"
+				"text";
+		}
+
+		.carousel-section {
+			height: auto;
+		}
+
+		.continued-grid .carousel-section :global(.carousel-container) {
+			height: auto;
+		}
+
+		.static-image img {
+			height: auto;
+		}
+
+		.continued-grid .carousel-section :global(.carousel-track) {
+			height: auto;
+			aspect-ratio: var(--carousel-aspect);
+		}
+
+		.description {
+			padding: 0;
+		}
+
 		section {
 			padding: 1.5rem;
 		}
