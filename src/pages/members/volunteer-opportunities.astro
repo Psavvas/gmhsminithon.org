@@ -51,7 +51,6 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 							<h2>{event.title}</h2>
 							<div class="event-info-row">
 								<div class="event-info-item">
-									<span class="info-icon">📅</span>
 									<div class="info-content">
 										<span class="info-label">Date</span>
 										<time datetime={event.date}>{getFullDate(event.date)}</time>
@@ -59,7 +58,6 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 								</div>
 								{event.location && (
 									<div class="event-info-item">
-										<span class="info-icon">📍</span>
 										<div class="info-content">
 											<span class="info-label">Location</span>
 											<span>{event.location}</span>
@@ -80,7 +78,7 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 						</div>
 
 						<div class="member-info">
-							<h3>🔒 Volunteer Information</h3>
+							<h3>Volunteer Information</h3>
 							{normalizeParagraphs(event.internal_description).map((paragraph) => (
 								<div class="internal-description" set:html={renderInternalParagraph(paragraph)} />
 							))}
@@ -221,12 +219,6 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 	.event-info-item {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-	}
-
-	.info-icon {
-		font-size: 1.5rem;
-		line-height: 1;
 	}
 
 	.info-content {

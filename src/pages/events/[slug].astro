@@ -36,7 +36,6 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 				<h1>{event.title}</h1>
 				<div class="event-info-row">
 					<div class="event-info-item">
-						<span class="info-icon">📅</span>
 						<div class="info-content">
 							<span class="info-label">Date</span>
 							<time datetime={event.date}>{fullDate}</time>
@@ -44,7 +43,6 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 					</div>
 					{event.location && (
 						<div class="event-info-item">
-							<span class="info-icon">📍</span>
 							<div class="info-content">
 								<span class="info-label">Location</span>
 								<span>{event.location}</span>
@@ -154,12 +152,6 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 	.event-info-item {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-	}
-
-	.info-icon {
-		font-size: 1.5rem;
-		line-height: 1;
 	}
 
 	.info-content {
