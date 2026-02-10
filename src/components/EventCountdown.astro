@@ -1,0 +1,197 @@
+---
+interface Props {
+	eventDate: string;
+}
+
+const { eventDate } = Astro.props;
+---
+
+<div class="countdown-container" data-event-date={eventDate}>
+	<div class="countdown-label">Time Until Event</div>
+	<div class="countdown-timer">
+		<div class="countdown-segment">
+			<span class="countdown-value" data-days>00</span>
+			<span class="countdown-unit">Days</span>
+		</div>
+		<div class="countdown-separator">:</div>
+		<div class="countdown-segment">
+			<span class="countdown-value" data-hours>00</span>
+			<span class="countdown-unit">Hours</span>
+		</div>
+		<div class="countdown-separator">:</div>
+		<div class="countdown-segment">
+			<span class="countdown-value" data-minutes>00</span>
+			<span class="countdown-unit">Mins</span>
+		</div>
+		<div class="countdown-separator">:</div>
+		<div class="countdown-segment">
+			<span class="countdown-value" data-seconds>00</span>
+			<span class="countdown-unit">Secs</span>
+		</div>
+	</div>
+	<div class="countdown-past" style="display: none;">
+		<span>Event has passed</span>
+	</div>
+</div>
+
+<script>
+	const intervals = new Map();
+	
+	function initCountdown() {
+		const containers = document.querySelectorAll('.countdown-container');
+		
+		containers.forEach(container => {
+			const eventDate = container.getAttribute('data-event-date');
+			if (!eventDate) return;
+			
+			// Clear existing interval if any
+			const existingInterval = intervals.get(container);
+			if (existingInterval) {
+				clearInterval(existingInterval);
+			}
+			
+			const targetDate = new Date(eventDate + 'T00:00:00').getTime();
+			const daysEl = container.querySelector('[data-days]');
+			const hoursEl = container.querySelector('[data-hours]');
+			const minutesEl = container.querySelector('[data-minutes]');
+			const secondsEl = container.querySelector('[data-seconds]');
+			const timerEl = container.querySelector('.countdown-timer');
+			const pastEl = container.querySelector('.countdown-past');
+			
+			function updateCountdown() {
+				const now = new Date().getTime();
+				const distance = targetDate - now;
+				
+				if (distance < 0) {
+					if (timerEl) timerEl.style.display = 'none';
+					if (pastEl) pastEl.style.display = 'block';
+					// Clear interval when event has passed
+					const intervalId = intervals.get(container);
+					if (intervalId) {
+						clearInterval(intervalId);
+						intervals.delete(container);
+					}
+					return;
+				}
+				
+				const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+				const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+				
+				if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+				if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+				if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+				if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+			}
+			
+			updateCountdown();
+			const intervalId = setInterval(updateCountdown, 1000);
+			intervals.set(container, intervalId);
+		});
+	}
+	
+	// Clean up intervals before page unload
+	function cleanup() {
+		intervals.forEach((intervalId) => clearInterval(intervalId));
+		intervals.clear();
+	}
+	
+	// Initialize on load
+	initCountdown();
+	
+	// Re-initialize on navigation (for view transitions)
+	document.addEventListener('astro:page-load', initCountdown);
+	
+	// Cleanup on navigation away
+	document.addEventListener('astro:before-preparation', cleanup);
+	window.addEventListener('beforeunload', cleanup);
+</script>
+
+<style>
+	.countdown-container {
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.12), rgba(106, 170, 228, 0.05));
+		border-radius: 16px;
+		padding: 1.5rem;
+		border: 1px solid var(--border-soft);
+	}
+	
+	.countdown-label {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--brand-ink);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 1rem;
+		text-align: center;
+	}
+	
+	.countdown-timer {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	
+	.countdown-segment {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+	}
+	
+	.countdown-value {
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--brand-ink);
+		font-family: 'Montserrat', sans-serif;
+		line-height: 1;
+	}
+	
+	.countdown-unit {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--ink-500);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	
+	.countdown-separator {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--ink-500);
+		margin: 0 0.25rem;
+		margin-bottom: 1.25rem;
+	}
+	
+	.countdown-past {
+		text-align: center;
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--ink-500);
+		padding: 1rem;
+	}
+	
+	@media (max-width: 768px) {
+		.countdown-container {
+			padding: 1rem;
+		}
+		
+		.countdown-timer {
+			gap: 0.25rem;
+		}
+		
+		.countdown-value {
+			font-size: 1.5rem;
+		}
+		
+		.countdown-unit {
+			font-size: 0.65rem;
+		}
+		
+		.countdown-separator {
+			font-size: 1.2rem;
+			margin: 0 0.1rem;
+		}
+	}
+</style>

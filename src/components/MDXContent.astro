@@ -1,0 +1,64 @@
+---
+interface Props {
+	content: string | string[];
+}
+
+const { content } = Astro.props;
+
+// Convert content to array if it's a string
+const paragraphs = Array.isArray(content) ? content : content.split('\n\n').filter(Boolean);
+
+// Simple markdown-to-HTML converter for basic formatting
+function parseMarkdown(text: string): string {
+	return text
+		// Bold
+		.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+		// Italic
+		.replace(/\*(.*?)\*/g, '<em>$1</em>')
+		// Links
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+		// Line breaks
+		.replace(/\n/g, '<br>');
+}
+---
+
+<div class="mdx-content">
+	{paragraphs.map((paragraph) => (
+		<p set:html={parseMarkdown(paragraph)} />
+	))}
+</div>
+
+<style>
+	.mdx-content {
+		font-size: 1.1rem;
+		line-height: 1.8;
+		color: var(--ink-700);
+	}
+	
+	.mdx-content p {
+		margin-bottom: 1rem;
+	}
+	
+	.mdx-content p:last-child {
+		margin-bottom: 0;
+	}
+	
+	.mdx-content :global(strong) {
+		font-weight: 600;
+		color: var(--ink-900);
+	}
+	
+	.mdx-content :global(em) {
+		font-style: italic;
+	}
+	
+	.mdx-content :global(a) {
+		color: var(--brand-ink);
+		text-decoration: underline;
+		transition: color 0.2s ease;
+	}
+	
+	.mdx-content :global(a:hover) {
+		color: var(--brand-sky);
+	}
+</style>

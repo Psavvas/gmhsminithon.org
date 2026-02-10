@@ -1,5 +1,7 @@
 ---
 import MemberLayout from '../../layouts/MemberLayout.astro';
+import EventCountdown from '../../components/EventCountdown.astro';
+import MDXContent from '../../components/MDXContent.astro';
 import { checkMemberAuth } from '../../utils/auth';
 import { getCurrentYearEvents, formatDate, eventToSlug } from '../../utils/events';
 
@@ -16,6 +18,14 @@ const normalizeParagraphs = (value: string | string[]) =>
 
 const renderInternalParagraph = (paragraph: string) =>
 	paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+
+// Format full date
+const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { 
+	weekday: 'long',
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric'
+});
 ---
 
 <MemberLayout title="Volunteer Opportunities - Mini-THON">
@@ -33,24 +43,46 @@ const renderInternalParagraph = (paragraph: string) =>
 		<div class="events-grid">
 			{events.map(event => (
 				<article class="event-card">
-					<div class="event-header">
-						<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
-						<time datetime={event.date}>{formatDate(event.date)}</time>
+					<div class="event-hero">
+						<div class="event-hero-content">
+							<div class="event-meta">
+								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+							</div>
+							<h2>{event.title}</h2>
+							<div class="event-info-row">
+								<div class="event-info-item">
+									<div class="info-content">
+										<span class="info-label">Date</span>
+										<time datetime={event.date}>{getFullDate(event.date)}</time>
+									</div>
+								</div>
+								{event.location && (
+									<div class="event-info-item">
+										<div class="info-content">
+											<span class="info-label">Location</span>
+											<span>{event.location}</span>
+										</div>
+									</div>
+								)}
+							</div>
+						</div>
+						<div class="event-countdown-wrapper">
+							<EventCountdown eventDate={event.date} />
+						</div>
 					</div>
-					<h2>{event.title}</h2>
 					
-					<div class="public-info">
-						<h3>Event Details</h3>
-						{normalizeParagraphs(event.public_description).map((paragraph) => (
-							<p>{paragraph}</p>
-						))}
-					</div>
+					<div class="event-sections">
+						<div class="public-info">
+							<h3>About This Event</h3>
+							<MDXContent content={event.public_description} />
+						</div>
 
-					<div class="member-info">
-						<h3>🔒 Member Information</h3>
-						{normalizeParagraphs(event.internal_description).map((paragraph) => (
-							<div class="internal-description" set:html={renderInternalParagraph(paragraph)} />
-						))}
+						<div class="member-info">
+							<h3>Volunteer Information</h3>
+							{normalizeParagraphs(event.internal_description).map((paragraph) => (
+								<div class="internal-description" set:html={renderInternalParagraph(paragraph)} />
+							))}
+						</div>
 					</div>
 
 					{event.media.links && event.media.links.length > 0 && (
@@ -73,56 +105,81 @@ const renderInternalParagraph = (paragraph: string) =>
 
 <style>
 	h1 {
-		font-size: 2.5rem;
-		color: #041E42;
+		font-size: clamp(2rem, 4vw, 2.5rem);
+		color: var(--ink-900);
 		margin-bottom: 2rem;
+		animation: fade-rise 0.6s ease both;
 	}
 
 	.intro {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 		margin-bottom: 2rem;
 		font-size: 1.1rem;
 		line-height: 1.8;
+		color: var(--ink-700);
+		animation: fade-rise 0.6s ease both;
+		animation-delay: 0.05s;
+	}
+
+	.intro p {
+		margin: 0;
 	}
 
 	.no-events {
-		background: white;
+		background: var(--surface-raised);
 		padding: 3rem 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 		text-align: center;
 		font-size: 1.2rem;
-		color: #666;
+		color: var(--ink-500);
+		animation: fade-rise 0.8s ease both;
+	}
+
+	.no-events p {
+		margin: 0;
 	}
 
 	.events-grid {
 		display: grid;
-		gap: 2rem;
+		gap: 2.5rem;
 	}
 
 	.event-card {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-		border-left: 4px solid #6A4C93;
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
+		animation: fade-rise 0.8s ease both;
 	}
 
-	.event-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+	.event-hero {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 2rem;
+		align-items: start;
+		margin-bottom: 2rem;
+		padding-bottom: 2rem;
+		border-bottom: 2px solid var(--border-soft);
+	}
+
+	.event-hero-content {
+		flex: 1;
+	}
+
+	.event-meta {
 		margin-bottom: 1rem;
-		flex-wrap: wrap;
-		gap: 0.5rem;
 	}
 
 	.event-type {
 		display: inline-block;
-		padding: 0.25rem 0.75rem;
+		padding: 0.35rem 0.9rem;
 		border-radius: 12px;
 		font-size: 0.85rem;
 		font-weight: 600;
@@ -145,39 +202,74 @@ const renderInternalParagraph = (paragraph: string) =>
 		color: #7B1FA2;
 	}
 
-	time {
-		color: #666;
-		font-size: 0.95rem;
-	}
-
 	.event-card h2 {
-		font-size: 1.8rem;
-		color: #041E42;
-		margin-bottom: 1.5rem;
+		font-size: clamp(1.5rem, 3vw, 1.8rem);
+		color: var(--ink-900);
+		margin: 0 0 1.5rem 0;
+		line-height: 1.2;
 	}
 
-	.public-info,
-	.member-info {
+	.event-info-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem;
+		margin-top: 1rem;
+	}
+
+	.event-info-item {
+		display: flex;
+		align-items: center;
+	}
+
+	.info-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+	}
+
+	.info-label {
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--ink-500);
+	}
+
+	.info-content time,
+	.info-content span {
+		font-size: 1.05rem;
+		font-weight: 600;
+		color: var(--ink-900);
+	}
+
+	.event-countdown-wrapper {
+		min-width: 280px;
+	}
+
+	.event-sections {
+		display: grid;
+		gap: 1.5rem;
 		margin-bottom: 1.5rem;
 	}
 
 	.public-info h3,
 	.member-info h3 {
 		font-size: 1.2rem;
-		color: #041E42;
-		margin-bottom: 0.75rem;
+		color: var(--ink-900);
+		margin-bottom: 1rem;
 	}
 
-	.public-info p,
+	.public-info :global(p),
 	.internal-description {
 		line-height: 1.8;
-		color: #333;
+		color: var(--ink-700);
+		font-size: 1.05rem;
 	}
 
 	.member-info {
-		background: #FFF9E6;
-		padding: 1.5rem;
-		border-radius: 8px;
+		background: linear-gradient(135deg, rgba(253, 185, 39, 0.12), rgba(253, 185, 39, 0.05));
+		padding: 1.75rem;
+		border-radius: 16px;
 		border-left: 4px solid #FDB927;
 	}
 
@@ -185,37 +277,86 @@ const renderInternalParagraph = (paragraph: string) =>
 		color: #8B4513;
 	}
 
+	.internal-description {
+		margin-bottom: 0.75rem;
+	}
+
+	.internal-description:last-child {
+		margin-bottom: 0;
+	}
+
 	.event-links {
-		background: #F8F9FA;
-		padding: 1rem;
-		border-radius: 8px;
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
+		padding: 1.5rem;
+		border-radius: 16px;
+		border: 1px solid var(--border-soft);
 	}
 
 	.event-links h4 {
-		font-size: 1rem;
-		color: #041E42;
-		margin-bottom: 0.5rem;
+		font-size: 1.1rem;
+		color: var(--brand-ink);
+		margin-bottom: 1rem;
 	}
 
 	.event-links ul {
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		display: grid;
+		gap: 0.5rem;
 	}
 
 	.event-links li {
-		margin-bottom: 0.25rem;
+		margin: 0;
 	}
 
 	.event-links a {
-		color: #6A4C93;
+		color: var(--brand-ink);
 		text-decoration: none;
 		word-break: break-all;
 		font-size: 0.95rem;
+		transition: color 0.2s ease;
+		display: inline-block;
+		padding: 0.25rem 0;
 	}
 
 	.event-links a:hover {
-		color: #041E42;
+		color: var(--brand-sky);
 		text-decoration: underline;
+	}
+
+	@keyframes fade-rise {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.event-hero {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+
+		.event-countdown-wrapper {
+			min-width: auto;
+		}
+
+		.event-card {
+			padding: 1.5rem;
+		}
+
+		.event-info-row {
+			flex-direction: column;
+			gap: 1rem;
+		}
+
+		.member-info {
+			padding: 1.25rem;
+		}
 	}
 </style>
