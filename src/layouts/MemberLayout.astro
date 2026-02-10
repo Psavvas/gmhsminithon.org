@@ -1,4 +1,5 @@
 ---
+import Analytics from '@vercel/analytics/astro';
 import NavBehavior from '../components/NavBehavior.astro';
 
 export interface Props {
@@ -25,6 +26,7 @@ const currentPath = Astro.url.pathname;
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<Analytics />
 	</head>
 	<body>
 		<nav class="navbar">
