@@ -35,12 +35,20 @@ const { eventDate } = Astro.props;
 </div>
 
 <script>
+	const intervals = new Map();
+	
 	function initCountdown() {
 		const containers = document.querySelectorAll('.countdown-container');
 		
 		containers.forEach(container => {
 			const eventDate = container.getAttribute('data-event-date');
 			if (!eventDate) return;
+			
+			// Clear existing interval if any
+			const existingInterval = intervals.get(container);
+			if (existingInterval) {
+				clearInterval(existingInterval);
+			}
 			
 			const targetDate = new Date(eventDate + 'T00:00:00').getTime();
 			const daysEl = container.querySelector('[data-days]');
@@ -57,6 +65,12 @@ const { eventDate } = Astro.props;
 				if (distance < 0) {
 					if (timerEl) timerEl.style.display = 'none';
 					if (pastEl) pastEl.style.display = 'block';
+					// Clear interval when event has passed
+					const intervalId = intervals.get(container);
+					if (intervalId) {
+						clearInterval(intervalId);
+						intervals.delete(container);
+					}
 					return;
 				}
 				
@@ -72,8 +86,15 @@ const { eventDate } = Astro.props;
 			}
 			
 			updateCountdown();
-			setInterval(updateCountdown, 1000);
+			const intervalId = setInterval(updateCountdown, 1000);
+			intervals.set(container, intervalId);
 		});
+	}
+	
+	// Clean up intervals before page unload
+	function cleanup() {
+		intervals.forEach((intervalId) => clearInterval(intervalId));
+		intervals.clear();
 	}
 	
 	// Initialize on load
@@ -81,6 +102,10 @@ const { eventDate } = Astro.props;
 	
 	// Re-initialize on navigation (for view transitions)
 	document.addEventListener('astro:page-load', initCountdown);
+	
+	// Cleanup on navigation away
+	document.addEventListener('astro:before-preparation', cleanup);
+	window.addEventListener('beforeunload', cleanup);
 </script>
 
 <style>
