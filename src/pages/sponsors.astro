@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import PublicLayout from '../layouts/PublicLayout.astro';
 import sponsorsData from '../data/sponsors.json';
 
@@ -28,7 +29,7 @@ const tierSections = tierOrder
 	
 	<section class="intro">
 		<p>We are grateful to our generous sponsors who make our mission possible. Their support helps us raise money and awareness for Four Diamonds and Penn State Hershey Children's Hospital.</p>
-		<p><a href="/get-involved#businesses" class="sponsor-cta">Interested in becoming a sponsor?</a></p>
+		<p><a href="/sponsorship" class="sponsor-cta">Interested in becoming a sponsor?</a></p>
 	</section>
 
 	{tierSections.map(tier => (
@@ -37,11 +38,14 @@ const tierSections = tierOrder
 				<span>{tier.name} Sponsors</span>
 				<span class="tier-diamonds" aria-hidden="true">
 					{Array.from({ length: tier.diamonds }).map(() => (
-						<img
+						<Image
 							src="/masthead-diamond-blue.svg"
 							alt=""
+							width={18}
+							height={18}
 							class="tier-diamond-icon"
 							loading="lazy"
+							decoding="async"
 						/>
 					))}
 				</span>
@@ -53,7 +57,17 @@ const tierSections = tierOrder
 							<a href={sponsor.website} target="_blank" rel="noopener noreferrer" class="sponsor-link">
 								{!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
 									<div class="sponsor-logo">
-										<img src={sponsor.logo} alt={sponsor.name} onerror="this.style.display='none'" />
+										<Image
+											src={sponsor.logo}
+											alt={sponsor.name}
+											width={320}
+											height={160}
+											sizes="(max-width: 768px) 80vw, 240px"
+											class="sponsor-logo-image"
+											loading="lazy"
+											decoding="async"
+											onerror="this.style.display='none'"
+										/>
 									</div>
 								)}
 								<h3>{sponsor.name}</h3>
@@ -62,7 +76,17 @@ const tierSections = tierOrder
 							<div class="sponsor-no-link">
 								{!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
 									<div class="sponsor-logo">
-										<img src={sponsor.logo} alt={sponsor.name} onerror="this.style.display='none'" />
+										<Image
+											src={sponsor.logo}
+											alt={sponsor.name}
+											width={320}
+											height={160}
+											sizes="(max-width: 768px) 80vw, 240px"
+											class="sponsor-logo-image"
+											loading="lazy"
+											decoding="async"
+											onerror="this.style.display='none'"
+										/>
 									</div>
 								)}
 								<h3>{sponsor.name}</h3>
@@ -244,7 +268,7 @@ const tierSections = tierOrder
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	}
 
-	.sponsor-logo img {
+	.sponsor-logo-image {
 		max-width: 100%;
 		max-height: 100%;
 		object-fit: contain;

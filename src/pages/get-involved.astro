@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import PublicLayout from '../layouts/PublicLayout.astro';
 import clubInfo from '../data/clubInfo.json';
 import fundraisingData from '../data/fundraising.json';
@@ -8,94 +9,59 @@ export const prerender = true;
 
 <PublicLayout title="Get Involved - Mini-THON">
 	<h1>Get Involved</h1>
-	
-	<section class="intro">
-		<p>There are many ways to support Mini-THON and help us fight pediatric cancer. Whether you're a student, business owner, or parent, you can make a difference!</p>
-	</section>
 
-	<section id="students" class="audience-section">
-		<h2>For Students</h2>
-		<div class="content-card">
-			<h3>Join Our Club!</h3>
-			<p class="gmhs-note"><strong>Open to GMHS Students Only</strong></p>
-			<p><strong>When:</strong> {clubInfo.meetings.general}</p>
-			<p>No experience needed! We welcome all GMHS students who want to make a difference in the lives of children fighting cancer.</p>
-			
-			<h3>What We Do</h3>
-			<ul>
-				<li>Organize fundraising events throughout the year</li>
-				<li>Raise awareness about pediatric cancer</li>
-				<li>Build leadership and teamwork skills</li>
-				<li>Make lasting friendships while helping others</li>
-			</ul>
-
-			<h3>Stay Connected</h3>
-			<div class="social-links">
-				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="button instagram">
-					Follow on Instagram
+	<section class="intro-grid">
+		<div class="intro-text">
+			<p>There are many ways to support Mini-THON and help us fight pediatric cancer. Whether you're a student, business owner, or parent, you can make a difference.</p>
+			<p>Start where you feel most connected. Join the club, donate, attend events, or explore sponsorship options for your business.</p>
+			<div class="intro-actions">
+				<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button donate">
+					Donate now
 				</a>
-				<div class="groupme-info">
-					<p><strong>GroupMe:</strong> {clubInfo.socialMedia.groupme}</p>
-					<p class="code">Join Code: {clubInfo.socialMedia.groupmeCode}</p>
-				</div>
+				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="button instagram">
+					Follow us on Instagram
+				</a>
 			</div>
+		</div>
+		<div class="intro-photo">
+			<Image
+				src="/genericCarousel/GiauPass.jpg"
+				alt="Mini-THON volunteers"
+				width={1200}
+				height={800}
+				sizes="(max-width: 768px) 92vw, 520px"
+				class="intro-photo-image"
+				loading="eager"
+				decoding="async"
+				fetchpriority="high"
+			/>
 		</div>
 	</section>
 
-	<section id="businesses" class="audience-section">
-		<h2>For Businesses</h2>
-		<div class="content-card">
-			<h3>Become a Sponsor</h3>
-			<p>Support our mission and gain visibility in the community! We offer three sponsorship tiers:</p>
-			
-			<div class="tiers">
-				<div class="tier gold">
-					<h4>Gold Sponsor</h4>
-					<ul>
-						<li>Logo on event materials</li>
-						<li>Social media recognition</li>
-						<li>Premium placement on website</li>
-						<li>Recognition at main event</li>
-					</ul>
-				</div>
-				<div class="tier silver">
-					<h4>Silver Sponsor</h4>
-					<ul>
-						<li>Logo on website</li>
-						<li>Social media shoutout</li>
-						<li>Recognition at events</li>
-					</ul>
-				</div>
-				<div class="tier bronze">
-					<h4>Bronze Sponsor</h4>
-					<ul>
-						<li>Name on website</li>
-						<li>Social media mention</li>
-					</ul>
-				</div>
-			</div>
-
-			<h3>Interested in Sponsoring?</h3>
-			<p>Contact us to learn more about sponsorship opportunities and how your business can help fight pediatric cancer.</p>
-			<a href={`mailto:${clubInfo.contact.email}?subject=Sponsorship Inquiry`} class="button">Contact Us About Sponsorship</a>
+	<section class="audience-grid">
+		<div id="students" class="audience-card">
+			<h2>Students</h2>
+			<p>GMHS Students: Join Mini-THON and help make an impact!
+			<p><strong>Meetings:</strong> {clubInfo.meetings.general}</p>
+			<p>No experience needed. We welcome students who want to make a real impact while building leadership and teamwork skills.</p>
+			<a href={`mailto:${clubInfo.contact.email}?subject=I'd like to get more information about joining Mini-THON`} class="button ">Let us know of your intrest</a>
 		</div>
-	</section>
 
-	<section id="parents" class="audience-section">
-		<h2>For Parents & Community Members</h2>
-		<div class="content-card">
-			<h3>Make a Donation</h3>
-			<p>Every dollar you donate goes directly to Four Diamonds and Penn State Hershey Children's Hospital to support families fighting pediatric cancer.</p>
-			
-			<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button donate">
+		<div id="businesses" class="audience-card">
+			<h2>Businesses</h2>
+			<p>Partner with us to support families facing pediatric cancer.</p>
+			<p>Sponsorships help fund care while connecting your business with our school community.</p>
+			<p>Learn how your business can be recognized across events, materials, and digital touchpoints.</p>
+			<a href="/sponsorship" class="button">View sponsorship options</a>
+		</div>
+
+		<div id="parents" class="audience-card">
+			<h2>Community</h2>
+			<p>Every dollar donated supports Four Diamonds's pediatric cancer treatement and research.</p>
+			<p class="compact">Support our year-round events on the <a href="/events">Events page</a>.</p>
+			<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button">
 				Donate via DonorDrive
 			</a>
-
-			<h3>Attend Our Events</h3>
-			<p>Support our fundraising events throughout the year! Check out our <a href="/events">Events page</a> to see what's coming up.</p>
-
-			<h3>Questions?</h3>
-			<p>Contact us at <a href={`mailto:${clubInfo.contact.email}`}>{clubInfo.contact.email}</a> or call {clubInfo.contact.phone}</p>
 		</div>
 	</section>
 </PublicLayout>
@@ -115,49 +81,67 @@ export const prerender = true;
 
 	section:nth-child(2) { animation-delay: 0.1s; }
 	section:nth-child(3) { animation-delay: 0.2s; }
-	section:nth-child(4) { animation-delay: 0.3s; }
-	section:nth-child(5) { animation-delay: 0.4s; }
 
-	.intro {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
+	.intro-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		gap: 2rem;
+		align-items: stretch;
+	}
+
+	.intro-text {
 		font-size: 1.05rem;
 		line-height: 1.8;
 		color: var(--ink-700);
 	}
 
-	.audience-section h2 {
-		font-size: clamp(1.6rem, 3vw, 2rem);
-		color: var(--ink-900);
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--brand-sky);
+	.intro-text p {
+		margin-bottom: 1rem;
 	}
 
-	.content-card {
+	.intro-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-top: 1.5rem;
+		justify-content: flex-start;
+	}
+
+	.intro-photo-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
+		display: block;
+	}
+
+	.audience-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.audience-card {
 		background: var(--surface-raised);
 		padding: 2rem;
 		border-radius: 20px;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
+		display: flex;
+		flex-direction: column;
 	}
 
-	.content-card h3 {
-		color: var(--brand-ink);
-		font-size: 1.4rem;
-		margin-top: 2rem;
-		margin-bottom: 1rem;
-		font-weight: 600;
+	.audience-card h2 {
+		font-size: clamp(1.5rem, 3vw, 1.9rem);
+		color: var(--ink-900);
+		margin-bottom: 1.25rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid var(--brand-sky);
 	}
 
-	.content-card h3:first-child {
-		margin-top: 0;
-	}
-
-	.content-card p {
+	.audience-card p {
 		line-height: 1.8;
 		margin-bottom: 1rem;
 		color: var(--ink-700);
@@ -173,24 +157,24 @@ export const prerender = true;
 		margin: 1rem 0;
 	}
 
-	.content-card ul {
+	.audience-card ul {
 		margin-left: 1.5rem;
 		margin-bottom: 1.5rem;
 	}
 
-	.content-card li {
+	.audience-card li {
 		margin-bottom: 0.75rem;
 		line-height: 1.6;
 		color: var(--ink-700);
 	}
 
-	.content-card a {
+	.audience-card a {
 		color: var(--brand-ink);
 		font-weight: 500;
 		transition: color 0.2s ease;
 	}
 
-	.content-card a:hover {
+	.audience-card a:hover {
 		color: var(--brand-sky);
 	}
 
@@ -236,8 +220,11 @@ export const prerender = true;
 		font-weight: 600;
 		letter-spacing: 0.02em;
 		transition: all 0.3s ease;
-		margin-top: 1rem;
-		margin-right: 1rem;
+	}
+
+	.audience-card .button {
+		margin-top: auto;
+		align-self: flex-start;
 	}
 
 	.button.instagram {
@@ -278,78 +265,8 @@ export const prerender = true;
 		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
 	}
 
-	.tiers {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 1.5rem;
-		margin: 2rem 0;
-	}
-
-	.tier {
-		padding: 1.75rem;
-		border-radius: 16px;
-		border: 2px solid;
-		transition: all 0.3s ease;
-	}
-
-	.tier:hover {
-		transform: translateY(-4px);
-		box-shadow: var(--shadow-card);
-	}
-
-	.tier.gold {
-		border-color: #D4AF37;
-		background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(212, 175, 55, 0.05));
-	}
-
-	.tier.silver {
-		border-color: #9AA0A6;
-		background: linear-gradient(135deg, rgba(154, 160, 166, 0.12), rgba(154, 160, 166, 0.05));
-	}
-
-	.tier.bronze {
-		border-color: #CD7F32;
-		background: linear-gradient(135deg, rgba(205, 127, 50, 0.12), rgba(205, 127, 50, 0.05));
-	}
-
-	.tier h4 {
-		margin-bottom: 1.25rem;
-		font-size: 1.35rem;
-		font-weight: 600;
-	}
-
-	.tier.gold h4 {
-		color: #B8860B;
-	}
-
-	.tier.silver h4 {
-		color: #708090;
-	}
-
-	.tier.bronze h4 {
-		color: #8B4513;
-	}
-
-	.tier ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.tier li {
-		padding: 0.6rem 0;
-		padding-left: 1.8rem;
-		position: relative;
-		color: var(--ink-700);
-	}
-
-	.tier li::before {
-		content: "✓";
-		position: absolute;
-		left: 0;
-		font-weight: bold;
-		color: #4CAF50;
-		font-size: 1.1rem;
+	.compact {
+		margin-top: 0.75rem;
 	}
 
 	@keyframes fade-rise {
@@ -364,12 +281,12 @@ export const prerender = true;
 	}
 
 	@media (max-width: 768px) {
-		.content-card {
-			padding: 1.5rem;
+		.intro-grid {
+			grid-template-columns: 1fr;
 		}
 
-		.tiers {
-			grid-template-columns: 1fr;
+		.audience-card {
+			padding: 1.5rem;
 		}
 
 		.social-links {
