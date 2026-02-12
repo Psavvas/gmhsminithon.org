@@ -1,14 +1,30 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
-import { getCurrentYearEvents, formatDate, eventToSlug } from '../utils/events';
 
 export const prerender = true;
 
-const events = getCurrentYearEvents();
 const currentYear = new Date().getFullYear();
+const eventEntries = await Astro.glob('./events/*.mdx');
+const today = new Date();
 
-const getEventPreview = (description: string | string[]) =>
-	Array.isArray(description) ? description[0] ?? '' : description;
+const events = eventEntries
+	.map((entry) => ({
+		...entry.frontmatter,
+		url: entry.url
+	}))
+	.filter((event) => new Date(event.date).getFullYear() === currentYear)
+	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
+const pastEvents = events.filter((event) => new Date(event.date) < today);
+
+const formatDate = (dateString: string) =>
+	new Date(dateString).toLocaleDateString('en-US', {
+		weekday: 'long',
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	});
 ---
 
 <PublicLayout title="Events - Mini-THON">
@@ -18,26 +34,55 @@ const getEventPreview = (description: string | string[]) =>
 		<p>Join us for exciting fundraising events throughout the year! All proceeds go to Four Diamonds and Penn State Hershey Children's Hospital.</p>
 	</section>
 
-	{events.length === 0 ? (
+	{upcomingEvents.length === 0 && pastEvents.length === 0 ? (
 		<section class="no-events">
 			<p>No events scheduled for {currentYear} yet. Check back soon!</p>
 		</section>
 	) : (
-		<div class="events-grid">
-			{events.map(event => (
-				<article class="event-card">
-					<div class="event-header">
-						<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
-						<time datetime={event.date}>{formatDate(event.date)}</time>
+		<>
+			{upcomingEvents.length > 0 ? (
+				<div class="events-grid">
+					{upcomingEvents.map(event => (
+						<article class="event-card">
+							<div class="event-header">
+								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+								<time datetime={event.date}>{formatDate(event.date)}</time>
+							</div>
+							<h2>{event.title}</h2>
+							<p class="description">{event.summary}</p>
+							<a href={event.url} class="read-more">
+								Learn More →
+							</a>
+						</article>
+					))}
+				</div>
+			) : (
+				<section class="no-events">
+					<p>No upcoming events for {currentYear}. Check back soon!</p>
+				</section>
+			)}
+
+			{pastEvents.length > 0 && (
+				<section class="past-events">
+					<h2>Past Events</h2>
+					<div class="events-grid">
+						{pastEvents.map(event => (
+							<article class="event-card past">
+								<div class="event-header">
+									<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+									<time datetime={event.date}>{formatDate(event.date)}</time>
+								</div>
+								<h2>{event.title}</h2>
+								<p class="description">{event.summary}</p>
+								<a href={event.url} class="read-more">
+									View Details →
+								</a>
+							</article>
+						))}
 					</div>
-					<h2>{event.title}</h2>
-					<p class="description">{getEventPreview(event.public_description)}</p>
-					<a href={`/events/${eventToSlug(event.title)}`} class="read-more">
-						Learn More →
-					</a>
-				</article>
-			))}
-		</div>
+				</section>
+			)}
+		</>
 	)}
 </PublicLayout>
 
@@ -79,6 +124,18 @@ const getEventPreview = (description: string | string[]) =>
 		gap: 2rem;
 	}
 
+	.past-events {
+		margin-top: 3rem;
+	}
+
+	.past-events h2 {
+		font-size: clamp(1.6rem, 3vw, 2rem);
+		color: var(--ink-900);
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid var(--border-soft);
+	}
+
 	.event-card {
 		background: var(--surface-raised);
 		padding: 2rem;
@@ -99,6 +156,15 @@ const getEventPreview = (description: string | string[]) =>
 		transform: translateY(-4px);
 		box-shadow: 0 12px 30px rgba(28, 42, 58, 0.12);
 		border-left-color: var(--brand-ink);
+	}
+
+	.event-card.past {
+		border-left-color: var(--border-soft);
+		background: linear-gradient(135deg, rgba(44, 70, 114, 0.04), rgba(255, 255, 255, 0.9));
+	}
+
+	.event-card.past:hover {
+		border-left-color: var(--brand-sky);
 	}
 
 	.event-header {

@@ -1,6 +1,6 @@
 ---
 interface Props {
-	eventDate: string;
+	eventDate: string | Date;
 }
 
 const { eventDate } = Astro.props;
@@ -50,7 +50,10 @@ const { eventDate } = Astro.props;
 				clearInterval(existingInterval);
 			}
 			
-			const targetDate = new Date(eventDate + 'T00:00:00').getTime();
+			const parsedDate = new Date(eventDate);
+			if (Number.isNaN(parsedDate.getTime())) return;
+			const normalizedDate = parsedDate.toISOString().slice(0, 10);
+			const targetDate = new Date(`${normalizedDate}T00:00:00`).getTime();
 			const daysEl = container.querySelector('[data-days]');
 			const hoursEl = container.querySelector('[data-hours]');
 			const minutesEl = container.querySelector('[data-minutes]');

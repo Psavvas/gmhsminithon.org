@@ -11,6 +11,23 @@ const currentTotal = fundraisingData.currentTotal.toLocaleString('en-US', {
 	maximumFractionDigits: 2
 });
 
+const goalTotal = fundraisingData.goalTotal ?? 0;
+const goalTotalFormatted = goalTotal.toLocaleString('en-US', {
+	style: 'currency',
+	currency: 'USD',
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0
+});
+const goalProgress = goalTotal > 0 ? Math.min(fundraisingData.currentTotal / goalTotal, 1) : 0;
+const goalProgressPercent = Math.round(goalProgress * 100);
+const remainingTotal = Math.max(goalTotal - fundraisingData.currentTotal, 0);
+const remainingFormatted = remainingTotal.toLocaleString('en-US', {
+	style: 'currency',
+	currency: 'USD',
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0
+});
+
 const allTimeTotal = fundraisingData.history.reduce((sum, year) => sum + year.total, fundraisingData.currentTotal);
 const formattedAllTime = allTimeTotal.toLocaleString('en-US', { 
 	style: 'currency', 
@@ -28,6 +45,26 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 		<div class="total-display">
 			<span class="label">Current Total</span>
 			<span class="amount">{currentTotal}</span>
+			<div class="fundraising-progress">
+				<div class="progress-header">
+					<span class="progress-label">{goalProgressPercent}% to goal</span>
+					<span class="progress-value">{currentTotal} raised</span>
+				</div>
+				<div
+					class="progress-slider"
+					role="progressbar"
+					aria-label="Fundraising progress"
+					aria-valuemin="0"
+					aria-valuemax="100"
+					aria-valuenow={goalProgressPercent}
+				>
+					<div class="progress-track" style={`--progress: ${goalProgressPercent}%`}>
+						<div class="progress-fill"></div>
+						<div class="progress-thumb"></div>
+					</div>
+				</div>
+				<p class="progress-caption">{remainingFormatted} to reach goal.</p>
+			</div>
 		</div>
 		<p>Every dollar raised goes directly to Four Diamonds and Penn State Hershey Children's Hospital to support families fighting pediatric cancer.</p>
 		<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="donate-button">
@@ -45,9 +82,9 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 
 	<section class="history">
 		<h2>Historical Totals</h2>
-		<div class="history-grid">
+		<ul class="history-list">
 			{fundraisingData.history.map(year => (
-				<div class="year-card">
+				<li class="history-item">
 					<span class="year">{year.year}</span>
 					<span class="total">
 						{year.total.toLocaleString('en-US', { 
@@ -57,9 +94,9 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 							maximumFractionDigits: 2
 						})}
 					</span>
-				</div>
+				</li>
 			))}
-		</div>
+		</ul>
 	</section>
 
 <style>
@@ -105,10 +142,14 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 
 	.total-display {
 		background: linear-gradient(160deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
-		padding: 2.5rem;
+		padding: 2.5rem 2.5rem 2rem;
 		border-radius: 16px;
 		margin: 2rem 0;
 		box-shadow: 0 8px 24px rgba(44, 70, 114, 0.2);
+		display: grid;
+		gap: 1.5rem;
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.total-display .label {
@@ -126,6 +167,74 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 		color: var(--brand-sky);
 		font-size: clamp(2.5rem, 5vw, 3.5rem);
 		font-weight: 700;
+	}
+
+	.fundraising-progress {
+		display: grid;
+		gap: 0.75rem;
+		margin: 0;
+		width: 100%;
+		align-self: stretch;
+	}
+
+	.progress-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.progress-label {
+		font-size: 0.95rem;
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	.progress-value {
+		font-size: 1.05rem;
+		color: var(--white);
+	}
+
+	.progress-slider {
+		width: 100%;
+	}
+
+	.progress-track {
+		position: relative;
+		height: 12px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.18);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+		width: 100%;
+		--progress: 0%;
+	}
+
+	.progress-fill {
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--progress);
+		background: linear-gradient(90deg, rgba(106, 170, 228, 0.95), rgba(255, 255, 255, 0.85));
+		border-radius: 999px;
+	}
+
+	.progress-thumb {
+		position: absolute;
+		top: 50%;
+		left: var(--progress);
+		transform: translate(-50%, -50%);
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--white);
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+		border: 2px solid rgba(106, 170, 228, 0.8);
+	}
+
+	.progress-caption {
+		margin: 0;
+		font-size: 0.95rem;
+		color: rgba(255, 255, 255, 0.75);
 	}
 
 	.donate-button {
@@ -183,39 +292,40 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 		text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
 	}
 
-	.history-grid {
+	.history-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 1.5rem;
+		gap: 1rem;
 	}
 
-	.year-card {
+	.history-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
-		padding: 1.75rem;
+		padding: 1.25rem 1.5rem;
 		border-radius: 16px;
-		text-align: center;
 		border: 1px solid var(--border-soft);
 		border-left: 4px solid var(--brand-ink);
 		transition: all 0.3s ease;
 	}
 
-	.year-card:hover {
-		transform: translateY(-4px);
+	.history-item:hover {
+		transform: translateY(-3px);
 		box-shadow: var(--shadow-card);
 		border-left-color: var(--brand-sky);
 	}
 
-	.year-card .year {
-		display: block;
-		font-size: 1.6rem;
+	.history-item .year {
+		font-size: 1.4rem;
 		font-weight: 700;
 		color: var(--brand-ink);
-		margin-bottom: 0.5rem;
 	}
 
-	.year-card .total {
-		display: block;
-		font-size: 1.25rem;
+	.history-item .total {
+		font-size: 1.2rem;
 		color: var(--ink-700);
 		font-weight: 600;
 	}
@@ -240,8 +350,35 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 			padding: 2rem 1.5rem;
 		}
 
-		.history-grid {
-			grid-template-columns: 1fr;
+
+		.fundraising-progress {
+			max-width: none;
+			padding: 1.25rem;
+		}
+
+		.progress-header {
+			flex-wrap: wrap;
+			gap: 0.35rem 1rem;
+		}
+
+		.progress-track {
+			height: 12px;
+		}
+
+		.fundraising-progress {
+			padding: 1.25rem 1rem;
+			box-sizing: border-box;
+		}
+
+		.progress-thumb {
+			width: 18px;
+			height: 18px;
+		}
+
+		.history-item {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.35rem;
 		}
 	}
 </style>

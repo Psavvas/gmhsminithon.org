@@ -3,8 +3,6 @@ import PublicLayout from '../layouts/PublicLayout.astro';
 import ImageCarousel from '../components/ImageCarousel.astro';
 import fundraisingData from '../data/fundraising.json';
 import clubInfo from '../data/clubInfo.json';
-import eventsData from '../data/events.json';
-import { eventToSlug } from '../utils/events';
 
 export const prerender = true;
 
@@ -35,8 +33,14 @@ const remainingFormatted = remainingTotal.toLocaleString('en-US', {
 const getEventPreview = (description: string | string[]) =>
 	Array.isArray(description) ? description[0] ?? '' : description;
 
+const eventEntries = await Astro.glob('./events/*.mdx');
 const today = new Date();
-const upcomingEvents = eventsData
+
+const upcomingEvents = eventEntries
+	.map((entry) => ({
+		...entry.frontmatter,
+		url: entry.url
+	}))
 	.filter((event) => new Date(event.date) >= today)
 	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 	.slice(0, 3);
@@ -104,11 +108,11 @@ const heroBackgroundImages = [
 					{upcomingEvents.length > 0 ? (
 						upcomingEvents.map((event) => (
 							<li>
-								<a class="event-link" href={`/events/${eventToSlug(event.title)}`}>
+								<a class="event-link" href={event.url}>
 									<span class="event-date">{formatDate(event.date)}</span>
 									<div>
 										<p class="event-title">{event.title}</p>
-										<p class="event-desc">{getEventPreview(event.public_description)}</p>
+										<p class="event-desc">{getEventPreview(event.summary)}</p>
 									</div>
 								</a>
 							</li>

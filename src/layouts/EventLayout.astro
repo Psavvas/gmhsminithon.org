@@ -1,24 +1,17 @@
 ---
-import PublicLayout from '../../layouts/PublicLayout.astro';
-import EventCountdown from '../../components/EventCountdown.astro';
-import MDXContent from '../../components/MDXContent.astro';
-import { getAllEvents, formatDate, eventToSlug } from '../../utils/events';
+import PublicLayout from './PublicLayout.astro';
+import EventCountdown from '../components/EventCountdown.astro';
 
-export const prerender = true;
+const { frontmatter } = Astro.props;
+const {
+	title,
+	date,
+	location,
+	event_type: eventType,
+	links = []
+} = frontmatter;
 
-export async function getStaticPaths() {
-  const events = getAllEvents();
-  return events.map(event => ({
-    params: { slug: eventToSlug(event.title) },
-    props: { event },
-  }));
-}
-
-const { event } = Astro.props;
-
-// Format the date for display
-const formattedDate = formatDate(event.date);
-const fullDate = new Date(event.date).toLocaleDateString('en-US', { 
+const fullDate = new Date(date).toLocaleDateString('en-US', {
 	weekday: 'long',
 	year: 'numeric',
 	month: 'long',
@@ -26,47 +19,52 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 });
 ---
 
-<PublicLayout title={`${event.title} - Mini-THON`}>
+<PublicLayout title={`${title} - Mini-THON`}>
 	<article class="event-detail">
-		<div class="event-hero">
+		<header class="event-hero">
 			<div class="event-hero-content">
 				<div class="event-meta">
-					<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+					<span class={`event-type ${eventType}`}>{eventType}</span>
 				</div>
-				<h1>{event.title}</h1>
+				<h1>{title}</h1>
 				<div class="event-info-row">
 					<div class="event-info-item">
-						<div class="info-content">
-							<span class="info-label">Date</span>
-							<time datetime={event.date}>{fullDate}</time>
-						</div>
+						<span class="info-icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+								<path d="M12 6.75a.75.75 0 0 1 .75.75v4.44l3.02 1.74a.75.75 0 1 1-.75 1.3l-3.4-1.96a.75.75 0 0 1-.37-.65V7.5a.75.75 0 0 1 .75-.75Z" fill="currentColor" />
+								<path d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5Zm0 1.5a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Z" fill="currentColor" />
+							</svg>
+						</span>
+						<time datetime={date}>{fullDate}</time>
 					</div>
-					{event.location && (
+					{location && (
 						<div class="event-info-item">
-							<div class="info-content">
-								<span class="info-label">Location</span>
-								<span>{event.location}</span>
-							</div>
+							<span class="info-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+									<path d="M12 2.5a7 7 0 0 0-7 7c0 5.25 6.16 11.2 6.42 11.45a.82.82 0 0 0 1.16 0c.26-.25 6.42-6.2 6.42-11.45a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor" />
+							</svg>
+						</span>
+						<span>{location}</span>
 						</div>
 					)}
 				</div>
 			</div>
 			<div class="event-countdown-wrapper">
-				<EventCountdown eventDate={event.date} />
+				<EventCountdown eventDate={date} />
 			</div>
-		</div>
+		</header>
 
 		<section class="event-content">
 			<div class="description-card">
 				<h2>About This Event</h2>
-				<MDXContent content={event.public_description} />
+				<slot />
 			</div>
-			
-			{event.media.links && event.media.links.length > 0 && (
+
+			{links.length > 0 && (
 				<div class="event-links-card">
 					<h3>Related Links</h3>
 					<ul>
-						{event.media.links.map(link => (
+						{links.map((link: string) => (
 							<li>
 								<a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
 							</li>
@@ -90,7 +88,7 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 
 	.event-hero {
 		background: var(--surface-raised);
-		padding: 2.5rem;
+		padding: 2.25rem;
 		border-radius: 20px;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
@@ -98,47 +96,43 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 		display: grid;
 		grid-template-columns: 1fr auto;
 		gap: 2rem;
-		align-items: start;
+		align-items: center;
 		animation: fade-rise 0.6s ease both;
 	}
 
-	.event-hero-content {
-		flex: 1;
-	}
-
 	.event-meta {
-		margin-bottom: 1rem;
+		margin-bottom: 0.75rem;
 	}
 
 	.event-type {
 		display: inline-block;
-		padding: 0.35rem 0.9rem;
-		border-radius: 12px;
-		font-size: 0.85rem;
+		padding: 0.3rem 0.75rem;
+		border-radius: 999px;
+		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		letter-spacing: 0.08em;
 	}
 
 	.event-type.gaming {
-		background: #E3F2FD;
-		color: #1976D2;
+		background: rgba(106, 170, 228, 0.18);
+		color: var(--brand-ink);
 	}
 
 	.event-type.dine-to-donate {
-		background: #FFF3E0;
-		color: #F57C00;
+		background: rgba(255, 152, 0, 0.18);
+		color: #E65100;
 	}
 
 	.event-type.fundraiser {
-		background: #F3E5F5;
-		color: #7B1FA2;
+		background: rgba(156, 39, 176, 0.15);
+		color: #6A1B9A;
 	}
 
 	h1 {
 		font-size: clamp(2rem, 4vw, 2.8rem);
 		color: var(--ink-900);
-		margin: 0 0 1.5rem 0;
+		margin: 0 0 1.25rem 0;
 		line-height: 1.2;
 	}
 
@@ -146,37 +140,36 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1.5rem;
-		margin-top: 1.5rem;
-	}
-
-	.event-info-item {
-		display: flex;
 		align-items: center;
 	}
 
-	.info-content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.15rem;
-	}
-
-	.info-label {
-		font-size: 0.8rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		color: var(--ink-500);
-	}
-
-	.info-content time,
-	.info-content span {
+	.event-info-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		font-size: 1.05rem;
 		font-weight: 600;
 		color: var(--ink-900);
 	}
 
+	.info-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 10px;
+		background: rgba(106, 170, 228, 0.15);
+		color: var(--brand-ink);
+	}
+
+	.info-icon svg {
+		width: 18px;
+		height: 18px;
+	}
+
 	.event-countdown-wrapper {
-		min-width: 280px;
+		min-width: 260px;
 	}
 
 	.event-content {
@@ -278,15 +271,21 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 900px) {
 		.event-hero {
 			grid-template-columns: 1fr;
-			padding: 1.5rem;
-			gap: 1.5rem;
+			align-items: start;
 		}
 
 		.event-countdown-wrapper {
 			min-width: auto;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.event-hero {
+			padding: 1.5rem;
+			gap: 1.5rem;
 		}
 
 		h1 {
@@ -295,6 +294,7 @@ const fullDate = new Date(event.date).toLocaleDateString('en-US', {
 
 		.event-info-row {
 			flex-direction: column;
+			align-items: flex-start;
 			gap: 1rem;
 		}
 

@@ -1,20 +1,30 @@
 ---
 import MemberLayout from '../../layouts/MemberLayout.astro';
 import EventCountdown from '../../components/EventCountdown.astro';
-import MDXContent from '../../components/MDXContent.astro';
 import { checkMemberAuth } from '../../utils/auth';
-import { getCurrentYearEvents, formatDate, eventToSlug } from '../../utils/events';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
   return Astro.redirect('/members/login');
 }
 
-const events = getCurrentYearEvents();
+const eventEntries = await Astro.glob('../events/*.mdx');
 const currentYear = new Date().getFullYear();
 
-const normalizeParagraphs = (value: string | string[]) =>
-	Array.isArray(value) ? value : value.split('\n\n').filter(Boolean);
+const events = eventEntries
+	.map((entry) => ({
+		...entry.frontmatter,
+		Content: entry.Content
+	}))
+	.filter((event) => new Date(event.date).getFullYear() === currentYear)
+	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+const normalizeParagraphs = (value?: string | string[]) =>
+	value
+		? Array.isArray(value)
+			? value
+			: value.split('\n\n').filter(Boolean)
+		: [];
 
 const renderInternalParagraph = (paragraph: string) =>
 	paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
@@ -74,7 +84,7 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 					<div class="event-sections">
 						<div class="public-info">
 							<h3>About This Event</h3>
-							<MDXContent content={event.public_description} />
+							<event.Content />
 						</div>
 
 						<div class="member-info">
@@ -85,11 +95,11 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 						</div>
 					</div>
 
-					{event.media.links && event.media.links.length > 0 && (
+						{event.links && event.links.length > 0 && (
 						<div class="event-links">
 							<h4>Related Links</h4>
 							<ul>
-								{event.media.links.map(link => (
+									{event.links.map(link => (
 									<li>
 										<a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
 									</li>

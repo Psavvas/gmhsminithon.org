@@ -1,12 +1,4 @@
-// Simple password-based authentication for member portal
-// SECURITY WARNING: This is a demonstration implementation only!
-// In production, you MUST:
-// 1. Store passwords in environment variables (process.env.MEMBER_PASSWORD)
-// 2. Hash passwords using bcrypt or argon2
-// 3. Use a proper authentication system (Auth0, NextAuth, etc.)
-// 4. Never commit passwords to source control
-
-const MEMBER_PASSWORD = import.meta.env.MEMBER_PASSWORD || 'minithon2026'; // Demo only - use env vars in production
+const MEMBER_PASSWORD = import.meta.env.VITE_MEMBER_PASSWORD;
 
 export function checkMemberAuth(request: Request): boolean {
   const cookies = parseCookies(request.headers.get('cookie') || '');
