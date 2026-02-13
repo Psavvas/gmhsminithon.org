@@ -1,0 +1,16 @@
+{
+  "announcements": [
+    {
+      "title": "Main Event Planning Meeting",
+      "message": "Mandatory meeting for all members on May 25th at 3:30 PM in the Auditorium to discuss final logistics for the main event.",
+      "type": "urgent",
+      "date": "2026-05-25"
+    },
+    {
+      "title": "Volunteer Sign-Ups Open",
+      "message": "Sign up for volunteer shifts for upcoming events. Check the Volunteer Opportunities page for details and links.",
+      "type": "info",
+      "date": "2026-03-01"
+    }
+  ]
+}

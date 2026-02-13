@@ -35,7 +35,7 @@ if (!checkMemberAuth(Astro.request)) {
 				<h3>Instagram</h3>
 				<p>Follow us for updates, event photos, and announcements</p>
 				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="link-button">
-					Follow @ourminithon
+					Follow @gmhsminithon
 				</a>
 			</div>
 		</div>
@@ -73,61 +73,51 @@ if (!checkMemberAuth(Astro.request)) {
 
 	<section class="resources">
 		<h2>📚 Member Resources</h2>
-		<div class="resource-list">
-			<div class="resource-item">
-				<h3>Event Planning Guidelines</h3>
-				<p>Contact the Events Coordinator for access to our event planning templates and checklists.</p>
-			</div>
-			<div class="resource-item">
-				<h3>Fundraising Materials</h3>
-				<p>Marketing materials, flyers, and social media graphics are available from the board members.</p>
-			</div>
-			<div class="resource-item">
-				<h3>Four Diamonds Information</h3>
-				<p>Learn more about our cause and get talking points for promoting our events.</p>
-			</div>
-		</div>
+		<p class="resource-note">Find templates, graphics, and shared files in the Member Resources library.</p>
+		<a href="/members/resources" class="resource-link">Go to Member Resources →</a>
 	</section>
 </MemberLayout>
 
 <style>
 	h1 {
-		font-size: 2.5rem;
-		color: #041E42;
+		font-size: clamp(2rem, 4vw, 2.6rem);
+		color: var(--ink-900);
 		margin-bottom: 2rem;
 	}
 
 	section {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 		margin-bottom: 2rem;
 	}
 
 	h2 {
-		font-size: 1.8rem;
-		color: #041E42;
+		font-size: clamp(1.5rem, 3vw, 1.9rem);
+		color: var(--ink-900);
 		margin-bottom: 1.5rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 3px solid #6A4C93;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid var(--brand-sky);
 	}
 
 	.meeting-card {
-		background: #F8F9FA;
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
 		padding: 1.5rem;
-		border-radius: 8px;
+		border-radius: 16px;
 		margin-bottom: 1rem;
-		border-left: 4px solid #6A4C93;
+		border: 1px solid var(--border-soft);
+		border-left: 4px solid var(--brand-sky);
 	}
 
 	.meeting-card.board {
 		border-left-color: #FDB927;
-		background: #FFF9E6;
+		background: linear-gradient(135deg, rgba(253, 185, 39, 0.16), rgba(255, 255, 255, 0.7));
 	}
 
 	.meeting-card h3 {
-		color: #041E42;
+		color: var(--ink-900);
 		font-size: 1.3rem;
 		margin-bottom: 0.5rem;
 	}
@@ -135,12 +125,12 @@ if (!checkMemberAuth(Astro.request)) {
 	.meeting-card .time {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: #6A4C93;
+		color: var(--brand-ink);
 		margin-bottom: 0.75rem;
 	}
 
 	.meeting-card .description {
-		color: #333;
+		color: var(--ink-700);
 		line-height: 1.6;
 		margin: 0;
 	}
@@ -148,21 +138,23 @@ if (!checkMemberAuth(Astro.request)) {
 	.comm-card {
 		display: flex;
 		gap: 1.5rem;
-		background: #F8F9FA;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
+		border-radius: 16px;
 		margin-bottom: 1.5rem;
 		align-items: flex-start;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 	}
 
 	.comm-card.instagram {
-		background: linear-gradient(135deg, #FFF5F8 0%, #FFF 100%);
-		border: 2px solid #E292AA;
+		background: linear-gradient(135deg, rgba(225, 48, 108, 0.1), rgba(255, 255, 255, 0.8));
+		border: 1px solid rgba(225, 48, 108, 0.3);
 	}
 
 	.comm-card.groupme {
-		background: linear-gradient(135deg, #F0F8FF 0%, #FFF 100%);
-		border: 2px solid #00AFF0;
+		background: linear-gradient(135deg, rgba(0, 175, 240, 0.12), rgba(255, 255, 255, 0.8));
+		border: 1px solid rgba(0, 175, 240, 0.3);
 	}
 
 	.comm-card .icon {
@@ -175,54 +167,55 @@ if (!checkMemberAuth(Astro.request)) {
 	}
 
 	.comm-card h3 {
-		color: #041E42;
+		color: var(--ink-900);
 		font-size: 1.3rem;
 		margin-bottom: 0.5rem;
 	}
 
 	.comm-card p {
-		color: #333;
+		color: var(--ink-700);
 		line-height: 1.6;
 		margin-bottom: 0.75rem;
 	}
 
 	.link-button {
 		display: inline-block;
-		background: linear-gradient(135deg, #833AB4 0%, #E292AA 100%);
+		background: linear-gradient(135deg, #833AB4 0%, #E1306C 100%);
 		color: white;
 		padding: 0.75rem 1.5rem;
-		border-radius: 4px;
+		border-radius: 999px;
 		text-decoration: none;
 		font-weight: 600;
-		transition: all 0.3s;
+		transition: all 0.3s ease;
 	}
 
 	.link-button:hover {
-		transform: scale(1.05);
-		box-shadow: 0 4px 12px rgba(131, 58, 180, 0.3);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(131, 58, 180, 0.3);
 	}
 
 	.join-code {
-		background: white;
+		background: var(--white);
 		padding: 1rem;
-		border-radius: 4px;
+		border-radius: 12px;
 		margin: 1rem 0;
 		border-left: 4px solid #00AFF0;
+		border: 1px solid rgba(0, 175, 240, 0.2);
 	}
 
 	.join-code code {
 		font-family: monospace;
 		font-size: 1.2rem;
 		font-weight: bold;
-		color: #041E42;
-		background: #F0F8FF;
+		color: var(--ink-900);
+		background: rgba(0, 175, 240, 0.08);
 		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
+		border-radius: 8px;
 	}
 
 	.note {
 		font-size: 0.95rem;
-		color: #666;
+		color: var(--ink-500);
 	}
 
 	.contact-grid {
@@ -232,58 +225,67 @@ if (!checkMemberAuth(Astro.request)) {
 	}
 
 	.contact-card {
-		background: #F8F9FA;
+		background: var(--surface-raised);
 		padding: 1.5rem;
-		border-radius: 8px;
-		border-left: 4px solid #041E42;
+		border-radius: 16px;
+		border: 1px solid var(--border-soft);
+		border-left: 4px solid var(--brand-ink);
 	}
 
 	.contact-card h3 {
-		color: #041E42;
+		color: var(--ink-900);
 		margin-bottom: 0.75rem;
 	}
 
 	.contact-card .name {
 		font-weight: 600;
-		color: #6A4C93;
+		color: var(--brand-ink);
 		margin-bottom: 0.5rem;
 	}
 
 	.contact-card p {
 		margin: 0.25rem 0;
-		color: #333;
+		color: var(--ink-700);
 	}
 
 	.contact-card a {
-		color: #041E42;
+		color: var(--brand-ink);
 		text-decoration: none;
 	}
 
 	.contact-card a:hover {
-		color: #E292AA;
 		text-decoration: underline;
 	}
 
-	.resource-list {
-		display: grid;
-		gap: 1rem;
+	.resource-note {
+		color: var(--ink-700);
+		font-size: 1.05rem;
+		line-height: 1.7;
+		margin-bottom: 1rem;
 	}
 
-	.resource-item {
-		background: #F8F9FA;
-		padding: 1.5rem;
-		border-radius: 8px;
-		border-left: 4px solid #E292AA;
+	.resource-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		color: var(--brand-ink);
+		font-weight: 600;
+		text-decoration: none;
+		transition: color 0.2s ease, transform 0.2s ease;
 	}
 
-	.resource-item h3 {
-		color: #041E42;
-		margin-bottom: 0.5rem;
+	.resource-link:hover {
+		color: var(--brand-sky);
+		transform: translateX(4px);
 	}
 
-	.resource-item p {
-		color: #333;
-		line-height: 1.6;
-		margin: 0;
+	@media (max-width: 768px) {
+		section {
+			padding: 1.5rem;
+		}
+
+		.comm-card {
+			flex-direction: column;
+		}
 	}
 </style>

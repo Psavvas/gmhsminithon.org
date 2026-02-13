@@ -23,7 +23,7 @@ const currentPath = Astro.url.pathname;
 			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
 			rel="stylesheet"
 		/>
-		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<link rel="icon" type="image/svg+xml" href="/masthead-diamond-blue.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<Analytics />
@@ -31,7 +31,7 @@ const currentPath = Astro.url.pathname;
 	<body>
 		<nav class="navbar">
 			<div class="nav-container">
-				<a href="/members" class="logo">Mini-THON Members</a>
+				<a href="/members" class="logo">GMHS Mini-THON Members</a>
 				<button class="nav-toggle" type="button" aria-controls="member-nav" aria-expanded="false">
 					<span class="nav-toggle-bar"></span>
 					<span class="nav-toggle-bar"></span>
@@ -41,6 +41,7 @@ const currentPath = Astro.url.pathname;
 					<li><a href="/members" class={currentPath === '/members' ? 'active' : ''}>Dashboard</a></li>
 					<li><a href="/members/volunteer-opportunities" class={currentPath === '/members/volunteer-opportunities' ? 'active' : ''}>Volunteer</a></li>
 					<li><a href="/members/meeting-info" class={currentPath === '/members/meeting-info' ? 'active' : ''}>Meeting Info</a></li>
+					<li><a href="/members/resources" class={currentPath === '/members/resources' ? 'active' : ''}>Member Resources</a></li>
 					<li><a href="/" class="return-main">Return to Main Site</a></li>
 				</ul>
 			</div>
@@ -65,12 +66,14 @@ const currentPath = Astro.url.pathname;
 		--ink-900: #1C2A3A;
 		--ink-700: #3D4C5C;
 		--ink-500: #6A7A8A;
-		--surface: #F1F5FA;
+		--surface: #F4F7FB;
 		--surface-raised: #FFFFFF;
 		--border-soft: #D7E2EF;
 		--white: #FFFFFF;
-		--member-accent: #233552;
+		--shadow-soft: 0 18px 45px rgba(28, 42, 58, 0.12);
+		--shadow-card: 0 12px 30px rgba(28, 42, 58, 0.08);
 		--nav-overlay: linear-gradient(135deg, rgba(44, 70, 114, 0.98), rgba(106, 170, 228, 0.95));
+		--nav-offset: 84px;
 	}
 
 	* {
@@ -83,16 +86,35 @@ const currentPath = Astro.url.pathname;
 		font-family: 'Montserrat', 'Helvetica Neue', 'Noto Sans', sans-serif;
 		background-color: var(--surface);
 		color: var(--ink-900);
+		overflow-x: hidden;
 	}
 
 	body {
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
-		background: radial-gradient(circle at 12% 10%, rgba(106, 170, 228, 0.16), transparent 45%),
-			linear-gradient(140deg, rgba(44, 70, 114, 0.04), transparent 35%),
+		position: relative;
+		background: radial-gradient(circle at 10% 10%, rgba(106, 170, 228, 0.18), transparent 45%),
+			linear-gradient(140deg, rgba(44, 70, 114, 0.05), transparent 35%),
 			var(--surface);
+		overflow-x: hidden;
 		padding-top: 0;
+	}
+
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		background: linear-gradient(120deg, rgba(44, 70, 114, 0.08), rgba(106, 170, 228, 0.06));
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	main,
+	.navbar,
+	footer {
+		position: relative;
+		z-index: 1;
 	}
 
 	body.nav-hidden {
@@ -108,9 +130,9 @@ const currentPath = Astro.url.pathname;
 	}
 
 	.navbar {
-		background: linear-gradient(135deg, var(--member-accent) 0%, var(--brand-ink) 100%);
+		background: linear-gradient(120deg, rgba(44, 70, 114, 0.98), rgba(44, 70, 114, 0.92));
 		color: var(--white);
-		padding: 1.1rem 0;
+		padding: 1rem 0;
 		box-shadow: 0 4px 20px rgba(28, 42, 58, 0.15);
 		backdrop-filter: blur(14px);
 		position: fixed;
@@ -136,7 +158,7 @@ const currentPath = Astro.url.pathname;
 	}
 
 	.logo {
-		font-size: 1.2rem;
+		font-size: 1.15rem;
 		font-weight: 600;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
@@ -154,27 +176,34 @@ const currentPath = Astro.url.pathname;
 	.nav-links a {
 		color: var(--white);
 		text-decoration: none;
-		transition: all 0.3s;
+		transition: all 0.3s ease;
 		padding: 0.5rem 0;
+		border-bottom: 2px solid transparent;
+		font-weight: 500;
 		font-size: 0.95rem;
 	}
 
 	.nav-links a:hover,
 	.nav-links a.active {
 		color: var(--brand-sky);
+		border-bottom-color: var(--brand-sky);
 	}
 
 	.return-main {
 		background-color: var(--brand-sky);
-		color: var(--member-accent) !important;
+		color: var(--brand-ink) !important;
 		padding: 0.45rem 1rem !important;
 		border-radius: 999px;
 		font-weight: 600;
+		border-bottom: 2px solid transparent !important;
+		transition: all 0.3s ease;
 	}
 
 	.return-main:hover {
 		background-color: var(--white);
-		color: var(--member-accent) !important;
+		color: var(--brand-ink) !important;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
 	}
 
 	main {
@@ -186,7 +215,7 @@ const currentPath = Astro.url.pathname;
 	}
 
 	footer {
-		background: linear-gradient(135deg, var(--member-accent) 0%, var(--brand-ink) 100%);
+		background: linear-gradient(120deg, rgba(44, 70, 114, 0.98), rgba(44, 70, 114, 0.92));
 		color: var(--white);
 		padding: 2rem 0;
 		margin-top: 4rem;

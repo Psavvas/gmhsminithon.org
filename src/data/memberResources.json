@@ -1,0 +1,19 @@
+{
+  "resources": [
+    {
+      "title": "Event Planning Drive",
+      "description": "Templates, checklists, and planning timelines for committee leads.",
+      "url": "https://drive.google.com/drive/folders/your-folder-id"
+    },
+    {
+      "title": "Marketing & Graphics",
+      "description": "Approved flyers, social graphics, and branding assets.",
+      "url": "https://drive.google.com/drive/folders/your-folder-id"
+    },
+    {
+      "title": "Volunteer Shift Sheet",
+      "description": "Sign up for shifts and see committee assignments.",
+      "url": "https://docs.google.com/spreadsheets/d/your-sheet-id"
+    }
+  ]
+}

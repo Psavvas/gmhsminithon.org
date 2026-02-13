@@ -1,6 +1,7 @@
 ---
 import PublicLayout from './PublicLayout.astro';
 import EventCountdown from '../components/EventCountdown.astro';
+import { checkMemberAuth } from '../utils/auth';
 
 const { frontmatter } = Astro.props;
 const {
@@ -17,6 +18,9 @@ const fullDate = new Date(date).toLocaleDateString('en-US', {
 	month: 'long',
 	day: 'numeric'
 });
+
+const isMember = checkMemberAuth(Astro.request);
+const hasMemberDetails = Astro.slots.has('member-details');
 ---
 
 <PublicLayout title={`${title} - Mini-THON`}>
@@ -59,6 +63,25 @@ const fullDate = new Date(date).toLocaleDateString('en-US', {
 				<h2>About This Event</h2>
 				<slot />
 			</div>
+
+			{hasMemberDetails && (
+				<div class="member-details-card" id="member-details">
+					<div class="member-details-header">
+						<h3>Member Details</h3>
+						<span class="member-badge">Members only</span>
+					</div>
+					{isMember ? (
+						<div class="member-details-body">
+							<slot name="member-details" />
+						</div>
+					) : (
+						<div class="member-locked">
+							<p>Log in to view volunteer needs, shift details, and member-only updates for this event.</p>
+							<a href="/members/login" class="member-login-link">Member login →</a>
+						</div>
+					)}
+				</div>
+			)}
 
 			{links.length > 0 && (
 				<div class="event-links-card">
@@ -203,6 +226,85 @@ const fullDate = new Date(date).toLocaleDateString('en-US', {
 		border: 1px solid var(--border-soft);
 		animation: fade-rise 0.8s ease both;
 		animation-delay: 0.2s;
+	}
+
+	.member-details-card {
+		background: linear-gradient(135deg, rgba(44, 70, 114, 0.08), rgba(106, 170, 228, 0.05));
+		padding: 1.75rem;
+		border-radius: 18px;
+		border: 1px solid var(--border-soft);
+		box-shadow: var(--shadow-card);
+		animation: fade-rise 0.8s ease both;
+		animation-delay: 0.15s;
+	}
+
+	.member-details-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.member-details-header h3 {
+		font-size: 1.3rem;
+		color: var(--ink-900);
+		margin: 0;
+	}
+
+	.member-badge {
+		background: rgba(44, 70, 114, 0.12);
+		color: var(--brand-ink);
+		padding: 0.35rem 0.75rem;
+		border-radius: 999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.member-details-body :global(h4),
+	.member-details-body :global(h5) {
+		margin: 1.25rem 0 0.5rem;
+		color: var(--ink-900);
+	}
+
+	.member-details-body :global(p),
+	.member-details-body :global(li) {
+		color: var(--ink-700);
+		line-height: 1.7;
+	}
+
+	.member-details-body :global(ul) {
+		padding-left: 1.25rem;
+		margin: 0.5rem 0 0;
+	}
+
+	.member-locked {
+		background: var(--white);
+		border-radius: 14px;
+		padding: 1.25rem;
+		border: 1px solid var(--border-soft);
+	}
+
+	.member-locked p {
+		margin: 0 0 0.75rem 0;
+		color: var(--ink-700);
+	}
+
+	.member-login-link {
+		color: var(--brand-ink);
+		font-weight: 600;
+		text-decoration: none;
+		transition: color 0.2s ease, transform 0.2s ease;
+		display: inline-flex;
+		gap: 0.4rem;
+		align-items: center;
+	}
+
+	.member-login-link:hover {
+		color: var(--brand-sky);
+		transform: translateX(4px);
 	}
 
 	.event-links-card h3 {

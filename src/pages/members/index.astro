@@ -1,6 +1,7 @@
 ---
 import MemberLayout from '../../layouts/MemberLayout.astro';
 import { checkMemberAuth } from '../../utils/auth';
+import memberAnnouncements from '../../data/memberAnnouncements.json';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
@@ -12,11 +13,16 @@ const currentYear = new Date().getFullYear();
 
 const upcomingEvents = eventEntries
 	.map((entry) => ({
-		...entry.frontmatter
+		...entry.frontmatter,
+		url: entry.url
 	}))
 	.filter((event) => new Date(event.date).getFullYear() === currentYear)
 	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 	.slice(0, 3);
+
+const announcements = Array.isArray(memberAnnouncements.announcements)
+	? memberAnnouncements.announcements
+	: [];
 ---
 
 <MemberLayout title="Member Dashboard - Mini-THON">
@@ -24,14 +30,26 @@ const upcomingEvents = eventEntries
 	
 	<section class="announcements">
 		<h2>📢 Important Announcements</h2>
-		<div class="announcement-card urgent">
-			<h3>Main Event Planning Meeting</h3>
-			<p>Mandatory meeting for all members on May 25th at 3:30 PM in the Auditorium to discuss final logistics for the main event.</p>
-		</div>
-		<div class="announcement-card">
-			<h3>Volunteer Sign-Ups Open</h3>
-			<p>Sign up for volunteer shifts for upcoming events! Check the Volunteer Opportunities page for details.</p>
-		</div>
+		{announcements.length > 0 ? (
+			announcements.map((announcement) => (
+				<div class={`announcement-card ${announcement.type === 'urgent' ? 'urgent' : ''}`}>
+					<div class="announcement-header">
+						<h3>{announcement.title}</h3>
+						{announcement.date && (
+							<span class="announcement-date">
+								{new Date(announcement.date).toLocaleDateString('en-US', {
+									month: 'short',
+									day: 'numeric'
+								})}
+							</span>
+						)}
+					</div>
+					<p>{announcement.message}</p>
+				</div>
+			))
+		) : (
+			<p class="empty-state">No announcements right now. Check back soon!</p>
+		)}
 	</section>
 
 	<section class="quick-actions">
@@ -46,6 +64,11 @@ const upcomingEvents = eventEntries
 				<span class="icon">📅</span>
 				<h3>Meeting Info</h3>
 				<p>Meeting times and GroupMe info</p>
+			</a>
+			<a href="/members/resources" class="action-card">
+				<span class="icon">📚</span>
+				<h3>Member Resources</h3>
+				<p>Quick links to files and templates</p>
 			</a>
 			<a href="/" class="action-card">
 				<span class="icon">🌐</span>
@@ -64,6 +87,10 @@ const upcomingEvents = eventEntries
 						<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
 						<h3>{event.title}</h3>
 						<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+						<div class="event-actions">
+							<a href={event.url} class="event-link">Event details</a>
+							<a href={`${event.url}#member-details`} class="event-link secondary">Member details</a>
+						</div>
 					</div>
 				))}
 			</div>
@@ -74,49 +101,70 @@ const upcomingEvents = eventEntries
 
 <style>
 	h1 {
-		font-size: 2.5rem;
-		color: #041E42;
+		font-size: clamp(2rem, 4vw, 2.6rem);
+		color: var(--ink-900);
 		margin-bottom: 2rem;
 	}
 
 	section {
-		background: white;
+		background: var(--surface-raised);
 		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		border-radius: 20px;
+		box-shadow: var(--shadow-card);
+		border: 1px solid var(--border-soft);
 		margin-bottom: 2rem;
 	}
 
 	h2 {
-		font-size: 1.8rem;
-		color: #041E42;
+		font-size: clamp(1.5rem, 3vw, 1.9rem);
+		color: var(--ink-900);
 		margin-bottom: 1.5rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 3px solid #6A4C93;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid var(--brand-sky);
 	}
 
 	.announcement-card {
-		background: #F8F9FA;
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
 		padding: 1.5rem;
-		border-radius: 8px;
+		border-radius: 16px;
 		margin-bottom: 1rem;
-		border-left: 4px solid #6A4C93;
+		border: 1px solid var(--border-soft);
+		border-left: 4px solid var(--brand-sky);
 	}
 
 	.announcement-card.urgent {
-		background: #FFF9E6;
+		background: linear-gradient(135deg, rgba(253, 185, 39, 0.18), rgba(255, 255, 255, 0.6));
 		border-left-color: #FDB927;
 	}
 
+	.announcement-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
 	.announcement-card h3 {
-		color: #041E42;
+		color: var(--ink-900);
 		margin-bottom: 0.5rem;
 	}
 
 	.announcement-card p {
-		color: #333;
+		color: var(--ink-700);
 		margin: 0;
-		line-height: 1.6;
+		line-height: 1.7;
+	}
+
+	.announcement-date {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--ink-500);
+	}
+
+	.empty-state {
+		color: var(--ink-500);
+		font-size: 1rem;
 	}
 
 	.actions-grid {
@@ -126,18 +174,19 @@ const upcomingEvents = eventEntries
 	}
 
 	.action-card {
-		background: linear-gradient(135deg, #6A4C93 0%, #041E42 100%);
+		background: linear-gradient(135deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
 		color: white;
 		padding: 2rem;
-		border-radius: 8px;
+		border-radius: 20px;
 		text-decoration: none;
-		transition: all 0.3s;
+		transition: all 0.3s ease;
 		text-align: center;
+		border: 1px solid rgba(255, 255, 255, 0.12);
 	}
 
 	.action-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 4px 16px rgba(106, 76, 147, 0.3);
+		box-shadow: 0 10px 24px rgba(28, 42, 58, 0.2);
 	}
 
 	.action-card .icon {
@@ -162,10 +211,11 @@ const upcomingEvents = eventEntries
 	}
 
 	.event-preview {
-		background: #F8F9FA;
+		background: var(--surface-raised);
 		padding: 1.5rem;
-		border-radius: 8px;
-		border-left: 4px solid #E292AA;
+		border-radius: 16px;
+		border: 1px solid var(--border-soft);
+		border-left: 4px solid var(--brand-sky);
 	}
 
 	.event-type {
@@ -195,27 +245,60 @@ const upcomingEvents = eventEntries
 	}
 
 	.event-preview h3 {
-		color: #041E42;
+		color: var(--ink-900);
 		margin-bottom: 0.5rem;
 	}
 
 	.event-preview .date {
-		color: #666;
+		color: var(--ink-500);
 		margin: 0;
 		font-size: 0.95rem;
+	}
+
+	.event-actions {
+		display: flex;
+		gap: 0.75rem;
+		margin-top: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.event-link {
+		color: var(--brand-ink);
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.95rem;
+		transition: color 0.2s ease;
+	}
+
+	.event-link.secondary {
+		color: var(--ink-500);
+	}
+
+	.event-link:hover {
+		color: var(--brand-sky);
 	}
 
 	.view-all {
 		display: inline-block;
 		margin-top: 1rem;
-		color: #6A4C93;
+		color: var(--brand-ink);
 		text-decoration: none;
 		font-weight: 600;
-		transition: all 0.3s;
+		transition: all 0.3s ease;
 	}
 
 	.view-all:hover {
-		color: #041E42;
+		color: var(--brand-sky);
 		transform: translateX(4px);
+	}
+
+	@media (max-width: 768px) {
+		section {
+			padding: 1.5rem;
+		}
+
+		.action-card {
+			padding: 1.5rem;
+		}
 	}
 </style>
