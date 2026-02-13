@@ -1,4 +1,4 @@
-const MEMBER_PASSWORD = import.meta.env.VITE_MEMBER_PASSWORD;
+const MEMBER_PASSWORD = import.meta.env.MEMBER_PASSWORD;
 
 export function checkMemberAuth(request: Request): boolean {
   const cookies = parseCookies(request.headers.get('cookie') || '');
@@ -6,8 +6,6 @@ export function checkMemberAuth(request: Request): boolean {
 }
 
 export function setMemberAuthCookie(): string {
-  // In production, add 'Secure' flag to ensure HTTPS-only transmission
-  // Example: 'memberAuth=true; Path=/; Max-Age=86400; SameSite=Strict; Secure'
   return 'memberAuth=true; Path=/; Max-Age=86400; SameSite=Strict';
 }
 
