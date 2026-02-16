@@ -8,8 +8,8 @@ if (!checkMemberAuth(Astro.request)) {
 }
 
 const currentYear = new Date().getFullYear();
-const eventEntries = await Astro.glob('../events/*.mdx');
 const today = new Date();
+const eventEntries = await Astro.glob('../events/*.mdx');
 
 const events = eventEntries
 	.map((entry) => ({
@@ -31,9 +31,10 @@ const formatDate = (dateString: string) =>
 	});
 
 // Convert public event URLs to member event URLs
-const getMemberEventUrl = (publicUrl: string) => {
+const getMemberEventUrl = (publicUrl: string | undefined) => {
+	if (!publicUrl) return '/members/volunteer-opportunities';
 	const eventSlug = publicUrl.split('/').pop();
-	return `/members/events/${eventSlug}`;
+	return eventSlug ? `/members/events/${eventSlug}` : '/members/volunteer-opportunities';
 };
 ---
 
