@@ -1,112 +1,39 @@
 ---
 import MemberLayout from '../../layouts/MemberLayout.astro';
-import EventCountdown from '../../components/EventCountdown.astro';
 import { checkMemberAuth } from '../../utils/auth';
-import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
   return Astro.redirect('/members/login');
 }
 
-const eventEntries = await Astro.glob('../events/*.mdx');
 const currentYear = new Date().getFullYear();
+const eventEntries = await Astro.glob('../events/*.mdx');
+const today = new Date();
 
-// Get the directory path for reading raw MDX files
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const eventsDir = join(__dirname, '../events');
-
-// Helper to extract member-details content from raw MDX
-const extractMemberDetails = async (filename: string) => {
-	try {
-		const filePath = join(eventsDir, filename);
-		const content = await readFile(filePath, 'utf-8');
-		const match = content.match(/<Fragment slot="member-details">([\s\S]*?)<\/Fragment>/);
-		return match ? match[1].trim() : null;
-	} catch (error) {
-		console.error(`Error reading ${filename}:`, error);
-		return null;
-	}
-};
-
-// Load events with member details
-const eventsWithDetails = await Promise.all(
-	eventEntries.map(async (entry) => {
-		const filename = entry.file?.split('/').pop();
-		const memberDetailsMarkdown = filename ? await extractMemberDetails(filename) : null;
-		return {
-			...entry.frontmatter,
-			Content: entry.Content,
-			memberDetailsMarkdown,
-			filename
-		};
-	})
-);
-
-const events = eventsWithDetails
+const events = eventEntries
+	.map((entry) => ({
+		...entry.frontmatter,
+		url: entry.url
+	}))
 	.filter((event) => new Date(event.date).getFullYear() === currentYear)
 	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-// Format full date
-const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { 
-	weekday: 'long',
-	year: 'numeric',
-	month: 'long',
-	day: 'numeric'
-});
+const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
+const pastEvents = events.filter((event) => new Date(event.date) < today);
 
-// Helper to render markdown as HTML
-const renderMarkdown = (markdown: string) => {
-	if (!markdown) return '';
-	
-	let html = markdown;
-	
-	// Replace headings
-	html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
-	html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
-	html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
-	
-	// Replace bold text
-	html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-	
-	// Process lists: convert lines starting with "- " into list items
-	const lines = html.split('\n');
-	const processedLines: string[] = [];
-	let inList = false;
-	
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
-		const trimmedLine = line.trim();
-		
-		if (trimmedLine.startsWith('- ')) {
-			if (!inList) {
-				processedLines.push('<ul>');
-				inList = true;
-			}
-			processedLines.push(`<li>${trimmedLine.substring(2)}</li>`);
-		} else if (trimmedLine === '') {
-			if (inList) {
-				processedLines.push('</ul>');
-				inList = false;
-			}
-			processedLines.push('');
-		} else {
-			if (inList) {
-				processedLines.push('</ul>');
-				inList = false;
-			}
-			processedLines.push(line);
-		}
-	}
-	
-	// Close any open list
-	if (inList) {
-		processedLines.push('</ul>');
-	}
-	
-	return processedLines.join('\n');
+const formatDate = (dateString: string) =>
+	new Date(dateString).toLocaleDateString('en-US', {
+		weekday: 'long',
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	});
+
+// Convert public event URLs to member event URLs
+const getMemberEventUrl = (publicUrl: string) => {
+	const eventSlug = publicUrl.split('/').pop();
+	return `/members/events/${eventSlug}`;
 };
 ---
 
@@ -114,79 +41,64 @@ const renderMarkdown = (markdown: string) => {
 	<h1>Volunteer Opportunities</h1>
 	
 	<section class="intro">
-		<p>Sign up for volunteer shifts for our upcoming events! Each event has specific volunteer needs listed below.</p>
+		<p>Sign up for volunteer shifts for our upcoming events! Click on any event below to see member-specific details, volunteer needs, and sign-up information.</p>
 	</section>
 
-	{events.length === 0 ? (
+	{upcomingEvents.length === 0 && pastEvents.length === 0 ? (
 		<section class="no-events">
 			<p>No volunteer opportunities scheduled for {currentYear} yet. Check back soon!</p>
 		</section>
 	) : (
-		<div class="events-grid">
-			{events.map(event => (
-				<article class="event-detail">
-					<header class="event-hero">
-						<div class="event-hero-content">
-							<div class="event-meta">
+		<>
+			{upcomingEvents.length > 0 ? (
+				<div class="events-grid">
+					{upcomingEvents.map(event => (
+						<article class="event-card">
+							<div class="event-header">
 								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+								<time datetime={event.date}>{formatDate(event.date)}</time>
 							</div>
 							<h2>{event.title}</h2>
-							<div class="event-info-row">
-								<div class="event-info-item">
-									<span class="info-icon" aria-hidden="true">
-										<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-											<path d="M12 6.75a.75.75 0 0 1 .75.75v4.44l3.02 1.74a.75.75 0 1 1-.75 1.3l-3.4-1.96a.75.75 0 0 1-.37-.65V7.5a.75.75 0 0 1 .75-.75Z" fill="currentColor" />
-											<path d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5Zm0 1.5a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Z" fill="currentColor" />
-										</svg>
-									</span>
-									<time datetime={event.date}>{getFullDate(event.date)}</time>
+							{event.location && (
+								<p class="location">📍 {event.location}</p>
+							)}
+							<p class="description">{event.summary}</p>
+							<a href={getMemberEventUrl(event.url)} class="read-more">
+								View Details & Sign Up →
+							</a>
+						</article>
+					))}
+				</div>
+			) : (
+				<section class="no-events">
+					<p>No upcoming volunteer opportunities for {currentYear}. Check back soon!</p>
+				</section>
+			)}
+
+			{pastEvents.length > 0 && (
+				<section class="past-events">
+					<h2>Past Events</h2>
+					<div class="events-grid">
+						{pastEvents.map(event => (
+							<article class="event-card past">
+								<div class="event-header">
+									<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+									<time datetime={event.date}>{formatDate(event.date)}</time>
 								</div>
+								<h2>{event.title}</h2>
 								{event.location && (
-									<div class="event-info-item">
-										<span class="info-icon" aria-hidden="true">
-											<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-												<path d="M12 2.5a7 7 0 0 0-7 7c0 5.25 6.16 11.2 6.42 11.45a.82.82 0 0 0 1.16 0c.26-.25 6.42-6.2 6.42-11.45a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor" />
-											</svg>
-										</span>
-										<span>{event.location}</span>
-									</div>
+									<p class="location">📍 {event.location}</p>
 								)}
-							</div>
-						</div>
-						<div class="event-countdown-wrapper">
-							<EventCountdown eventDate={event.date} />
-						</div>
-					</header>
-
-					<section class="event-content">
-						{event.memberDetailsMarkdown && (
-							<div class="description-card">
-								<h3>Member Details</h3>
-								<div class="member-details-body" set:html={renderMarkdown(event.memberDetailsMarkdown)} />
-							</div>
-						)}
-
-						{event.links && event.links.length > 0 && (
-							<div class="event-links-card">
-								<h3>Related Links</h3>
-								<ul>
-									{event.links.map((link: string) => (
-										<li>
-											<a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
-										</li>
-									))}
-								</ul>
-							</div>
-						)}
-
-						<div class="description-card">
-							<h3>Public Description</h3>
-							<p>{event.summary}</p>
-						</div>
-					</section>
-				</article>
-			))}
-		</div>
+								<p class="description">{event.summary}</p>
+								<a href={getMemberEventUrl(event.url)} class="read-more">
+									View Details →
+								</a>
+							</article>
+						))}
+					</div>
+				</section>
+			)}
+		</>
 	)}
 </MemberLayout>
 
@@ -205,11 +117,11 @@ const renderMarkdown = (markdown: string) => {
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
 		margin-bottom: 2rem;
-		font-size: 1.1rem;
+		font-size: 1.05rem;
 		line-height: 1.8;
 		color: var(--ink-700);
-		animation: fade-rise 0.6s ease both;
-		animation-delay: 0.05s;
+		animation: fade-rise 0.8s ease both;
+		animation-delay: 0.1s;
 	}
 
 	.intro p {
@@ -225,59 +137,82 @@ const renderMarkdown = (markdown: string) => {
 		text-align: center;
 		font-size: 1.2rem;
 		color: var(--ink-500);
-		animation: fade-rise 0.8s ease both;
-	}
-
-	.no-events p {
-		margin: 0;
 	}
 
 	.events-grid {
 		display: grid;
-		gap: 2.5rem;
+		gap: 2rem;
 	}
 
-	/* Match EventLayout.astro styles exactly */
-	.event-detail {
-		max-width: 1000px;
-		margin: 0 auto 2rem;
+	.past-events {
+		margin-top: 3rem;
 	}
 
-	.event-hero {
+	.past-events h2 {
+		font-size: clamp(1.6rem, 3vw, 2rem);
+		color: var(--ink-900);
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid var(--border-soft);
+	}
+
+	.event-card {
 		background: var(--surface-raised);
-		padding: 2.25rem;
+		padding: 2rem;
 		border-radius: 20px;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
-		margin-bottom: 2rem;
-		display: grid;
-		grid-template-columns: 1fr auto;
-		gap: 2rem;
-		align-items: center;
-		animation: fade-rise 0.6s ease both;
+		border-left: 4px solid var(--brand-sky);
+		transition: all 0.3s ease;
+		animation: fade-rise 0.8s ease both;
 	}
 
-	.event-meta {
-		margin-bottom: 0.75rem;
+	.event-card:nth-child(1) { animation-delay: 0.2s; }
+	.event-card:nth-child(2) { animation-delay: 0.3s; }
+	.event-card:nth-child(3) { animation-delay: 0.4s; }
+	.event-card:nth-child(4) { animation-delay: 0.5s; }
+
+	.event-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 30px rgba(28, 42, 58, 0.12);
+		border-left-color: var(--brand-ink);
+	}
+
+	.event-card.past {
+		border-left-color: var(--border-soft);
+		background: linear-gradient(135deg, rgba(44, 70, 114, 0.04), rgba(255, 255, 255, 0.9));
+	}
+
+	.event-card.past:hover {
+		border-left-color: var(--brand-sky);
+	}
+
+	.event-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 	}
 
 	.event-type {
 		display: inline-block;
-		padding: 0.3rem 0.75rem;
+		padding: 0.35rem 0.85rem;
 		border-radius: 999px;
-		font-size: 0.75rem;
+		font-size: 0.8rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.08em;
+		letter-spacing: 0.5px;
 	}
 
 	.event-type.gaming {
-		background: rgba(106, 170, 228, 0.18);
+		background: rgba(106, 170, 228, 0.15);
 		color: var(--brand-ink);
 	}
 
 	.event-type.dine-to-donate {
-		background: rgba(255, 152, 0, 0.18);
+		background: rgba(255, 152, 0, 0.15);
 		color: #E65100;
 	}
 
@@ -286,147 +221,45 @@ const renderMarkdown = (markdown: string) => {
 		color: #6A1B9A;
 	}
 
-	.event-detail h2 {
-		font-size: clamp(2rem, 4vw, 2.8rem);
+	time {
+		color: var(--ink-500);
+		font-size: 0.95rem;
+		font-weight: 500;
+	}
+
+	.event-card h2 {
+		font-size: clamp(1.5rem, 3vw, 1.8rem);
 		color: var(--ink-900);
-		margin: 0 0 1.25rem 0;
-		line-height: 1.2;
-	}
-
-	.event-info-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5rem;
-		align-items: center;
-	}
-
-	.event-info-item {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 1.05rem;
-		font-weight: 600;
-		color: var(--ink-900);
-	}
-
-	.info-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		border-radius: 10px;
-		background: rgba(106, 170, 228, 0.15);
-		color: var(--brand-ink);
-	}
-
-	.info-icon svg {
-		width: 18px;
-		height: 18px;
-	}
-
-	.event-countdown-wrapper {
-		min-width: 260px;
-	}
-
-	.event-content {
-		display: grid;
-		gap: 1.5rem;
-		margin-bottom: 2rem;
-	}
-
-	.description-card {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.1s;
-	}
-
-	.description-card h3 {
-		font-size: 1.5rem;
-		color: var(--ink-900);
-		margin-bottom: 1.25rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--brand-sky);
-	}
-
-	.member-details-body p {
-		color: var(--ink-700);
-		line-height: 1.7;
-		margin: 0 0 0.75rem 0;
-	}
-
-	.member-details-body p:last-child {
-		margin-bottom: 0;
-	}
-
-	.member-details-body h4 {
-		font-size: 1.2rem;
-		color: var(--ink-900);
-		margin: 1.25rem 0 0.75rem 0;
-	}
-
-	.member-details-body h4:first-child {
-		margin-top: 0;
-	}
-
-	.member-details-body ul {
-		margin: 0.5rem 0 1rem 0;
-		padding-left: 1.5rem;
-	}
-
-	.member-details-body li {
-		color: var(--ink-700);
-		line-height: 1.7;
 		margin-bottom: 0.5rem;
 	}
 
-	.member-details-body li:last-child {
-		margin-bottom: 0;
+	.location {
+		color: var(--ink-600);
+		font-size: 0.95rem;
+		margin-bottom: 1rem;
+		font-weight: 500;
 	}
 
-	.event-links-card {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
-		padding: 1.5rem;
-		border-radius: 16px;
-		border: 1px solid var(--border-soft);
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.2s;
-	}
-
-	.event-links-card h3 {
-		font-size: 1.2rem;
-		color: var(--brand-ink);
+	.description {
+		line-height: 1.8;
+		color: var(--ink-700);
 		margin-bottom: 1rem;
 	}
 
-	.event-links-card ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: grid;
-		gap: 0.5rem;
-	}
-
-	.event-links-card li {
-		margin: 0;
-	}
-
-	.event-links-card a {
+	.read-more {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
 		color: var(--brand-ink);
 		text-decoration: none;
-		word-break: break-all;
-		transition: color 0.2s ease;
-		display: inline-block;
-		padding: 0.25rem 0;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		margin-top: 0.5rem;
 	}
 
-	.event-links-card a:hover {
+	.read-more:hover {
 		color: var(--brand-sky);
-		text-decoration: underline;
+		gap: 0.6rem;
 	}
 
 	@keyframes fade-rise {
@@ -440,34 +273,9 @@ const renderMarkdown = (markdown: string) => {
 		}
 	}
 
-	@media (max-width: 900px) {
-		.event-hero {
-			grid-template-columns: 1fr;
-			align-items: start;
-		}
-
-		.event-countdown-wrapper {
-			min-width: auto;
-		}
-	}
-
 	@media (max-width: 768px) {
-		.event-hero {
-			padding: 1.5rem;
-			gap: 1.5rem;
-		}
-
-		.event-detail h2 {
-			font-size: 1.75rem;
-		}
-
-		.event-info-row {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 1rem;
-		}
-
-		.description-card {
+		.intro,
+		.event-card {
 			padding: 1.5rem;
 		}
 	}
