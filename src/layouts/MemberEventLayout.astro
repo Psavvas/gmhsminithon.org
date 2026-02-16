@@ -29,8 +29,10 @@ const fullDate = new Date(date).toLocaleDateString('en-US', {
 });
 
 // Extract member-details content from the event MDX file
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const eventsDir = join(__dirname, '../pages/events');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+// Navigate from layouts directory to pages/events: ../pages/events
+const eventsDir = join(__dirname, '..', 'pages', 'events');
 
 let memberDetailsMarkdown = null;
 try {
@@ -46,6 +48,7 @@ try {
 	}
 } catch (error) {
 	console.error('Error reading member details:', error);
+	console.error('Attempted path:', eventsDir);
 }
 
 // Helper to render markdown as HTML
