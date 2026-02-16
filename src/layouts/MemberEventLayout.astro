@@ -2,9 +2,6 @@
 import MemberLayout from './MemberLayout.astro';
 import EventCountdown from '../components/EventCountdown.astro';
 import { checkMemberAuth } from '../utils/auth';
-import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
@@ -29,10 +26,8 @@ const fullDate = new Date(date).toLocaleDateString('en-US', {
 });
 
 // Extract member-details content from the event MDX file
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-// Navigate from layouts directory to pages/events: ../pages/events
-const eventsDir = join(__dirname, '..', 'pages', 'events');
+// Use import.meta.glob to get access to raw content at build time
+const eventFiles = import.meta.glob('/src/pages/events/*.mdx', { as: 'raw', eager: true });
 
 let memberDetailsMarkdown = null;
 try {
@@ -40,15 +35,17 @@ try {
 	const eventSlug = pathSegments[pathSegments.length - 1];
 	
 	if (eventSlug) {
-		const filename = eventSlug + '.mdx';
-		const filePath = join(eventsDir, filename);
-		const content = await readFile(filePath, 'utf-8');
-		const match = content.match(/<Fragment slot="member-details">([\s\S]*?)<\/Fragment>/);
-		memberDetailsMarkdown = match ? match[1].trim() : null;
+		// Try to find the corresponding event file
+		const eventFilePath = `/src/pages/events/${eventSlug}.mdx`;
+		const rawContent = eventFiles[eventFilePath];
+		
+		if (rawContent) {
+			const match = rawContent.match(/<Fragment slot="member-details">([\s\S]*?)<\/Fragment>/);
+			memberDetailsMarkdown = match ? match[1].trim() : null;
+		}
 	}
 } catch (error) {
 	console.error('Error reading member details:', error);
-	console.error('Attempted path:', eventsDir);
 }
 
 // Helper to render markdown as HTML
