@@ -5,7 +5,6 @@ import { checkMemberAuth } from '../../utils/auth';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { compile } from '@mdx-js/mdx';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
@@ -58,22 +57,56 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 	day: 'numeric'
 });
 
-// Helper to render markdown as HTML (simple implementation)
+// Helper to render markdown as HTML
 const renderMarkdown = (markdown: string) => {
 	if (!markdown) return '';
-	return markdown
-		.replace(/^### (.+)$/gm, '<h4>$1</h4>')
-		.replace(/^## (.+)$/gm, '<h3>$1</h3>')
-		.replace(/^# (.+)$/gm, '<h2>$1</h2>')
-		.replace(/^\- (.+)$/gm, '<li>$1</li>')
-		.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-		.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-		.replace(/\n\n/g, '</p><p>')
-		.replace(/^(?!<[hul])/gm, '<p>')
-		.replace(/(?<![>])$/gm, '</p>')
-		.replace(/<p><\/p>/g, '')
-		.replace(/<p>(<[hul])/g, '$1')
-		.replace(/(<\/[hul][^>]*>)<\/p>/g, '$1');
+	
+	let html = markdown;
+	
+	// Replace headings
+	html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+	html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+	html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
+	
+	// Replace bold text
+	html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+	
+	// Process lists: convert lines starting with "- " into list items
+	const lines = html.split('\n');
+	const processedLines: string[] = [];
+	let inList = false;
+	
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		const trimmedLine = line.trim();
+		
+		if (trimmedLine.startsWith('- ')) {
+			if (!inList) {
+				processedLines.push('<ul>');
+				inList = true;
+			}
+			processedLines.push(`<li>${trimmedLine.substring(2)}</li>`);
+		} else if (trimmedLine === '') {
+			if (inList) {
+				processedLines.push('</ul>');
+				inList = false;
+			}
+			processedLines.push('');
+		} else {
+			if (inList) {
+				processedLines.push('</ul>');
+				inList = false;
+			}
+			processedLines.push(line);
+		}
+	}
+	
+	// Close any open list
+	if (inList) {
+		processedLines.push('</ul>');
+	}
+	
+	return processedLines.join('\n');
 };
 ---
 
