@@ -2,6 +2,10 @@
 import MemberLayout from '../../layouts/MemberLayout.astro';
 import EventCountdown from '../../components/EventCountdown.astro';
 import { checkMemberAuth } from '../../utils/auth';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { compile } from '@mdx-js/mdx';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
@@ -11,11 +15,38 @@ if (!checkMemberAuth(Astro.request)) {
 const eventEntries = await Astro.glob('../events/*.mdx');
 const currentYear = new Date().getFullYear();
 
-const events = eventEntries
-	.map((entry) => ({
-		...entry.frontmatter,
-		Content: entry.Content
-	}))
+// Get the directory path for reading raw MDX files
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const eventsDir = join(__dirname, '../events');
+
+// Helper to extract member-details content from raw MDX
+const extractMemberDetails = async (filename: string) => {
+	try {
+		const filePath = join(eventsDir, filename);
+		const content = await readFile(filePath, 'utf-8');
+		const match = content.match(/<Fragment slot="member-details">([\s\S]*?)<\/Fragment>/);
+		return match ? match[1].trim() : null;
+	} catch (error) {
+		console.error(`Error reading ${filename}:`, error);
+		return null;
+	}
+};
+
+// Load events with member details
+const eventsWithDetails = await Promise.all(
+	eventEntries.map(async (entry) => {
+		const filename = entry.file?.split('/').pop();
+		const memberDetailsMarkdown = filename ? await extractMemberDetails(filename) : null;
+		return {
+			...entry.frontmatter,
+			Content: entry.Content,
+			memberDetailsMarkdown,
+			filename
+		};
+	})
+);
+
+const events = eventsWithDetails
 	.filter((event) => new Date(event.date).getFullYear() === currentYear)
 	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -27,14 +58,22 @@ const getFullDate = (dateString: string) => new Date(dateString).toLocaleDateStr
 	day: 'numeric'
 });
 
-// Helper to render internal_description as formatted HTML with Markdown support
-const renderInternalDescription = (desc: string | string[]) => {
-	if (!desc) return '';
-	const paragraphs = Array.isArray(desc) ? desc : [desc];
-	return paragraphs.map(p => 
-		p.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-		 .replace(/\n/g, '<br>')
-	);
+// Helper to render markdown as HTML (simple implementation)
+const renderMarkdown = (markdown: string) => {
+	if (!markdown) return '';
+	return markdown
+		.replace(/^### (.+)$/gm, '<h4>$1</h4>')
+		.replace(/^## (.+)$/gm, '<h3>$1</h3>')
+		.replace(/^# (.+)$/gm, '<h2>$1</h2>')
+		.replace(/^\- (.+)$/gm, '<li>$1</li>')
+		.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+		.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+		.replace(/\n\n/g, '</p><p>')
+		.replace(/^(?!<[hul])/gm, '<p>')
+		.replace(/(?<![>])$/gm, '</p>')
+		.replace(/<p><\/p>/g, '')
+		.replace(/<p>(<[hul])/g, '$1')
+		.replace(/(<\/[hul][^>]*>)<\/p>/g, '$1');
 };
 ---
 
@@ -87,14 +126,10 @@ const renderInternalDescription = (desc: string | string[]) => {
 					</header>
 
 					<section class="event-content">
-						{event.internal_description && (
+						{event.memberDetailsMarkdown && (
 							<div class="description-card">
 								<h3>Member Details</h3>
-								<div class="member-details-body">
-									{renderInternalDescription(event.internal_description).map((paragraph: string) => (
-										<p set:html={paragraph} />
-									))}
-								</div>
+								<div class="member-details-body" set:html={renderMarkdown(event.memberDetailsMarkdown)} />
 							</div>
 						)}
 
@@ -292,6 +327,31 @@ const renderInternalDescription = (desc: string | string[]) => {
 	}
 
 	.member-details-body p:last-child {
+		margin-bottom: 0;
+	}
+
+	.member-details-body h4 {
+		font-size: 1.2rem;
+		color: var(--ink-900);
+		margin: 1.25rem 0 0.75rem 0;
+	}
+
+	.member-details-body h4:first-child {
+		margin-top: 0;
+	}
+
+	.member-details-body ul {
+		margin: 0.5rem 0 1rem 0;
+		padding-left: 1.5rem;
+	}
+
+	.member-details-body li {
+		color: var(--ink-700);
+		line-height: 1.7;
+		margin-bottom: 0.5rem;
+	}
+
+	.member-details-body li:last-child {
 		margin-bottom: 0;
 	}
 
