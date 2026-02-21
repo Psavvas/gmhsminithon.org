@@ -1,19 +1,12 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
+import { getCurrentYearEvents } from '../utils/events';
 
 export const prerender = true;
 
 const currentYear = new Date().getFullYear();
-const eventEntries = await Astro.glob('./events/*.mdx');
+const events = await getCurrentYearEvents();
 const today = new Date();
-
-const events = eventEntries
-	.map((entry) => ({
-		...entry.frontmatter,
-		url: entry.url
-	}))
-	.filter((event) => new Date(event.date).getFullYear() === currentYear)
-	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
 const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
 const pastEvents = events.filter((event) => new Date(event.date) < today);

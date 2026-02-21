@@ -15,7 +15,6 @@ if (Astro.request.method === 'POST') {
     const password = data.get('password')?.toString() || '';
     
 		if (verifyPassword(password)) {
-			// Set auth cookie and redirect in a single response.
 			return new Response(null, {
 				status: 302,
 				headers: {
@@ -57,11 +56,6 @@ if (Astro.request.method === 'POST') {
 			
 			<button type="submit" class="submit-button">Login</button>
 		</form>
-		
-		<div class="help-text">
-			<p>Don't have the password? Contact a club officer or check the latest club announcements.</p>
-			<p><strong>Demo password:</strong> minithon2026</p>
-		</div>
 	</div>
 </PublicLayout>
 
@@ -108,7 +102,6 @@ if (Astro.request.method === 'POST') {
 		padding: 1rem;
 		border-radius: 12px;
 		margin-bottom: 1.5rem;
-		border-left: 4px solid #C62828;
 	}
 
 	.form-group {

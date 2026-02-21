@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@9.15.4",
   "engines": {
     "node": "20.x"
@@ -9,13 +10,17 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "upload": "node scripts/upload-to-uploadthing.js",
+    "upload:clean": "node scripts/upload-to-uploadthing.js --delete-old --update-refs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/vercel": "8.0.1",
     "@vercel/analytics": "^1.6.1",
     "astro": "^5.1.1",
-    "react": "18.3.1"
+    "dotenv": "^17.3.1",
+    "react": "18.3.1",
+    "uploadthing": "^7.7.4"
   }
 }

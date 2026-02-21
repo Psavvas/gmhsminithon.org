@@ -7,34 +7,70 @@ export const prerender = true;
 
 const tiers = [
 	{
-		name: 'Diamond',
-		tone: 'diamond',
-		description: 'Top-tier partnership with premier event recognition, full logo placement, and spotlighted community mentions.'
-	},
-	{
-		name: 'Platinum',
-		tone: 'platinum',
-		description: 'High-visibility sponsorship with strong branding across our website, materials, and announcements.'
-	},
-	{
-		name: 'Gold',
-		tone: 'gold',
-		description: 'Prominent placement on event materials plus recurring social media recognition.'
-	},
-	{
-		name: 'Silver',
-		tone: 'silver',
-		description: 'Logo placement on the Mini-THON website and recognition during key events.'
+		name: 'Supporter',
+		tone: 'supporter',
+		amount: '$50+',
+		description: 'A great entry point for businesses looking to show community support and contribute to the fight against pediatric cancer.',
+		benefits: [
+			'Business name listed on the Mini-THON website',
+			'Recognition on posters at Mini-THON events'
+		]
 	},
 	{
 		name: 'Bronze',
 		tone: 'bronze',
-		description: 'Supporter-level recognition on our website and selected event materials.'
+		amount: '$100+',
+		description: 'Ideal for small businesses seeking increased visibility while supporting a meaningful cause.',
+		benefits: [
+			'All Supporter benefits',
+			'Recognition on social media posts and event flyers',
+			'Business name listed on the Mini-THON website'
+		]
 	},
 	{
-		name: 'Supporter',
-		tone: 'supporter',
-		description: 'Name recognition on our website and appreciation in event communications.'
+		name: 'Silver',
+		tone: 'silver',
+		amount: '$250+',
+		description: 'A strong option for businesses wanting brand visibility at school events and online.',
+		benefits: [
+			'All Bronze benefits',
+			'Small logo on the back of Mini-THON shirts',
+			'Logo displayed on the Mini-THON website',
+			'Recognition on an individual advertisement banner at the event'
+		]
+	},
+	{
+		name: 'Gold',
+		tone: 'gold',
+		amount: '$500+',
+		description: 'Designed for businesses seeking prominent exposure across multiple Mini-THON platforms.',
+		benefits: [
+			'All Silver benefits',
+			'Large logo on the back of Mini-THON shirts',
+			'Recognition on the event’s Donor Drive webpage'
+		]
+	},
+	{
+		name: 'Platinum',
+		tone: 'platinum',
+		amount: '$1,000+',
+		description: 'A premium tier offering expanded branding opportunities and high-level recognition.',
+		benefits: [
+			'All Gold benefits',
+			'Enhanced placement on promotional materials',
+			'Additional recognition at major Mini-THON events'
+		]
+	},
+	{
+		name: 'Diamond',
+		tone: 'diamond',
+		amount: '$1,500+',
+		description: 'Our top tier, providing maximum visibility and community presence for committed partners.',
+		benefits: [
+			'All Platinum benefits',
+			'Recognition on the marquee outside Great Mills High School',
+			'Priority logo placement on shirts, banners, and the website'
+		]
 	}
 ];
 ---
@@ -70,8 +106,14 @@ const tiers = [
 		<div class="tiers-grid">
 			{tiers.map((tier) => (
 				<div class={`tier-card ${tier.tone}`}>
-					<h3>{tier.name}</h3>
+					<h3>{tier.name} — {tier.amount}</h3>
 					<p>{tier.description}</p>
+					<h4>Benefits:</h4>
+					<ul>
+						{tier.benefits.map((benefit) => (
+							<li>{benefit}</li>
+						))}
+					</ul>
 				</div>
 			))}
 		</div>
@@ -158,7 +200,8 @@ const tiers = [
 	.tiers-grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1.5rem;
+		column-gap: 1.5rem;
+		row-gap: 1.75rem;
 	}
 
 	.tier-card {
@@ -179,6 +222,24 @@ const tiers = [
 	.tier-card p {
 		color: var(--ink-700);
 		line-height: 1.7;
+		margin-bottom: 0.85rem;
+	}
+
+	.tier-card h4 {
+		font-size: 1rem;
+		margin: 0 0 0.5rem;
+		color: var(--ink-900);
+	}
+
+	.tier-card ul {
+		margin: 0;
+		padding-left: 1.2rem;
+		color: var(--ink-700);
+		line-height: 1.7;
+	}
+
+	.tier-card li + li {
+		margin-top: 0.25rem;
 	}
 
 	.tier-card.diamond { border-top-color: #2F6B99; }

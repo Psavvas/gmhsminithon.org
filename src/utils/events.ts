@@ -1,62 +1,95 @@
-import eventsData from '../data/events.json';
-
-export interface Event {
+export interface EventFrontmatter {
   title: string;
   date: string;
+  location?: string;
   event_type: string;
-  public_description: string | string[];
-  internal_description: string | string[];
-  media: {
-    images: string[];
-    links: string[];
-  };
+  summary: string | string[];
+  internal_description?: string | string[];
+  links?: string[];
+}
+
+export interface Event extends EventFrontmatter {
+  url: string;
+  Content?: any;
+}
+
+type EventModule = {
+  frontmatter: EventFrontmatter;
+  default?: unknown;
+};
+
+function filePathToEventUrl(filePath: string): string {
+  return filePath
+    .replace('../pages/events/', '/events/')
+    .replace(/\.mdx$/, '');
+}
+
+async function loadEventModules(): Promise<Array<{ filePath: string; module: EventModule }>> {
+  const modules = import.meta.glob('../pages/events/*.mdx', { eager: true }) as Record<string, EventModule>;
+
+  return Object.entries(modules).map(([filePath, module]) => ({ filePath, module }));
 }
 
 /**
- * Get all events for the current year
- * Note: "current year" is determined dynamically at runtime based on the server's date
- * For example, in 2026 this will return only events from 2026
+ * Get all events from MDX files in src/pages/events.
  */
-export function getCurrentYearEvents(): Event[] {
+export async function getAllEvents(): Promise<Event[]> {
+  const modules = await loadEventModules();
+
+  return modules
+    .map(({ filePath, module }) => ({
+      ...module.frontmatter,
+      url: filePathToEventUrl(filePath),
+      Content: module.default
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+}
+
+/**
+ * Get all events for the current year.
+ */
+export async function getCurrentYearEvents(): Promise<Event[]> {
   const currentYear = new Date().getFullYear();
-  return eventsData.filter((event: Event) => {
-    const eventYear = new Date(event.date).getFullYear();
-    return eventYear === currentYear;
-  });
+  const events = await getAllEvents();
+
+  return events.filter((event) => new Date(event.date).getFullYear() === currentYear);
 }
 
 /**
- * Get all events (for member portal)
+ * Get upcoming events from today onward.
  */
-export function getAllEvents(): Event[] {
-  return eventsData as Event[];
+export async function getUpcomingEvents(limit?: number): Promise<Event[]> {
+  const events = await getAllEvents();
+  const today = new Date();
+  const upcoming = events.filter((event) => new Date(event.date) >= today);
+
+  return typeof limit === 'number' ? upcoming.slice(0, limit) : upcoming;
 }
 
 /**
- * Get a single event by title (slug)
+ * Get a single event by URL slug.
  */
-export function getEventBySlug(slug: string): Event | undefined {
-  return eventsData.find((event: Event) => 
-    event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === slug
-  );
+export async function getEventBySlug(slug: string): Promise<Event | undefined> {
+  const events = await getAllEvents();
+  return events.find((event) => event.url.replace('/events/', '') === slug);
 }
 
 /**
- * Convert event title to URL-friendly slug
+ * Convert event title to URL-friendly slug.
  */
 export function eventToSlug(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
 /**
- * Format date for display
+ * Format date for display.
  */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 }

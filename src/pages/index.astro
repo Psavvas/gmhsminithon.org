@@ -3,6 +3,7 @@ import PublicLayout from '../layouts/PublicLayout.astro';
 import ImageCarousel from '../components/ImageCarousel.astro';
 import fundraisingData from '../data/fundraising.json';
 import clubInfo from '../data/clubInfo.json';
+import { getUpcomingEvents } from '../utils/events';
 
 export const prerender = true;
 
@@ -33,17 +34,7 @@ const remainingFormatted = remainingTotal.toLocaleString('en-US', {
 const getEventPreview = (description: string | string[]) =>
 	Array.isArray(description) ? description[0] ?? '' : description;
 
-const eventEntries = await Astro.glob('./events/*.mdx');
-const today = new Date();
-
-const upcomingEvents = eventEntries
-	.map((entry) => ({
-		...entry.frontmatter,
-		url: entry.url
-	}))
-	.filter((event) => new Date(event.date) >= today)
-	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-	.slice(0, 3);
+const upcomingEvents = await getUpcomingEvents(3);
 
 const formatDate = (dateString: string) =>
 	new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -133,7 +124,7 @@ const heroBackgroundImages = [
 				<div class="fundraising-card-body">
 					<h2>Yearly fundraising</h2>
 					<p class="big-figure">{currentTotal}</p>
-					<p class="muted">Raised in {fundraisingData.currentYear} to support pediatric cancer research & treatement.</p>
+					<p class="muted">Raised in the {fundraisingData.currentYear} school year to support pediatric cancer research & treatement.</p>
 					<div class="fundraising-progress">
 						<div class="progress-header">
 							<span class="progress-label">Goal: {goalTotalFormatted}</span>

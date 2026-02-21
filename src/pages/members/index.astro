@@ -2,22 +2,18 @@
 import MemberLayout from '../../layouts/MemberLayout.astro';
 import { checkMemberAuth } from '../../utils/auth';
 import memberAnnouncements from '../../data/memberAnnouncements.json';
+import { getCurrentYearEvents } from '../../utils/events';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
   return Astro.redirect('/members/login');
 }
 
-const eventEntries = await Astro.glob('../events/*.mdx');
 const currentYear = new Date().getFullYear();
+const today = new Date();
 
-const upcomingEvents = eventEntries
-	.map((entry) => ({
-		...entry.frontmatter,
-		url: entry.url
-	}))
-	.filter((event) => new Date(event.date).getFullYear() === currentYear)
-	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+const upcomingEvents = (await getCurrentYearEvents())
+	.filter((event) => new Date(event.date) >= today)
 	.slice(0, 3);
 
 const announcements = Array.isArray(memberAnnouncements.announcements)

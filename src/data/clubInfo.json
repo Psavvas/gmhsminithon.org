@@ -1,19 +1,20 @@
 {
   "mission": [
-    "Four Diamonds Mini-THON® is a student-led philanthropic organization dedicated to raising money and awareness for Four Diamonds and Penn State Hershey Children's Hospital. We support children and families affected by pediatric cancer."
+    "GMHS Four Diamonds Mini-THON® is a student-driven charitable group committed to raising money and awareness for research, support, and treatment related to pediatric cancer. Their mission focuses on making a significant impact in the fight against childhood cancer through fundraising efforts and educational initiatives."
   ],
   "about": [
-    "Mini-THON is a student-led philanthropic organization dedicated to raising money and awareness for Four Diamonds and Penn State Hershey Children's Hospital. We support children and families affected by pediatric cancer. Our mission extends beyond fundraising to build a community of compassionate students who understand the impact of pediatric cancer on families.",
-    "Through year-round events, fundraising, and community outreach, we bring students, families, and local partners together to support Four Diamonds and Penn State Hershey Children's Hospital. Every project is driven by the same goal: better days and brighter outcomes for kids facing pediatric cancer."
+    "Great Mills High School Mini‑THON is a student‑driven charitable organization dedicated to raising funds and awareness for pediatric cancer by supporting Four Diamonds. Four Diamonds provides comprehensive assistance to children and families impacted by pediatric cancer, offering financial support, emotional care, and access to cutting‑edge research. Through this partnership, GMHS Mini‑THON empowers students to make a meaningful difference in the lives of those facing childhood cancer.",
+    "Through year‑round fundraising events, community activities, and local sponsorships, we unite students, families, and partners across St. Mary’s County to champion the mission of Four Diamonds. From charity races and themed events to donation drives and business‑supported campaigns, every effort helps support children battling pediatric cancer and ensures no family faces this fight alone"
   ],
   "aboutContinued": [
-    "What sets our organization apart is the deep personal commitment of our members. We don't just fundraise—we build lasting relationships with the families we support and create memorable experiences that unite our school community around a shared purpose.",
-    "We invite you to join us on this meaningful journey. Whether you're interested in helping with events, fundraising, community outreach, or simply supporting a cause that matters, there's a place for you in Mini-THON.",
-    "Our Mini-THON chapter was founded in 2018 by a group of passionate students who wanted to make a difference in the lives of children fighting cancer. Since then, we've raised over $220,000 for Four Diamonds."
+    "Founded in 2018, the Great Mills High School Mini‑THON chapter began with a small group of students determined to bring the Four Diamonds mission to our community. Since then, it has grown into a meaningful tradition that unites our school around supporting families affected by pediatric cancer.",
+    "Over the years, GMHS Mini‑THON has raised more than $40,000 through student‑led events, local sponsorships, and community‑wide fundraising efforts. Each new year builds on that momentum, finding creative ways to expand our reach and strengthen our impact.",
+    "Today, Mini‑THON remains a powerful force for good in our school and community. We encourage students, families, and local partners to get involved—attend events, volunteer, or become a sponsor—and help us continue making a real difference for children and families battling pediatric cancer."
+
   ],
   "meetings": {
-    "general": "Wednesdays during Green Lunch in the Auditorium",
-    "board": "First Monday of each month at 3:30 PM in Room 215"
+    "general": "Thursdays during Green Lunch in the Auditorium",
+    "board": "Wednesdays during Gold Lunch in Room 2208"
   },
   "socialMedia": {
     "instagram": "https://instagram.com/gmhsminithon",
@@ -22,29 +23,29 @@
   },
   "officers": [
     {
-      "role": "President",
-      "name": "Sarah Johnson",
-      "email": "president@minithon.school.edu"
+      "role": "Co-President",
+      "name": "Audrey Gutekunst",
+      "email": "agutekunst@gmhs-mini-thon.org"
     },
     {
-      "role": "Vice President",
-      "name": "Michael Chen",
-      "email": "vp@minithon.school.edu"
+      "role": "Co-President",
+      "name": "Sam King",
+      "email": "sking@gmhs-mini-thon.org"
     },
     {
-      "role": "Treasurer",
-      "name": "Emily Rodriguez",
-      "email": "treasurer@minithon.school.edu"
+      "role": "Operations Lead",
+      "name": "Claire Davis",
+      "email": "cdavis@gmhs-mini-thon.org"
     },
     {
-      "role": "Secretary",
-      "name": "James Williams",
-      "email": "secretary@minithon.school.edu"
+      "role": "Marketing Lead",
+      "name": "Damir Hinmon",
+      "email": "dhinmon@gmhs-mini-thon.org"
     },
     {
-      "role": "Events Coordinator",
-      "name": "Amanda Thompson",
-      "email": "events@minithon.school.edu"
+      "role": "Engagement Lead",
+      "name": "Mehek Panwala",
+      "email": "mpanwala@gmhs-mini-thon.org"
     },
     {
       "role": "Adult Coordinator",
@@ -53,7 +54,6 @@
     }
   ],
   "contact": {
-    "email": "info@minithon.school.edu",
-    "phone": "(555) 123-4567"
+    "email": "hello@gmhs-mini-thon.org"
   }
 }

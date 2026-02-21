@@ -54,16 +54,11 @@ if (!checkMemberAuth(Astro.request)) {
 	</section>
 
 	<section class="contacts">
-		<h2>📞 Contact Information</h2>
+		<h2>📞 Key Contact Information</h2>
 		<div class="contact-grid">
-			<div class="contact-card">
-				<h3>General Inquiries</h3>
-				<p><strong>Email:</strong> <a href={`mailto:${clubInfo.contact.email}`}>{clubInfo.contact.email}</a></p>
-				<p><strong>Phone:</strong> {clubInfo.contact.phone}</p>
-			</div>
-			{clubInfo.officers.slice(0, 3).map(officer => (
+			{clubInfo.officers.map(officer => (
 				<div class="contact-card">
-					<h3>{officer.role}</h3>
+					<h3>{officer.role === 'Adult Coordinator' ? 'Adult Sponsor' : officer.role}</h3>
 					<p class="name">{officer.name}</p>
 					<p><a href={`mailto:${officer.email}`}>{officer.email}</a></p>
 				</div>
