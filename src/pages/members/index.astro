@@ -78,17 +78,20 @@ const announcements = Array.isArray(memberAnnouncements.announcements)
 		<section class="upcoming-events">
 			<h2>Upcoming Events</h2>
 			<div class="events-list">
-				{upcomingEvents.map(event => (
-					<div class="event-preview">
-						<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
-						<h3>{event.title}</h3>
-						<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
-						<div class="event-actions">
-							<a href={event.url} class="event-link">Event details</a>
-							<a href={`${event.url}#member-details`} class="event-link secondary">Member details</a>
+				{upcomingEvents.map(event => {
+					const eventSlug = event.url.split('/').pop();
+					const memberEventUrl = `/members/events/${eventSlug}`;
+					return (
+						<div class="event-preview">
+							<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+							<h3>{event.title}</h3>
+							<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+							<div class="event-actions">
+								<a href={memberEventUrl} class="event-link">View event details</a>
+							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 			<a href="/members/volunteer-opportunities" class="view-all">View All Events →</a>
 		</section>
