@@ -9,20 +9,8 @@ if (!checkMemberAuth(Astro.request)) {
 }
 
 const currentYear = new Date().getFullYear();
-<<<<<<< HEAD
-const events = await getCurrentYearEvents();
-=======
 const today = new Date();
-const eventEntries = await Astro.glob('../events/*.mdx');
-
-const events = eventEntries
-	.map((entry) => ({
-		...entry.frontmatter,
-		url: entry.url
-	}))
-	.filter((event) => new Date(event.date).getFullYear() === currentYear)
-	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
->>>>>>> e26381a63f342e75cb721e47a26a7d89e8d69de3
+const events = await getCurrentYearEvents();
 
 const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
 const pastEvents = events.filter((event) => new Date(event.date) < today);
