@@ -1,11 +1,10 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
-import { getCurrentYearEvents } from '../utils/events';
+import { getAllEvents } from '../utils/events';
 
 export const prerender = true;
 
-const currentYear = new Date().getFullYear();
-const events = await getCurrentYearEvents();
+const events = await getAllEvents();
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
@@ -22,7 +21,7 @@ const formatDate = (dateString: string) =>
 ---
 
 <PublicLayout title="Events - Mini-THON">
-	<h1>{currentYear} Events</h1>
+	<h1>Events</h1>
 	
 	<section class="intro">
 		<p>Join us for exciting fundraising events throughout the year! All proceeds go to Four Diamonds and Penn State Hershey Children's Hospital.</p>
@@ -30,7 +29,7 @@ const formatDate = (dateString: string) =>
 
 	{upcomingEvents.length === 0 && pastEvents.length === 0 ? (
 		<section class="no-events">
-			<p>No events scheduled for {currentYear} yet. Check back soon!</p>
+			<p>No events scheduled yet. Check back soon!</p>
 		</section>
 	) : (
 		<>
@@ -52,7 +51,7 @@ const formatDate = (dateString: string) =>
 				</div>
 			) : (
 				<section class="no-events">
-					<p>No upcoming events for {currentYear}. Check back soon!</p>
+					<p>No upcoming events right now. Check back soon!</p>
 				</section>
 			)}
 

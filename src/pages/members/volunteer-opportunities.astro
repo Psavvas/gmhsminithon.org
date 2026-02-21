@@ -29,11 +29,9 @@ const formatDescription = (content: string | string[] | undefined) => {
 	return Array.isArray(content) ? content.join(' ') : content;
 };
 
-// Convert public event URLs to member event URLs
 const getMemberEventUrl = (publicUrl: string | undefined) => {
-	if (!publicUrl) return '/members/volunteer-opportunities';
-	const eventSlug = publicUrl.split('/').pop();
-	return eventSlug ? `/members/events/${eventSlug}` : '/members/volunteer-opportunities';
+	if (!publicUrl) return '/events';
+	return publicUrl.includes('#member-details') ? publicUrl : `${publicUrl}#member-details`;
 };
 ---
 
