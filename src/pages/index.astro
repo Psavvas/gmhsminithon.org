@@ -3,7 +3,7 @@ import PublicLayout from '../layouts/PublicLayout.astro';
 import ImageCarousel from '../components/ImageCarousel.astro';
 import fundraisingData from '../data/fundraising.json';
 import clubInfo from '../data/clubInfo.json';
-import { getUpcomingEvents } from '../utils/events';
+import { getCurrentYearEvents } from '../utils/events';
 
 export const prerender = true;
 
@@ -34,7 +34,17 @@ const remainingFormatted = remainingTotal.toLocaleString('en-US', {
 const getEventPreview = (description: string | string[]) =>
 	Array.isArray(description) ? description[0] ?? '' : description;
 
-const upcomingEvents = await getUpcomingEvents(3);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const currentYearEvents = await getCurrentYearEvents();
+const upcomingEvents = currentYearEvents
+	.filter((event) => new Date(event.date) >= today)
+	.slice(0, 3);
+const pastEvents = currentYearEvents
+	.filter((event) => new Date(event.date) < today)
+	.slice(-3)
+	.reverse();
 
 const formatDate = (dateString: string) =>
 	new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -117,6 +127,29 @@ const heroBackgroundImages = [
 						<li class="event-empty">New events coming soon.</li>
 					)}
 				</ul>
+				{pastEvents.length > 0 && (
+					<>
+						<h3 class="past-events-heading">Past events</h3>
+						<ul class="event-list past-event-list">
+							{pastEvents.map((event) => (
+								<li>
+									<div class="event-card-item past">
+										<a class="event-link" href={event.url}>
+											<span class="event-date">{formatDate(event.date)}</span>
+											<div>
+												<p class="event-title">{event.title}</p>
+												<p class="event-desc">{getEventPreview(event.summary)}</p>
+											</div>
+										</a>
+										<div class="event-actions">
+											<a href={event.url} class="event-action">View details</a>
+										</div>
+									</div>
+								</li>
+							))}
+						</ul>
+					</>
+				)}
 				<a href="/events" class="text-link">View all events</a>
 			</div>
 			<div class="grid-card highlight fundraising-card">
@@ -419,12 +452,28 @@ const heroBackgroundImages = [
 		list-style: none;
 	}
 
+	.past-events-heading {
+		font-size: 1.1rem;
+		color: var(--ink-800);
+		margin: 0 0 0.5rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--border-soft);
+	}
+
+	.past-event-list {
+		margin-top: 0.75rem;
+	}
+
 	.event-card-item {
 		display: grid;
 		gap: 0.6rem;
 		padding: 0.35rem 0.4rem;
 		border-radius: 16px;
 		transition: background 0.2s ease;
+	}
+
+	.event-card-item.past {
+		opacity: 0.95;
 	}
 
 	.event-card-item:hover {

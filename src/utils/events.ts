@@ -61,6 +61,7 @@ export async function getCurrentYearEvents(): Promise<Event[]> {
 export async function getUpcomingEvents(limit?: number): Promise<Event[]> {
   const events = await getAllEvents();
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const upcoming = events.filter((event) => new Date(event.date) >= today);
 
   return typeof limit === 'number' ? upcoming.slice(0, limit) : upcoming;

@@ -10,6 +10,7 @@ if (!checkMemberAuth(Astro.request)) {
 
 const currentYear = new Date().getFullYear();
 const today = new Date();
+today.setHours(0, 0, 0, 0);
 const events = await getCurrentYearEvents();
 
 const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
@@ -22,6 +23,11 @@ const formatDate = (dateString: string) =>
 		month: 'long',
 		day: 'numeric'
 	});
+
+const formatDescription = (content: string | string[] | undefined) => {
+	if (!content) return '';
+	return Array.isArray(content) ? content.join(' ') : content;
+};
 
 // Convert public event URLs to member event URLs
 const getMemberEventUrl = (publicUrl: string | undefined) => {
@@ -56,7 +62,10 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 							{event.location && (
 								<p class="location">📍 {event.location}</p>
 							)}
-							<p class="description">{event.summary}</p>
+							{event.internal_description && (
+								<p class="description member-description">{formatDescription(event.internal_description)}</p>
+							)}
+							<p class="description public-description">{formatDescription(event.summary)}</p>
 							<a href={getMemberEventUrl(event.url)} class="read-more">
 								View Details & Sign Up →
 							</a>
@@ -83,7 +92,10 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 								{event.location && (
 									<p class="location">📍 {event.location}</p>
 								)}
-								<p class="description">{event.summary}</p>
+								{event.internal_description && (
+									<p class="description member-description">{formatDescription(event.internal_description)}</p>
+								)}
+								<p class="description public-description">{formatDescription(event.summary)}</p>
 								<a href={getMemberEventUrl(event.url)} class="read-more">
 									View Details →
 								</a>
@@ -238,6 +250,14 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 		line-height: 1.8;
 		color: var(--ink-700);
 		margin-bottom: 1rem;
+	}
+
+	.member-description {
+		font-weight: 500;
+	}
+
+	.public-description {
+		color: var(--ink-600);
 	}
 
 	.read-more {
