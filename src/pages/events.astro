@@ -135,7 +135,6 @@ const formatDate = (dateString: string) =>
 		border-radius: 20px;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
-		border-left: 4px solid var(--brand-sky);
 		transition: all 0.3s ease;
 		animation: fade-rise 0.8s ease both;
 	}
@@ -148,16 +147,6 @@ const formatDate = (dateString: string) =>
 	.event-card:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 12px 30px rgba(28, 42, 58, 0.12);
-		border-left-color: var(--brand-ink);
-	}
-
-	.event-card.past {
-		border-left-color: var(--border-soft);
-		background: linear-gradient(135deg, rgba(44, 70, 114, 0.04), rgba(255, 255, 255, 0.9));
-	}
-
-	.event-card.past:hover {
-		border-left-color: var(--brand-sky);
 	}
 
 	.event-header {

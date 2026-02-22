@@ -61,10 +61,7 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 							{event.location && (
 								<p class="location">📍 {event.location}</p>
 							)}
-							{event.internal_description && (
-								<p class="description member-description">{formatDescription(event.internal_description)}</p>
-							)}
-							<p class="description public-description">{formatDescription(event.summary)}</p>
+							<p class="description">{formatDescription(event.summary)}</p>
 							<a href={getMemberEventUrl(event.url)} class="read-more">
 								View Details & Sign Up →
 							</a>
@@ -91,10 +88,7 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 								{event.location && (
 									<p class="location">📍 {event.location}</p>
 								)}
-								{event.internal_description && (
-									<p class="description member-description">{formatDescription(event.internal_description)}</p>
-								)}
-								<p class="description public-description">{formatDescription(event.summary)}</p>
+								<p class="description">{formatDescription(event.summary)}</p>
 								<a href={getMemberEventUrl(event.url)} class="read-more">
 									View Details →
 								</a>
@@ -249,14 +243,6 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 		line-height: 1.8;
 		color: var(--ink-700);
 		margin-bottom: 1rem;
-	}
-
-	.member-description {
-		font-weight: 500;
-	}
-
-	.public-description {
-		color: var(--ink-600);
 	}
 
 	.read-more {
