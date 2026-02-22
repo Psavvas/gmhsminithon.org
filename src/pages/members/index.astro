@@ -59,9 +59,9 @@ const announcements = Array.isArray(memberAnnouncements.announcements)
 	<section class="quick-actions">
 		<h2>Quick Actions</h2>
 		<div class="actions-grid">
-			<a href="/members/volunteer-opportunities" class="action-card">
+			<a href="/members/upcoming-events" class="action-card">
 				<span class="icon">🤝</span>
-				<h3>Volunteer Opportunities</h3>
+				<h3>Upcoming Events</h3>
 				<p>View and sign up for upcoming events</p>
 			</a>
 			<a href="/members/meeting-info" class="action-card">
@@ -93,8 +93,7 @@ const announcements = Array.isArray(memberAnnouncements.announcements)
 							<h3>{event.title}</h3>
 							<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 							<div class="event-actions">
-								<a href={event.url} class="event-link">Event details</a>
-								<a href={`${event.url}#member-details`} class="event-link secondary">Member details</a>
+								<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
 							</div>
 						</div>
 					))}
@@ -112,15 +111,14 @@ const announcements = Array.isArray(memberAnnouncements.announcements)
 								<h3>{event.title}</h3>
 								<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 								<div class="event-actions">
-									<a href={event.url} class="event-link">Event details</a>
-									<a href={`${event.url}#member-details`} class="event-link secondary">Member details</a>
+									<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
 								</div>
 							</div>
 						))}
 					</div>
 				</>
 			)}
-			<a href="/members/volunteer-opportunities" class="view-all">View All Events →</a>
+			<a href="/members/upcoming-events" class="view-all">View All Events →</a>
 		</section>
 	)}
 </MemberLayout>

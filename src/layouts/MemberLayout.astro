@@ -39,7 +39,7 @@ const currentPath = Astro.url.pathname;
 				</button>
 				<ul class="nav-links" id="member-nav">
 					<li><a href="/members" class={currentPath === '/members' ? 'active' : ''}>Dashboard</a></li>
-					<li><a href="/members/volunteer-opportunities" class={currentPath === '/members/volunteer-opportunities' ? 'active' : ''}>Volunteer</a></li>
+					<li><a href="/members/upcoming-events" class={currentPath.startsWith('/members/upcoming-events') || currentPath.startsWith('/members/events/') ? 'active' : ''}>Events</a></li>
 					<li><a href="/members/meeting-info" class={currentPath === '/members/meeting-info' ? 'active' : ''}>Meeting Info</a></li>
 					<li><a href="/members/resources" class={currentPath === '/members/resources' ? 'active' : ''}>Member Resources</a></li>
 					<li><a href="/" class="return-main">Return to Main Site</a></li>

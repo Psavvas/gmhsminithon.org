@@ -1,12 +1,17 @@
 ---
-import PublicLayout from '../layouts/PublicLayout.astro';
-import { getAllEvents } from '../utils/events';
+import MemberLayout from '../../layouts/MemberLayout.astro';
+import { checkMemberAuth } from '../../utils/auth';
+import { getCurrentYearEvents } from '../../utils/events';
 
-export const prerender = true;
+// Check authentication
+if (!checkMemberAuth(Astro.request)) {
+  return Astro.redirect('/members/login');
+}
 
-const events = await getAllEvents();
+const currentYear = new Date().getFullYear();
 const today = new Date();
 today.setHours(0, 0, 0, 0);
+const events = await getCurrentYearEvents();
 
 const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
 const pastEvents = events.filter((event) => new Date(event.date) < today);
@@ -18,18 +23,29 @@ const formatDate = (dateString: string) =>
 		month: 'long',
 		day: 'numeric'
 	});
+
+const formatDescription = (content: string | string[] | undefined) => {
+	if (!content) return '';
+	return Array.isArray(content) ? content.join(' ') : content;
+};
+
+const getMemberEventUrl = (publicUrl: string | undefined) => {
+	if (!publicUrl) return '/members/upcoming-events';
+	const slug = publicUrl.replace('/events/', '');
+	return `/members/events/${slug}`;
+};
 ---
 
-<PublicLayout title="Events - Mini-THON">
-	<h1>Events</h1>
+<MemberLayout title="Upcoming Events - Mini-THON">
+	<h1>Upcoming Events</h1>
 	
 	<section class="intro">
-		<p>Join us for exciting fundraising events throughout the year! All proceeds go to Four Diamonds and Penn State Hershey Children's Hospital.</p>
+		<p>Sign up for volunteer shifts for our upcoming events! Click on any event below to see member-specific details, volunteer needs, and sign-up information.</p>
 	</section>
 
 	{upcomingEvents.length === 0 && pastEvents.length === 0 ? (
 		<section class="no-events">
-			<p>No events scheduled yet. Check back soon!</p>
+			<p>No events scheduled for {currentYear} yet. Check back soon!</p>
 		</section>
 	) : (
 		<>
@@ -42,16 +58,19 @@ const formatDate = (dateString: string) =>
 								<time datetime={event.date}>{formatDate(event.date)}</time>
 							</div>
 							<h2>{event.title}</h2>
-							<p class="description">{event.summary}</p>
-							<a href={event.url} class="read-more">
-								Learn More →
+							{event.location && (
+								<p class="location">📍 {event.location}</p>
+							)}
+							<p class="description">{formatDescription(event.summary)}</p>
+							<a href={getMemberEventUrl(event.url)} class="read-more">
+								View Details & Sign Up →
 							</a>
 						</article>
 					))}
 				</div>
 			) : (
 				<section class="no-events">
-					<p>No upcoming events right now. Check back soon!</p>
+					<p>No upcoming events for {currentYear}. Check back soon!</p>
 				</section>
 			)}
 
@@ -66,8 +85,11 @@ const formatDate = (dateString: string) =>
 									<time datetime={event.date}>{formatDate(event.date)}</time>
 								</div>
 								<h2>{event.title}</h2>
-								<p class="description">{event.summary}</p>
-								<a href={event.url} class="read-more">
+								{event.location && (
+									<p class="location">📍 {event.location}</p>
+								)}
+								<p class="description">{formatDescription(event.summary)}</p>
+								<a href={getMemberEventUrl(event.url)} class="read-more">
 									View Details →
 								</a>
 							</article>
@@ -77,11 +99,11 @@ const formatDate = (dateString: string) =>
 			)}
 		</>
 	)}
-</PublicLayout>
+</MemberLayout>
 
 <style>
 	h1 {
-		font-size: clamp(2.2rem, 4vw, 3rem);
+		font-size: clamp(2rem, 4vw, 2.5rem);
 		color: var(--ink-900);
 		margin-bottom: 2rem;
 		animation: fade-rise 0.6s ease both;
@@ -99,6 +121,10 @@ const formatDate = (dateString: string) =>
 		color: var(--ink-700);
 		animation: fade-rise 0.8s ease both;
 		animation-delay: 0.1s;
+	}
+
+	.intro p {
+		margin: 0;
 	}
 
 	.no-events {
@@ -135,6 +161,7 @@ const formatDate = (dateString: string) =>
 		border-radius: 20px;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
+		border-left: 4px solid var(--brand-sky);
 		transition: all 0.3s ease;
 		animation: fade-rise 0.8s ease both;
 	}
@@ -147,6 +174,16 @@ const formatDate = (dateString: string) =>
 	.event-card:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 12px 30px rgba(28, 42, 58, 0.12);
+		border-left-color: var(--brand-ink);
+	}
+
+	.event-card.past {
+		border-left-color: var(--border-soft);
+		background: linear-gradient(135deg, rgba(44, 70, 114, 0.04), rgba(255, 255, 255, 0.9));
+	}
+
+	.event-card.past:hover {
+		border-left-color: var(--brand-sky);
 	}
 
 	.event-header {
@@ -192,9 +229,14 @@ const formatDate = (dateString: string) =>
 	.event-card h2 {
 		font-size: clamp(1.5rem, 3vw, 1.8rem);
 		color: var(--ink-900);
+		margin-bottom: 0.5rem;
+	}
+
+	.location {
+		color: var(--ink-600);
+		font-size: 0.95rem;
 		margin-bottom: 1rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--border-soft);
+		font-weight: 500;
 	}
 
 	.description {
