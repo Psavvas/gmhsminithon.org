@@ -24,27 +24,27 @@
     {
       "role": "Co-President",
       "name": "Audrey Gutekunst",
-      "email": "agutekunst@gmhs-mini-thon.org"
+      "email": "president@gmhsminithon.org"
     },
     {
       "role": "Co-President",
       "name": "Sam King",
-      "email": "sking@gmhs-mini-thon.org"
+      "email": "president@gmhsminithon.org"
     },
     {
       "role": "Operations Lead",
       "name": "Claire Davis",
-      "email": "cdavis@gmhs-mini-thon.org"
+      "email": "operations@gmhsminithon.org"
     },
     {
       "role": "Marketing Lead",
       "name": "Damir Hinmon",
-      "email": "dhinmon@gmhs-mini-thon.org"
+      "email": "marketing@gmhsminithon.org"
     },
     {
       "role": "Engagement Lead",
       "name": "Mehek Panwala",
-      "email": "mpanwala@gmhs-mini-thon.org"
+      "email": "engagement@gmhsminithon.org"
     },
     {
       "role": "Adult Coordinator",
@@ -53,6 +53,6 @@
     }
   ],
   "contact": {
-    "email": "hello@gmhs-mini-thon.org"
+    "email": "hello@gmhsminithon.org"
   }
 }
