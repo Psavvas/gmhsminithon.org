@@ -2,7 +2,7 @@
 import MemberLayout from '../../layouts/MemberLayout.astro';
 import { checkMemberAuth } from '../../utils/auth';
 import memberAnnouncements from '../../data/memberAnnouncements.json';
-import { getCurrentYearEvents } from '../../utils/events';
+import { formatEventDate, getCurrentYearEvents } from '../../utils/events';
 import { getPinnedAnnouncements, normalizeAnnouncements, renderAnnouncementMdx } from '../../utils/announcements';
 
 // Check authentication
@@ -97,7 +97,7 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 						<div class="event-preview">
 							<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
 							<h3>{event.title}</h3>
-							<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+							<p class="date">{formatEventDate(event.date, event.time)}</p>
 							<div class="event-actions">
 								<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
 							</div>
@@ -115,7 +115,7 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 							<div class="event-preview past">
 								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
 								<h3>{event.title}</h3>
-								<p class="date">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+								<p class="date">{formatEventDate(event.date, event.time)}</p>
 								<div class="event-actions">
 									<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
 								</div>

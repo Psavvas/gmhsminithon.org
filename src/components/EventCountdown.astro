@@ -52,8 +52,7 @@ const { eventDate } = Astro.props;
 			
 			const parsedDate = new Date(eventDate);
 			if (Number.isNaN(parsedDate.getTime())) return;
-			const normalizedDate = parsedDate.toISOString().slice(0, 10);
-			const targetDate = new Date(`${normalizedDate}T00:00:00`).getTime();
+			const targetDate = parsedDate.getTime();
 			const daysEl = container.querySelector('[data-days]');
 			const hoursEl = container.querySelector('[data-hours]');
 			const minutesEl = container.querySelector('[data-minutes]');

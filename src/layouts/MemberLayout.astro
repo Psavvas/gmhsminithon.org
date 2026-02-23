@@ -31,14 +31,7 @@ const currentPath = Astro.url.pathname;
 	<body>
 		<nav class="navbar">
 			<div class="nav-container">
-				<a href="/members" class="logo">
-					<span class="logo-mark" aria-hidden="true">
-						<img class="logo-gmhs" src="/gmhs-logo.png" alt="" loading="eager" />
-						<span class="logo-x">+</span>
-						<img class="logo-diamond" src="/masthead-diamond-white.svg" alt="" loading="eager" />
-					</span>
-					<span class="logo-text">GMHS Mini-THON Members</span>
-				</a>
+				<a href="/members" class="logo">GMHS Mini-THON Members</a>
 				<button class="nav-toggle" type="button" aria-controls="member-nav" aria-expanded="false">
 					<span class="nav-toggle-bar"></span>
 					<span class="nav-toggle-bar"></span>
@@ -46,7 +39,6 @@ const currentPath = Astro.url.pathname;
 				</button>
 				<ul class="nav-links" id="member-nav">
 					<li><a href="/members" class={currentPath === '/members' ? 'active' : ''}>Dashboard</a></li>
-					<li><a href="/members/announcements" class={currentPath.startsWith('/members/announcements') ? 'active' : ''}>Announcements</a></li>
 					<li><a href="/members/upcoming-events" class={currentPath.startsWith('/members/upcoming-events') || currentPath.startsWith('/members/events/') ? 'active' : ''}>Events</a></li>
 					<li><a href="/members/meeting-info" class={currentPath === '/members/meeting-info' ? 'active' : ''}>Meeting Info</a></li>
 					<li><a href="/members/resources" class={currentPath === '/members/resources' ? 'active' : ''}>Member Resources</a></li>
@@ -166,49 +158,12 @@ const currentPath = Astro.url.pathname;
 	}
 
 	.logo {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.6rem;
-		font-size: 1.25rem;
+		font-size: 1.15rem;
 		font-weight: 600;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		color: var(--white);
 		text-decoration: none;
-	}
-
-	.logo-mark {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.3rem;
-		width: 96px;
-		height: 34px;
-		border-radius: 999px;
-		padding: 3px 6px;
-		background: rgba(255, 255, 255, 0.08);
-		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-	}
-
-	.logo-gmhs,
-	.logo-diamond {
-		height: 100%;
-		max-width: 38px;
-		width: auto;
-		object-fit: contain;
-		display: block;
-		flex: 0 0 auto;
-	}
-
-	.logo-x {
-		font-size: 0.65rem;
-		font-weight: 700;
-		letter-spacing: 0.03em;
-		color: var(--white);
-	}
-
-	.logo-text {
-		display: inline-block;
 	}
 
 	.nav-links {
@@ -297,26 +252,11 @@ const currentPath = Astro.url.pathname;
 		.logo {
 			font-size: 1.1rem;
 		}
-
-		.logo-mark {
-			width: 86px;
-			height: 32px;
-		}
 	}
 
 	@media (max-width: 480px) {
 		.logo {
 			font-size: 1rem;
-			gap: 0.5rem;
-		}
-
-		.logo-mark {
-			width: 80px;
-			height: 32px;
-		}
-
-		.logo-text {
-			font-size: 0.9rem;
 		}
 
 		.nav-container {

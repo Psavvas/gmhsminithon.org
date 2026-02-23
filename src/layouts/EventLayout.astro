@@ -2,22 +2,20 @@
 import PublicLayout from './PublicLayout.astro';
 import EventCountdown from '../components/EventCountdown.astro';
 import { checkMemberAuth } from '../utils/auth';
+import { formatEventDate, getEventDateTimeValue } from '../utils/events';
 
 const { frontmatter } = Astro.props;
 const {
 	title,
 	date,
+	time,
 	location,
 	event_type: eventType,
 	links = []
 } = frontmatter;
 
-const fullDate = new Date(date).toLocaleDateString('en-US', {
-	weekday: 'long',
-	year: 'numeric',
-	month: 'long',
-	day: 'numeric'
-});
+const fullDate = formatEventDate(date, time);
+const eventDateTime = getEventDateTimeValue(date, time);
 
 const isMember = checkMemberAuth(Astro.request);
 const hasMemberDetails = Astro.slots.has('member-details');
@@ -39,7 +37,7 @@ const hasMemberDetails = Astro.slots.has('member-details');
 								<path d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5Zm0 1.5a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Z" fill="currentColor" />
 							</svg>
 						</span>
-						<time datetime={date}>{fullDate}</time>
+						<time datetime={eventDateTime}>{fullDate}</time>
 					</div>
 					{location && (
 						<div class="event-info-item">
@@ -54,7 +52,7 @@ const hasMemberDetails = Astro.slots.has('member-details');
 				</div>
 			</div>
 			<div class="event-countdown-wrapper">
-				<EventCountdown eventDate={date} />
+				<EventCountdown eventDate={eventDateTime} />
 			</div>
 		</header>
 

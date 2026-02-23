@@ -1,6 +1,7 @@
 export interface EventFrontmatter {
   title: string;
   date: string;
+  time?: string;
   location?: string;
   event_type: string;
   summary: string | string[];
@@ -93,4 +94,63 @@ export function formatDate(dateString: string): string {
     month: 'long',
     day: 'numeric'
   });
+}
+
+function normalizeTimeTo24Hour(time?: string): string | undefined {
+  if (!time) {
+    return undefined;
+  }
+
+  const trimmedTime = time.trim();
+
+  const twentyFourHourMatch = trimmedTime.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  if (twentyFourHourMatch) {
+    const hour = Number.parseInt(twentyFourHourMatch[1], 10);
+    const minute = Number.parseInt(twentyFourHourMatch[2], 10);
+    const second = twentyFourHourMatch[3] ?? '00';
+
+    if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+      return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${second}`;
+    }
+  }
+
+  const twelveHourMatch = trimmedTime.match(/^(\d{1,2})(?::(\d{2}))?\s*([ap]m)$/i);
+  if (twelveHourMatch) {
+    const baseHour = Number.parseInt(twelveHourMatch[1], 10);
+    const minute = Number.parseInt(twelveHourMatch[2] ?? '0', 10);
+    const period = twelveHourMatch[3].toLowerCase();
+
+    if (baseHour >= 1 && baseHour <= 12 && minute >= 0 && minute <= 59) {
+      const normalizedHour = period === 'pm'
+        ? (baseHour === 12 ? 12 : baseHour + 12)
+        : (baseHour === 12 ? 0 : baseHour);
+      return `${String(normalizedHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
+    }
+  }
+
+  return undefined;
+}
+
+export function getEventDateTimeValue(date: string, time?: string): string {
+  const normalizedTime = normalizeTimeTo24Hour(time);
+  return `${date}T${normalizedTime ?? '00:00:00'}`;
+}
+
+export function formatEventDate(date: string, time?: string): string {
+  const baseDate = formatDate(date);
+  if (!time) {
+    return baseDate;
+  }
+
+  const parsedDateTime = new Date(getEventDateTimeValue(date, time));
+  if (Number.isNaN(parsedDateTime.getTime())) {
+    return `${baseDate} at ${time}`;
+  }
+
+  const formattedTime = parsedDateTime.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+
+  return `${baseDate} at ${formattedTime}`;
 }

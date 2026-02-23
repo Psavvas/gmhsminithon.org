@@ -1,6 +1,6 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
-import { getAllEvents } from '../utils/events';
+import { formatEventDate, getAllEvents, getEventDateTimeValue } from '../utils/events';
 
 export const prerender = true;
 
@@ -11,13 +11,6 @@ today.setHours(0, 0, 0, 0);
 const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
 const pastEvents = events.filter((event) => new Date(event.date) < today);
 
-const formatDate = (dateString: string) =>
-	new Date(dateString).toLocaleDateString('en-US', {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	});
 ---
 
 <PublicLayout title="Events - Mini-THON">
@@ -39,7 +32,7 @@ const formatDate = (dateString: string) =>
 						<article class="event-card">
 							<div class="event-header">
 								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
-								<time datetime={event.date}>{formatDate(event.date)}</time>
+								<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
 							</div>
 							<h2>{event.title}</h2>
 							<p class="description">{event.summary}</p>
@@ -63,7 +56,7 @@ const formatDate = (dateString: string) =>
 							<article class="event-card past">
 								<div class="event-header">
 									<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
-									<time datetime={event.date}>{formatDate(event.date)}</time>
+									<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
 								</div>
 								<h2>{event.title}</h2>
 								<p class="description">{event.summary}</p>

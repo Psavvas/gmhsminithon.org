@@ -1,7 +1,7 @@
 ---
 import MemberLayout from '../../layouts/MemberLayout.astro';
 import { checkMemberAuth } from '../../utils/auth';
-import { getCurrentYearEvents } from '../../utils/events';
+import { formatEventDate, getCurrentYearEvents, getEventDateTimeValue } from '../../utils/events';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
@@ -15,14 +15,6 @@ const events = await getCurrentYearEvents();
 
 const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
 const pastEvents = events.filter((event) => new Date(event.date) < today);
-
-const formatDate = (dateString: string) =>
-	new Date(dateString).toLocaleDateString('en-US', {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	});
 
 const formatDescription = (content: string | string[] | undefined) => {
 	if (!content) return '';
@@ -55,7 +47,7 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 						<article class="event-card">
 							<div class="event-header">
 								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
-								<time datetime={event.date}>{formatDate(event.date)}</time>
+								<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
 							</div>
 							<h2>{event.title}</h2>
 							{event.location && (
@@ -82,7 +74,7 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
 							<article class="event-card past">
 								<div class="event-header">
 									<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
-									<time datetime={event.date}>{formatDate(event.date)}</time>
+									<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
 								</div>
 								<h2>{event.title}</h2>
 								{event.location && (
