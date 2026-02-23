@@ -22,7 +22,7 @@ if (!checkMemberAuth(Astro.request)) {
 		<div class="meeting-card board">
 			<h3>Board Meetings</h3>
 			<p class="time">{clubInfo.meetings.board}</p>
-			<p class="description">For board members and committee chairs. Leadership team discusses strategic planning and event logistics.</p>
+			<p class="description">Strategic planning and event logistics geared meeting..</p>
 		</div>
 	</section>
 
@@ -45,10 +45,7 @@ if (!checkMemberAuth(Astro.request)) {
 			<div class="content">
 				<h3>GroupMe</h3>
 				<p>{clubInfo.socialMedia.groupme}</p>
-				<div class="join-code">
-					<strong>Join Code:</strong> <code>{clubInfo.socialMedia.groupmeCode}</code>
-				</div>
-				<p class="note">Use this code to join our GroupMe group for real-time updates and discussions.</p>
+				<p class="note">Ask a club officer for the GroupMe join link.</p>
 			</div>
 		</div>
 	</section>
