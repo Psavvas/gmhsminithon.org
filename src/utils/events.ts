@@ -1,6 +1,6 @@
 export interface EventFrontmatter {
   title: string;
-  date: string;
+  date: string | Date;
   time?: string;
   location?: string;
   event_type: string;
@@ -86,8 +86,39 @@ export function eventToSlug(title: string): string {
 /**
  * Format date for display.
  */
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
+function toDateInput(dateValue: string | Date): Date {
+  return dateValue instanceof Date ? dateValue : new Date(dateValue);
+}
+
+function getIsoDatePart(dateValue: string | Date): string {
+  if (typeof dateValue === 'string') {
+    const trimmedValue = dateValue.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmedValue)) {
+      return trimmedValue;
+    }
+
+    const parsedFromString = new Date(trimmedValue);
+    if (!Number.isNaN(parsedFromString.getTime())) {
+      return parsedFromString.toISOString().slice(0, 10);
+    }
+
+    return '';
+  }
+
+  if (!Number.isNaN(dateValue.getTime())) {
+    return dateValue.toISOString().slice(0, 10);
+  }
+
+  return '';
+}
+
+export function formatDate(dateValue: string | Date): string {
+  const date = toDateInput(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return typeof dateValue === 'string' ? dateValue : '';
+  }
+
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -131,12 +162,17 @@ function normalizeTimeTo24Hour(time?: string): string | undefined {
   return undefined;
 }
 
-export function getEventDateTimeValue(date: string, time?: string): string {
+export function getEventDateTimeValue(date: string | Date, time?: string): string {
+  const datePart = getIsoDatePart(date);
+  if (!datePart) {
+    return '';
+  }
+
   const normalizedTime = normalizeTimeTo24Hour(time);
-  return `${date}T${normalizedTime ?? '00:00:00'}`;
+  return `${datePart}T${normalizedTime ?? '00:00:00'}`;
 }
 
-export function formatEventDate(date: string, time?: string): string {
+export function formatEventDate(date: string | Date, time?: string): string {
   const baseDate = formatDate(date);
   if (!time) {
     return baseDate;
