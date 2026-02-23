@@ -36,6 +36,28 @@ const { eventDate } = Astro.props;
 
 <script>
 	const intervals = new Map();
+
+	function parseEventDate(eventDate) {
+		if (!eventDate) return null;
+
+		const normalized = String(eventDate).trim();
+		const localDateTimeMatch = normalized.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/);
+
+		if (localDateTimeMatch) {
+			const year = Number.parseInt(localDateTimeMatch[1], 10);
+			const month = Number.parseInt(localDateTimeMatch[2], 10) - 1;
+			const day = Number.parseInt(localDateTimeMatch[3], 10);
+			const hour = Number.parseInt(localDateTimeMatch[4], 10);
+			const minute = Number.parseInt(localDateTimeMatch[5], 10);
+			const second = Number.parseInt(localDateTimeMatch[6] ?? '0', 10);
+
+			const localDate = new Date(year, month, day, hour, minute, second);
+			return Number.isNaN(localDate.getTime()) ? null : localDate;
+		}
+
+		const fallbackDate = new Date(normalized);
+		return Number.isNaN(fallbackDate.getTime()) ? null : fallbackDate;
+	}
 	
 	function initCountdown() {
 		const containers = document.querySelectorAll('.countdown-container');
@@ -50,8 +72,8 @@ const { eventDate } = Astro.props;
 				clearInterval(existingInterval);
 			}
 			
-			const parsedDate = new Date(eventDate);
-			if (Number.isNaN(parsedDate.getTime())) return;
+			const parsedDate = parseEventDate(eventDate);
+			if (!parsedDate) return;
 			const targetDate = parsedDate.getTime();
 			const daysEl = container.querySelector('[data-days]');
 			const hoursEl = container.querySelector('[data-hours]');
