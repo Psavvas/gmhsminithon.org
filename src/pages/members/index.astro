@@ -3,6 +3,7 @@ import MemberLayout from '../../layouts/MemberLayout.astro';
 import { checkMemberAuth } from '../../utils/auth';
 import memberAnnouncements from '../../data/memberAnnouncements.json';
 import { getCurrentYearEvents } from '../../utils/events';
+import { getPinnedAnnouncements, normalizeAnnouncements, renderAnnouncementMdx } from '../../utils/announcements';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
@@ -24,36 +25,36 @@ const pastEvents = currentYearEvents
 	.slice(-3)
 	.reverse();
 
-const announcements = Array.isArray(memberAnnouncements.announcements)
-	? memberAnnouncements.announcements
-	: [];
+const allAnnouncements = normalizeAnnouncements(memberAnnouncements.announcements);
+const announcements = getPinnedAnnouncements(allAnnouncements);
 ---
 
 <MemberLayout title="Member Dashboard - Mini-THON">
 	<h1>Welcome to the Member Portal</h1>
 	
 	<section class="announcements">
-		<h2>📢 Important Announcements</h2>
+		<h2>📌 Pinned Announcements</h2>
 		{announcements.length > 0 ? (
 			announcements.map((announcement) => (
 				<div class={`announcement-card ${announcement.type === 'urgent' ? 'urgent' : ''}`}>
 					<div class="announcement-header">
 						<h3>{announcement.title}</h3>
-						{announcement.date && (
+						{announcement.dateAdded && (
 							<span class="announcement-date">
-								{new Date(announcement.date).toLocaleDateString('en-US', {
+								{new Date(announcement.dateAdded).toLocaleDateString('en-US', {
 									month: 'short',
 									day: 'numeric'
 								})}
 							</span>
 						)}
 					</div>
-					<p>{announcement.message}</p>
+					<div class="announcement-body" set:html={renderAnnouncementMdx(announcement.descriptionMdx)} />
 				</div>
 			))
 		) : (
-			<p class="empty-state">No announcements right now. Check back soon!</p>
+			<p class="empty-state">No pinned announcements right now. Check the full announcements page for updates.</p>
 		)}
+		<a href="/members/announcements" class="view-all-announcements">View all announcements →</a>
 	</section>
 
 	<section class="quick-actions">
@@ -64,15 +65,20 @@ const announcements = Array.isArray(memberAnnouncements.announcements)
 				<h3>Upcoming Events</h3>
 				<p>View and sign up for upcoming events</p>
 			</a>
-			<a href="/members/meeting-info" class="action-card">
+			<a href="/members/club-info" class="action-card">
 				<span class="icon">📅</span>
-				<h3>Meeting Info</h3>
-				<p>Meeting times and GroupMe info</p>
+				<h3>Club Info</h3>
+				<p>Meeting times and communications platfroms</p>
 			</a>
 			<a href="/members/resources" class="action-card">
 				<span class="icon">📚</span>
 				<h3>Member Resources</h3>
 				<p>Quick links to files and templates</p>
+			</a>
+			<a href="/members/announcements" class="action-card">
+				<span class="icon">📣</span>
+				<h3>Announcements</h3>
+				<p>Read pinned updates and recent posts</p>
 			</a>
 			<a href="/" class="action-card">
 				<span class="icon">🌐</span>
@@ -178,6 +184,40 @@ const announcements = Array.isArray(memberAnnouncements.announcements)
 		color: var(--ink-700);
 		margin: 0;
 		line-height: 1.7;
+	}
+
+	.announcement-body {
+		color: var(--ink-700);
+		line-height: 1.7;
+	}
+
+	.announcement-body :global(p) {
+		margin: 0.4rem 0;
+	}
+
+	.announcement-body :global(ul) {
+		margin: 0.5rem 0 0.5rem 1.25rem;
+	}
+
+	.announcement-body :global(li) {
+		margin: 0.2rem 0;
+	}
+
+	.announcement-body :global(a) {
+		color: var(--brand-ink);
+		font-weight: 600;
+	}
+
+	.view-all-announcements {
+		display: inline-flex;
+		margin-top: 0.75rem;
+		font-weight: 600;
+		color: var(--brand-ink);
+		text-decoration: none;
+	}
+
+	.view-all-announcements:hover {
+		color: var(--brand-sky);
 	}
 
 	.announcement-date {

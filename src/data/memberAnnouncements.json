@@ -2,15 +2,17 @@
   "announcements": [
     {
       "title": "Main Event Planning Meeting",
-      "message": "Mandatory meeting for all members on May 25th at 3:30 PM in the Auditorium to discuss final logistics for the main event.",
+      "descriptionMdx": "Mandatory meeting for all members on **May 25th at 3:30 PM** in the Auditorium to discuss final logistics for the main event.\n\n- Bring your volunteer shirt\n- Be ready to confirm your shift\n- Check the sign-in table when you arrive",
       "type": "urgent",
-      "date": "2026-05-25"
+      "dateAdded": "2026-05-25",
+      "pin": true
     },
     {
       "title": "Volunteer Sign-Ups Open",
-      "message": "Sign up for volunteer shifts for upcoming events. Check the Volunteer Opportunities page for details and links.",
+      "descriptionMdx": "Sign up for volunteer shifts for upcoming events. Check the [Upcoming Events](/members/upcoming-events) page for details and links.",
       "type": "info",
-      "date": "2026-03-01"
+      "dateAdded": "2026-03-01",
+      "pin": false
     }
   ]
 }
