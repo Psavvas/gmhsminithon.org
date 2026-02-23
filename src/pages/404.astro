@@ -1,0 +1,133 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+import fundraisingData from '../data/fundraising.json';
+---
+
+<PublicLayout title="Page Not Found – GMHS Mini-THON">
+	<div class="error-container">
+		<div class="error-card">
+			<p class="error-code">404</p>
+			<h1>Page not found</h1>
+			<p class="error-message">
+				Looks like this page wandered off — but the cause is still here.
+				Every dollar you give goes directly to pediatric cancer research and treatment
+				through Four Diamonds. Don't let a missing page stop you from making a difference.
+			</p>
+			<div class="error-actions">
+				<a href={fundraisingData.donorDriveLink} class="button primary" target="_blank" rel="noopener noreferrer">
+					Donate now
+				</a>
+				<a href="/" class="button ghost">Go home</a>
+			</div>
+		</div>
+	</div>
+</PublicLayout>
+
+<style>
+	.error-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 60vh;
+		padding: 2rem 1rem;
+	}
+
+	.error-card {
+		background: var(--surface-raised);
+		border-radius: 24px;
+		padding: 3.5rem 3rem;
+		box-shadow: var(--shadow-soft);
+		border: 1px solid var(--border-soft);
+		max-width: 560px;
+		width: 100%;
+		text-align: center;
+		animation: fade-rise 0.6s ease both;
+	}
+
+	.error-code {
+		font-size: clamp(5rem, 15vw, 8rem);
+		font-weight: 700;
+		line-height: 1;
+		margin: 0 0 0.5rem;
+		background: linear-gradient(135deg, var(--brand-ink), var(--brand-sky));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	h1 {
+		font-size: clamp(1.5rem, 4vw, 2.2rem);
+		margin-bottom: 1.25rem;
+	}
+
+	.error-message {
+		color: var(--ink-700);
+		line-height: 1.8;
+		margin-bottom: 2.5rem;
+		font-size: 1.05rem;
+	}
+
+	.error-actions {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.9rem 1.8rem;
+		border-radius: 999px;
+		text-decoration: none;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		border: 1px solid transparent;
+	}
+
+	.button.primary {
+		background: var(--brand-sky);
+		color: var(--brand-ink);
+		box-shadow: 0 14px 25px rgba(106, 170, 228, 0.3);
+	}
+
+	.button.ghost {
+		background: transparent;
+		color: var(--brand-ink);
+		border-color: var(--brand-ink);
+	}
+
+	.button:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 18px 35px rgba(28, 42, 58, 0.18);
+	}
+
+	@keyframes fade-rise {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (max-width: 480px) {
+		.error-card {
+			padding: 2.5rem 1.5rem;
+		}
+
+		.error-actions {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.button {
+			width: 100%;
+			max-width: 280px;
+		}
+	}
+</style>
