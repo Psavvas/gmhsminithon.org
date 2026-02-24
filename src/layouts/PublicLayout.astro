@@ -139,6 +139,17 @@ const currentPath = Astro.url.pathname;
 		color: var(--ink-900);
 	}
 
+	@keyframes nav-enter {
+		from {
+			transform: translateY(-100%);
+			opacity: 0;
+		}
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
 	.navbar {
 		background: linear-gradient(120deg, rgba(44, 70, 114, 0.98), rgba(44, 70, 114, 0.92));
 		color: var(--white);
@@ -151,6 +162,13 @@ const currentPath = Astro.url.pathname;
 		right: 0;
 		z-index: 1000;
 		transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+		animation: nav-enter 0.5s ease-out both;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.navbar {
+			animation: none;
+		}
 	}
 
 	.navbar.is-hidden {
