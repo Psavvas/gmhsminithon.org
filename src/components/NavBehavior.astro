@@ -4,6 +4,10 @@
 	const navLinks = document.querySelector('.nav-links');
 
 	if (navbar) {
+		navbar.addEventListener('animationend', () => {
+			navbar.style.animation = 'none';
+		}, { once: true });
+
 		let lastScrollY = window.scrollY;
 		const hideOffset = 80;
 		const scrollThreshold = 10;
