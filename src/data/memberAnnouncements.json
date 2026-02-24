@@ -1,18 +1,11 @@
 {
   "announcements": [
     {
-      "title": "Main Event Planning Meeting",
-      "descriptionMdx": "Mandatory meeting for all members on **May 25th at 3:30 PM** in the Auditorium to discuss final logistics for the main event.\n\n- Bring your volunteer shirt\n- Be ready to confirm your shift\n- Check the sign-in table when you arrive",
-      "type": "urgent",
+      "title": "Welcome to the Mini-THON Member Portal!",
+      "descriptionMdx": "This is a place for all members to stay updated on the latest news, events, and important information related to GMHS Mini-THON. Check back regularly for updates and announcements from our leadership team.",
+      "type": "info",
       "dateAdded": "2026-05-25",
       "pin": true
-    },
-    {
-      "title": "Volunteer Sign-Ups Open",
-      "descriptionMdx": "Sign up for volunteer shifts for upcoming events. Check the [Upcoming Events](/members/upcoming-events) page for details and links.",
-      "type": "info",
-      "dateAdded": "2026-03-01",
-      "pin": false
     }
   ]
 }

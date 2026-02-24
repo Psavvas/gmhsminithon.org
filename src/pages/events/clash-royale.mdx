@@ -1,0 +1,28 @@
+---
+layout: ../../layouts/EventLayout.astro
+title: Clash Royale Gaming Tournament
+date: 02-27-2026
+time: 12:05 PM
+location: Great Mills High School Room 2208 (Weisner)
+event_type: gaming
+summary: Join Mini-THON for a Clash Royale Gaming Tournament. Open to GMHS students only.
+---
+
+Join Mini-THON for a Clash Royale Gaming Tournament. Enter for a chance to win a $25 dollar Amazon gift card. Entries are 5 dollars. Open to GMHS students only.
+
+import { Image } from 'astro:assets';
+import flyer from '/public/eventAssets/ClashRoyaleFlyer.png';
+
+<Image 
+  src={flyer} 
+  alt="Clash Royale Tournament Flyer" 
+  width={400} 
+  height={485} 
+  class="w-full h-auto"
+/>
+
+<Fragment slot="member-details">
+
+N/A
+
+</Fragment>
