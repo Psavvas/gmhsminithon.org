@@ -1,6 +1,6 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
-import { formatEventDate, getAllEvents, getEventDateTimeValue } from '../utils/events';
+import { formatEventDate, getAllEvents, getEventDateTimeValue, getEventTypeClass } from '../utils/events';
 
 export const prerender = true;
 
@@ -31,7 +31,7 @@ const pastEvents = events.filter((event) => new Date(event.date) < today);
 					{upcomingEvents.map(event => (
 						<article class="event-card">
 							<div class="event-header">
-								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+								<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
 								<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
 							</div>
 							<h2>{event.title}</h2>
@@ -55,7 +55,7 @@ const pastEvents = events.filter((event) => new Date(event.date) < today);
 						{pastEvents.map(event => (
 							<article class="event-card past">
 								<div class="event-header">
-									<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+									<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
 									<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
 								</div>
 								<h2>{event.title}</h2>
@@ -174,6 +174,16 @@ const pastEvents = events.filter((event) => new Date(event.date) < today);
 	.event-type.fundraiser {
 		background: rgba(156, 39, 176, 0.15);
 		color: #6A1B9A;
+	}
+
+	.event-type.sports {
+		background: rgba(76, 175, 80, 0.15);
+		color: #2E7D32;
+	}
+
+	.event-type.race {
+		background: rgba(0, 188, 212, 0.15);
+		color: #006064;
 	}
 
 	time {

@@ -2,7 +2,7 @@
 import PublicLayout from './PublicLayout.astro';
 import EventCountdown from '../components/EventCountdown.astro';
 import { checkMemberAuth } from '../utils/auth';
-import { formatEventDate, getEventDateTimeValue } from '../utils/events';
+import { formatEventDate, getEventDateTimeValue, getEventTypeClass } from '../utils/events';
 
 const { frontmatter } = Astro.props;
 const {
@@ -26,7 +26,7 @@ const hasMemberDetails = Astro.slots.has('member-details');
 		<header class="event-hero">
 			<div class="event-hero-content">
 				<div class="event-meta">
-					<span class={`event-type ${eventType}`}>{eventType}</span>
+					<span class={`event-type ${getEventTypeClass(eventType)}`}>{eventType}</span>
 				</div>
 				<h1>{title}</h1>
 				<div class="event-info-row">
@@ -148,6 +148,16 @@ const hasMemberDetails = Astro.slots.has('member-details');
 	.event-type.fundraiser {
 		background: rgba(156, 39, 176, 0.15);
 		color: #6A1B9A;
+	}
+
+	.event-type.sports {
+		background: rgba(76, 175, 80, 0.15);
+		color: #2E7D32;
+	}
+
+	.event-type.race {
+		background: rgba(0, 188, 212, 0.15);
+		color: #006064;
 	}
 
 	h1 {

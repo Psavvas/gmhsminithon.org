@@ -190,3 +190,11 @@ export function formatEventDate(date: string | Date, time?: string): string {
 
   return `${baseDate} at ${formattedTime}`;
 }
+
+export function getEventTypeClass(eventType: string): string {
+  return eventType
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}

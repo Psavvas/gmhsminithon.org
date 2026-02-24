@@ -2,7 +2,7 @@
 import MemberLayout from '../../layouts/MemberLayout.astro';
 import { checkMemberAuth } from '../../utils/auth';
 import memberAnnouncements from '../../data/memberAnnouncements.json';
-import { formatEventDate, getCurrentYearEvents } from '../../utils/events';
+import { formatEventDate, getCurrentYearEvents, getEventTypeClass } from '../../utils/events';
 import { getPinnedAnnouncements, normalizeAnnouncements, renderAnnouncementMdx } from '../../utils/announcements';
 
 // Check authentication
@@ -95,7 +95,7 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 				<div class="events-list">
 					{upcomingEvents.map(event => (
 						<div class="event-preview">
-							<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+							<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
 							<h3>{event.title}</h3>
 							<p class="date">{formatEventDate(event.date, event.time)}</p>
 							<div class="event-actions">
@@ -113,7 +113,7 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 					<div class="events-list past-events-list">
 						{pastEvents.map(event => (
 							<div class="event-preview past">
-								<span class={`event-type ${event.event_type}`}>{event.event_type}</span>
+								<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
 								<h3>{event.title}</h3>
 								<p class="date">{formatEventDate(event.date, event.time)}</p>
 								<div class="event-actions">
@@ -322,6 +322,16 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 	.event-type.fundraiser {
 		background: #F3E5F5;
 		color: #7B1FA2;
+	}
+
+	.event-type.sports {
+		background: #E8F5E9;
+		color: #2E7D32;
+	}
+
+	.event-type.race {
+		background: #E0F7FA;
+		color: #006064;
 	}
 
 	.event-preview h3 {

@@ -2,7 +2,7 @@
 import MemberLayout from './MemberLayout.astro';
 import EventCountdown from '../components/EventCountdown.astro';
 import { checkMemberAuth } from '../utils/auth';
-import { formatEventDate, getEventDateTimeValue } from '../utils/events';
+import { formatEventDate, getEventDateTimeValue, getEventTypeClass } from '../utils/events';
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
@@ -104,7 +104,7 @@ const renderMarkdown = (markdown: string) => {
 		<header class="event-hero">
 			<div class="event-hero-content">
 				<div class="event-meta">
-					<span class={`event-type ${eventType}`}>{eventType}</span>
+					<span class={`event-type ${getEventTypeClass(eventType)}`}>{eventType}</span>
 				</div>
 				<h1>{title}</h1>
 				<div class="event-info-row">
@@ -214,6 +214,16 @@ const renderMarkdown = (markdown: string) => {
 	.event-type.fundraiser {
 		background: rgba(156, 39, 176, 0.15);
 		color: #6A1B9A;
+	}
+
+	.event-type.sports {
+		background: rgba(76, 175, 80, 0.15);
+		color: #2E7D32;
+	}
+
+	.event-type.race {
+		background: rgba(0, 188, 212, 0.15);
+		color: #006064;
 	}
 
 	h1 {
