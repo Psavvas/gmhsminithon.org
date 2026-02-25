@@ -52,6 +52,15 @@ const currentPath = Astro.url.pathname;
 					<li><a href="/get-involved" class={currentPath === '/get-involved' ? 'active' : ''}>Get Involved</a></li>
 					<li><a href="/events" class={currentPath === '/events' ? 'active' : ''}>Events</a></li>
 					<li><a href="/fundraising" class={currentPath === '/fundraising' ? 'active' : ''}>Fundraising</a></li>
+					<li>
+						<button type="button" class="nav-subscribe-btn" data-open-newsletter aria-label="Subscribe to newsletter">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+								<rect x="2" y="4" width="20" height="16" rx="3"/>
+								<polyline points="2,4 12,13 22,4"/>
+							</svg>
+							<span>Subscribe</span>
+						</button>
+					</li>
 					<li><a href="/members/login" class="member-login">Member Login</a></li>
 				</ul>
 			</div>
@@ -136,37 +145,109 @@ const currentPath = Astro.url.pathname;
 			</div>
 		</footer>
 
+		<dialog id="newsletter-modal" aria-labelledby="newsletter-modal-title">
+			<div class="modal-inner">
+				<div class="modal-header">
+					<h2 id="newsletter-modal-title">Stay Updated</h2>
+					<button id="newsletter-modal-close" type="button" aria-label="Close">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" focusable="false">
+							<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+						</svg>
+					</button>
+				</div>
+				<p class="modal-desc">Subscribe to our newsletter and never miss an event, fundraising milestone, or update in our fight against pediatric cancer.</p>
+				<form id="newsletter-modal-form" novalidate>
+					<div class="modal-input-row">
+						<label for="newsletter-modal-email" class="sr-only">Email address</label>
+						<input
+							type="email"
+							id="newsletter-modal-email"
+							name="email"
+							placeholder="Your email address"
+							required
+							autocomplete="email"
+						/>
+						<button type="submit">Subscribe</button>
+					</div>
+					<p class="newsletter-status" id="newsletter-modal-status" aria-live="polite"></p>
+				</form>
+			</div>
+		</dialog>
+
 		<script>
-			const form = document.getElementById('newsletter-form') as HTMLFormElement | null;
-			const statusEl = document.getElementById('newsletter-status');
-
-			if (form && statusEl) {
-				form.addEventListener('submit', async (e) => {
-					e.preventDefault();
-					const button = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
-					if (button) button.disabled = true;
-					statusEl.textContent = '';
-					statusEl.className = 'newsletter-status';
-
-					try {
-						const formData = new FormData(form);
-						const res = await fetch('/api/newsletter', { method: 'POST', body: formData });
-						const json = await res.json() as { success?: boolean; error?: string };
-
-						if (json.success) {
-							statusEl.textContent = "✓ You're subscribed! Thank you.";
-							statusEl.classList.add('newsletter-status--success');
-							form.reset();
-						} else {
-							statusEl.textContent = json.error ?? 'Something went wrong. Please try again.';
-							statusEl.classList.add('newsletter-status--error');
-						}
-					} catch {
-						statusEl.textContent = 'Unable to subscribe right now. Please try again later.';
+			async function submitNewsletterForm(
+				email: string,
+				statusEl: HTMLElement,
+				form: HTMLFormElement,
+				button: HTMLButtonElement | null
+			) {
+				if (button) button.disabled = true;
+				statusEl.textContent = '';
+				statusEl.className = 'newsletter-status';
+				try {
+					const fd = new FormData();
+					fd.set('email', email);
+					const res = await fetch('/api/newsletter', { method: 'POST', body: fd });
+					const json = await res.json() as { success?: boolean; error?: string };
+					if (json.success) {
+						statusEl.textContent = "✓ You're subscribed! Thank you.";
+						statusEl.classList.add('newsletter-status--success');
+						form.reset();
+					} else {
+						statusEl.textContent = json.error ?? 'Something went wrong. Please try again.';
 						statusEl.classList.add('newsletter-status--error');
-					} finally {
-						if (button) button.disabled = false;
 					}
+				} catch {
+					statusEl.textContent = 'Unable to subscribe right now. Please try again later.';
+					statusEl.classList.add('newsletter-status--error');
+				} finally {
+					if (button) button.disabled = false;
+				}
+			}
+
+			// Footer form
+			const footerForm = document.getElementById('newsletter-form') as HTMLFormElement | null;
+			const footerStatus = document.getElementById('newsletter-status');
+			if (footerForm && footerStatus) {
+				footerForm.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const emailInput = footerForm.querySelector('input[name="email"]') as HTMLInputElement | null;
+					const button = footerForm.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+					await submitNewsletterForm(emailInput?.value ?? '', footerStatus, footerForm, button);
+				});
+			}
+
+			// Modal form
+			const modal = document.getElementById('newsletter-modal') as HTMLDialogElement | null;
+			const modalForm = document.getElementById('newsletter-modal-form') as HTMLFormElement | null;
+			const modalStatus = document.getElementById('newsletter-modal-status');
+			const modalClose = document.getElementById('newsletter-modal-close');
+
+			document.querySelectorAll('[data-open-newsletter]').forEach((el) => {
+				el.addEventListener('click', () => {
+					if (modal) modal.showModal();
+				});
+			});
+
+			modalClose?.addEventListener('click', () => modal?.close());
+
+			modal?.addEventListener('click', (e) => {
+				if (e.target === modal) modal?.close();
+			});
+
+			modal?.addEventListener('close', () => {
+				if (modalStatus) {
+					modalStatus.textContent = '';
+					modalStatus.className = 'newsletter-status';
+				}
+			});
+
+			if (modalForm && modalStatus) {
+				modalForm.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const emailInput = modalForm.querySelector('input[name="email"]') as HTMLInputElement | null;
+					const button = modalForm.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+					await submitNewsletterForm(emailInput?.value ?? '', modalStatus, modalForm, button);
 				});
 			}
 		</script>
@@ -744,5 +825,172 @@ const currentPath = Astro.url.pathname;
 			font-size: 1.1rem;
 			padding: 0.65rem 1.2rem;
 		}
+	}
+
+	/* Navbar subscribe button */
+	.nav-subscribe-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		background: transparent;
+		color: var(--white);
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		border-radius: 999px;
+		padding: 0.35rem 0.9rem 0.35rem 0.7rem;
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.9rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+		white-space: nowrap;
+	}
+
+	.nav-subscribe-btn svg {
+		width: 14px;
+		height: 14px;
+		flex-shrink: 0;
+	}
+
+	.nav-subscribe-btn:hover {
+		background: rgba(255, 255, 255, 0.12);
+		border-color: rgba(255, 255, 255, 0.6);
+	}
+
+	@media (max-width: 1120px) {
+		.nav-subscribe-btn {
+			background: rgba(255, 255, 255, 0.1);
+			border-color: rgba(255, 255, 255, 0.3);
+			font-size: 1.15rem;
+			padding: 0.7rem 1.5rem;
+			width: auto;
+		}
+	}
+
+	/* Newsletter modal (dialog) */
+	#newsletter-modal {
+		border: none;
+		border-radius: 20px;
+		padding: 0;
+		width: min(540px, calc(100vw - 2rem));
+		box-shadow: 0 24px 60px rgba(28, 42, 58, 0.22);
+		animation: modal-enter 0.25s ease both;
+	}
+
+	#newsletter-modal::backdrop {
+		background: rgba(28, 42, 58, 0.55);
+		backdrop-filter: blur(4px);
+		animation: backdrop-enter 0.25s ease both;
+	}
+
+	@keyframes modal-enter {
+		from { opacity: 0; transform: translateY(16px) scale(0.97); }
+		to   { opacity: 1; transform: translateY(0) scale(1); }
+	}
+
+	@keyframes backdrop-enter {
+		from { opacity: 0; }
+		to   { opacity: 1; }
+	}
+
+	.modal-inner {
+		padding: 2rem;
+	}
+
+	.modal-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.75rem;
+	}
+
+	.modal-header h2 {
+		font-size: 1.4rem;
+		color: var(--ink-900);
+		margin: 0;
+	}
+
+	#newsletter-modal-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border: none;
+		background: rgba(44, 70, 114, 0.08);
+		border-radius: 50%;
+		cursor: pointer;
+		color: var(--ink-700);
+		transition: background 0.2s ease, color 0.2s ease;
+		flex-shrink: 0;
+	}
+
+	#newsletter-modal-close:hover {
+		background: rgba(44, 70, 114, 0.15);
+		color: var(--ink-900);
+	}
+
+	#newsletter-modal-close svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	.modal-desc {
+		font-size: 0.95rem;
+		line-height: 1.7;
+		color: var(--ink-700);
+		margin-bottom: 1.5rem;
+	}
+
+	.modal-input-row {
+		display: flex;
+		gap: 0;
+		border-radius: 10px;
+		overflow: hidden;
+		border: 1px solid var(--border-soft);
+		transition: border-color 0.2s ease;
+		margin-bottom: 0.5rem;
+	}
+
+	.modal-input-row:focus-within {
+		border-color: var(--brand-sky);
+	}
+
+	.modal-input-row input[type="email"] {
+		flex: 1;
+		padding: 0.7rem 1rem;
+		background: var(--surface);
+		border: none;
+		color: var(--ink-900);
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.95rem;
+		outline: none;
+		min-width: 0;
+	}
+
+	.modal-input-row input[type="email"]::placeholder {
+		color: var(--ink-500);
+	}
+
+	.modal-input-row button[type="submit"] {
+		padding: 0.7rem 1.25rem;
+		background: var(--brand-ink);
+		color: var(--white);
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.9rem;
+		font-weight: 600;
+		border: none;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: background 0.2s ease;
+		flex-shrink: 0;
+	}
+
+	.modal-input-row button[type="submit"]:hover {
+		background: var(--brand-sky);
+	}
+
+	.modal-input-row button[type="submit"]:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
 	}
 </style>
