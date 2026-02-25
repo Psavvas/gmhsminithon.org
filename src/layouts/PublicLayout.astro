@@ -77,7 +77,7 @@ const currentPath = Astro.url.pathname;
 							A student-driven charitable organization at Great Mills High School dedicated to raising funds and awareness for pediatric cancer through Four Diamonds.
 						</p>
 						<div class="footer-social">
-							<a href="https://instagram.com/gmhsminithon" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow us on Instagram">
+							<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow us on Instagram">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
 									<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
 									<circle cx="12" cy="12" r="4"/>
@@ -85,11 +85,17 @@ const currentPath = Astro.url.pathname;
 								</svg>
 								<span>Instagram</span>
 							</a>
+							<a href={clubInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow us on Facebook">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" width="24" height="24">
+									<path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
+								</svg>
+								<span>Facebook</span>
+							</a>
 							<a href="https://fourdiamonds.donordrive.com/GMHSMT" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Donate on DonorDrive">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
 									<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
 								</svg>
-								<span>DonorDrive</span>
+								<span>Donate</span>
 							</a>
 						</div>
 					</div>
@@ -104,6 +110,7 @@ const currentPath = Astro.url.pathname;
 							<li><a href="/get-involved">Get Involved</a></li>
 							<li><a href="/events">Events</a></li>
 							<li><a href="/fundraising">Fundraising</a></li>
+							<li><a href="/members/login">Member Page</a></li>
 						</ul>
 					</div>
 
@@ -130,7 +137,7 @@ const currentPath = Astro.url.pathname;
 				</div>
 
 				<div class="footer-bottom">
-					<p class="footer-copyright">&copy; {new Date().getFullYear()} Great Mills High School Mini-THON. All rights reserved.</p>
+					<p class="footer-copyright">&copy; {new Date().getFullYear()} Great Mills High School Mini-THON.</p>
 					<p class="footer-legal">Mini-THON® and Four Diamonds Mini-THON® are registered trademarks. The Diamond Masthead and DonorDrive® are owned by their respective trademark holders. Used with permission.</p>
 				</div>
 			</div>
