@@ -1,24 +1,19 @@
 {
   "resources": [
     {
-      "title": "Google Drive Folder",
-      "description": "Everything related to Mini-THON in one centralized placed. Ask for access if you don't already have it.",
-      "url": "https://drive.google.com/drive/folders/1Ro18oZZ_PM4ZIA9Nfd621lqqPYdl8guH?usp=sharing"
+      "title": "Event Planning Drive",
+      "description": "Templates, checklists, and planning timelines for committee leads.",
+      "url": "https://drive.google.com/drive/folders/your-folder-id"
     },
     {
-      "title": "Marketing & Brand Kit",
-      "description": "Official marketing content and guidelines from Four Diamonds.",
-      "url": "https://drive.google.com/drive/folders/1024-A0SP1aq0rSF0GxdalwV6njbj91oa?usp=drive_link"
+      "title": "Marketing & Graphics",
+      "description": "Approved flyers, social graphics, and branding assets.",
+      "url": "https://drive.google.com/drive/folders/your-folder-id"
     },
     {
-      "title": "T-Shirt Order Form",
-      "description": "Order quick before the shop closes.",
-      "url": "https://drive.google.com/drive/folders/1024-A0SP1aq0rSF0GxdalwV6njbj91oa?usp=drive_link"
-    },
-    {
-      "title": "Fundrasing Start Guide",
-      "description": "Resources to help you get started with your own fundraiser.",
-      "url": "https://drive.google.com/drive/folders/1bmhXOJgHC57TS9YB3K2kqQ0b2ay67ujs?usp=drive_link"
+      "title": "Volunteer Shift Sheet",
+      "description": "Sign up for shifts and see committee assignments.",
+      "url": "https://docs.google.com/spreadsheets/d/your-sheet-id"
     }
   ]
 }
