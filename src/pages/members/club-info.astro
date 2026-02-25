@@ -39,6 +39,17 @@ if (!checkMemberAuth(Astro.request)) {
 				</a>
 			</div>
 		</div>
+		
+		<div class="comm-card instagram">
+			<div class="icon">📱</div>
+			<div class="content">
+				<h3>Facebook</h3>
+				<p>Follow Mini-THON's Facebook page for updates and announcements.</p>
+				<a href={clubInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" class="link-button">
+					Follow @gmhsftk
+				</a>
+			</div>
+		</div>
 
 		<div class="comm-card groupme">
 			<div class="icon">💬</div>
@@ -147,6 +158,11 @@ if (!checkMemberAuth(Astro.request)) {
 	.comm-card.groupme {
 		background: linear-gradient(135deg, rgba(0, 175, 240, 0.12), rgba(255, 255, 255, 0.8));
 		border: 1px solid rgba(0, 175, 240, 0.3);
+	}
+
+	.comm-card.facebook {
+		background: linear-gradient(135deg, #1887F2, rgba(255, 255, 255, 0.8));
+		border: 1px solid #083775;
 	}
 
 	.comm-card .icon {
