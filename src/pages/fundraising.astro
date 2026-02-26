@@ -43,7 +43,7 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 	<section class="current-year">
 		<h2>{fundraisingData.currentYear} Fundraising</h2>
 		<div class="total-display">
-			<span class="label">Current Total</span>
+			<span class="label">Current DonorDrive Total</span>
 			<span class="amount">{currentTotal}</span>
 			<div class="fundraising-progress">
 				<div class="progress-header">
@@ -67,6 +67,7 @@ const formattedAllTime = allTimeTotal.toLocaleString('en-US', {
 			</div>
 		</div>
 		<p>Every dollar raised goes directly to Four Diamonds to support families fighting pediatric cancer.</p>
+		<p>Please note that the amount above only refers to donations processed through DonorDrive. The yearly grand total will be announced at the end of the school year.</p>
 		<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="donate-button">
 			Donate Now
 		</a>
