@@ -16,6 +16,9 @@ if (!event) {
 	return Astro.redirect('/members/upcoming-events');
 }
 
+
+import EventMDXContent from '../../../components/EventMDXContent.astro';
+
 const {
 	title,
 	date,
@@ -23,7 +26,8 @@ const {
 	location,
 	event_type: eventType,
 	summary,
-	links = []
+	links = [],
+	Content
 } = event;
 
 const fullDate = formatEventDate(date, time);
@@ -142,10 +146,15 @@ const formatDescription = (content: string | string[] | undefined) => {
 				</div>
 			)}
 
-			<div class="description-card">
-				<h2>About This Event</h2>
-				<p>{formatDescription(summary)}</p>
-			</div>
+
+						<div class="description-card">
+								<h2>About This Event</h2>
+								{Content ? (
+									<EventMDXContent Content={Content} />
+								) : (
+									<p>{formatDescription(summary)}</p>
+								)}
+						</div>
 
 			{(links as string[]).length > 0 && (
 				<div class="event-links-card">
