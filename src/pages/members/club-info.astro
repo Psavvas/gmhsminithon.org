@@ -51,6 +51,15 @@ if (!checkMemberAuth(Astro.request)) {
 			</div>
 		</div>
 
+		<div class="comm-card tiktok">
+			<div class="icon">📷</div>
+			<div class="content">
+				<h3>TikTok</h3>
+				<p>{clubInfo.socialMedia.tiktok}</p>
+				<p class="note">Updates and upcoming events posted here!</p>
+			</div>
+		</div>
+
 		<div class="comm-card groupme">
 			<div class="icon">💬</div>
 			<div class="content">
@@ -59,6 +68,7 @@ if (!checkMemberAuth(Astro.request)) {
 				<p class="note">Ask a club officer for the GroupMe join link.</p>
 			</div>
 		</div>
+
 	</section>
 
 	<section class="contacts">
@@ -163,6 +173,11 @@ if (!checkMemberAuth(Astro.request)) {
 	.comm-card.facebook {
 		background: linear-gradient(135deg, #b4cee7, rgba(255, 255, 255, 0.8));
 		border: 1px solid #4f719e;
+	}
+
+	.com-card.tiktok {
+		background: linear-gradient(135deg, #fec4cf, rgba(255, 255, 255, 0.8));
+		border: 1px solid #ff5876;
 	}
 
 	.comm-card .icon {

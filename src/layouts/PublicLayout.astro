@@ -66,9 +66,9 @@ const currentPath = Astro.url.pathname;
 					<!-- Brand column -->
 					<div class="footer-brand">
 						<a href="/" class="footer-logo">
-							<img src="/gmhs-logo.png" alt="Great Mills High School" class="footer-logo-gmhs" />
+							<img src="/gmhs-logo.png" alt="Great Mills High School" class="footer-logo-gmhs" loading="lazy" />
 							<span class="footer-logo-divider" aria-hidden="true"></span>
-							<img src="/masthead-diamond-white.svg" alt="Mini-THON diamond" class="footer-logo-diamond" />
+							<img src="/masthead-diamond-white.svg" alt="Mini-THON diamond" class="footer-logo-diamond" loading="lazy" />
 							<span class="footer-logo-text">
 								<span class="footer-logo-school">GMHS</span>
 								<span class="footer-logo-event">Mini-THON</span>
@@ -91,6 +91,12 @@ const currentPath = Astro.url.pathname;
 									<path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
 								</svg>
 								<span>Facebook</span>
+							</a>
+							<a href={clubInfo.socialMedia.tiktok} target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow us on TikTok">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" width="24" height="24">
+									<path d="M12.5 2c.3 4.2 3.1 6.2 6.5 6.4v3.1c-1.1-.1-2.2-.3-3.2-.7v7.2c0 3.1-2.1 4.8-4.7 4.8-2.7 0-4.6-1.7-4.6-4.5 0-2.7 2-4.5 4.6-4.5.3 0 .6 0 .9.1v2.7c-.2-.1-.5-.1-.8-.1-1.2 0-2.1.8-2.1 2.1 0 1.2.8 2.1 2.1 2.1 1.2 0 2.1-.8 2.1-2.1V2h1.2z"/>
+								</svg>
+								<span>TikTok</span>
 							</a>
 							<a href="https://fourdiamonds.donordrive.com/GMHSMT" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Donate on DonorDrive">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -134,6 +140,8 @@ const currentPath = Astro.url.pathname;
 							</div>
 							<p class="newsletter-status" id="newsletter-status" aria-live="polite"></p>
 						</form>
+						<h3 class="footer-heading">Contact Us</h3>
+						<p class="footer-newsletter-desc">Send us an email at: <a href="mailto:hello@gmhsminithon.org" style="color:rgba(255,255,255,0.7);text-decoration:underline;font-weight:500;">hello@gmhsminithon.org</a></p>
 					</div>
 				</div>
 

@@ -1,40 +1,93 @@
-# Astro
 
-This directory is a brief example of an [Astro](https://astro.build/) site that can be deployed to Vercel with zero configuration. This demo showcases:
+# GMHS Mini-THON Website
 
-- `/` - A static page (pre-rendered)
-- `/ssr` - A page that uses server-side rendering (through [Vercel Functions](https://vercel.com/docs/functions))
-- `/ssr-with-swr-caching` - Similar to the previous page, but also caches the response on the [Vercel Edge Network](https://vercel.com/docs/edge-network/overview) using `cache-control` headers
-- `/image` - Astro [Asset](https://docs.astro.build/en/guides/images/) using Vercel [Image Optimization](https://vercel.com/docs/image-optimization)
+This repository contains the official website for Great Mills High School Mini-THON, built with [Astro](https://astro.build/). The site provides information about our club, events, fundraising, and resources for members and sponsors.
 
-Learn more about [Astro on Vercel](https://vercel.com/docs/frameworks/astro).
+## Website Organization
 
-## Deploy Your Own
+The project is organized as follows:
 
-Deploy your own Astro project with Vercel.
+- `src/pages/` — Main site pages. Each `.astro` or `.mdx` file is a route:
+  - `index.astro`: Homepage
+  - `about.astro`: About the club
+  - `events.astro`: Events overview
+  - `fundraising.astro`: Fundraising info
+  - `get-involved.astro`: How to join or help
+  - `sponsors.astro`, `sponsorship.astro`: Sponsor info
+  - `members/`: Member-only pages (announcements, club info, resources, login, upcoming events)
+  - `events/`: Individual event pages (`.mdx` files)
+  - `api/`: API endpoints (e.g., newsletter)
+- `src/components/` — Reusable UI components (cards, carousels, countdowns, navigation, etc.)
+- `src/layouts/` — Page layouts (public, event, member, etc.)
+- `src/data/` — JSON files for club info, fundraising, announcements, resources, redirects, sponsors
+- `src/utils/` — Utility functions (event handling, authentication, etc.)
+- `public/` — Static assets (images, banners, sponsor logos, etc.)
+- `scripts/` — Utility scripts
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/framework-boilerplates/astro&template=astro)
+## How to Update the Site
 
-_Live Example: https://astro-template.vercel.app_
+### Elected Officers
+- Officers are listed in `src/data/clubInfo.json` under the `officers` array.
+- To update, edit the officer entries (role, name, email) in the JSON file.
 
-## Project Structure
+### Website Description & Mission
+- The club mission and description are in `src/data/clubInfo.json` (`mission`, `about`, `aboutContinued`).
+- Update these fields to change the homepage and about page text.
 
-Astro looks for `.astro`, `.md`, or `.js` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### Member Files
+- Member announcements: `src/data/memberAnnouncements.json`
+- Member resources: `src/data/memberResources.json`
+- Club info: `src/data/clubInfo.json`
+- To add or update, edit the relevant JSON files.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components or layouts.
+### New Events
+- Events are listed in `src/pages/events/` as `.mdx` files (one per event).
+- To add a new event:
+  1. Create a new `.mdx` file in `src/pages/events/` (e.g., `new-event.mdx`).
+  2. Fill in the event details (title, date, summary, etc.) using the existing files as templates.
+- Event metadata may also be managed in `src/data/events.json` or similar utility files.
 
-Any static assets, like images, can be placed in the `public/` directory.
+### Fundraising Totals
+- Fundraising data is in `src/data/fundraising.json`.
+- Update `currentTotal`, `goalTotal`, and `currentYear` to reflect new totals and goals.
+- The homepage and fundraising page will automatically show updated values.
 
-## Commands
+### Sponsors
+- Sponsor information is in `src/data/sponsors.json` and images in `public/sponsors/`.
+- To add a sponsor, update the JSON file and add their logo/image to the public folder.
 
-All commands are run from the root of the project, from a terminal:
+### Announcements & Redirects
+- Announcements: `src/data/memberAnnouncements.json`
+- Redirects: `src/data/redirects.json`
+- Edit these files to update site-wide announcements or add new redirects.
 
-| Command                | Action                                             |
-| :--------------------- | :------------------------------------------------- |
-| `pnpm install`          | Installs dependencies                              |
-| `pnpm run dev`          | Starts local dev server at `localhost:3000`        |
-| `pnpm run build`        | Build your production site to `./dist/`            |
-| `pnpm run preview`      | Preview your build locally, before deploying       |
-| `pnpm run start`       | Starts a production dev server at  `localhost:3000`     |
-| `pnpm run astro ...`    | Run CLI commands like `astro add`, `astro preview` |
-| `pnpm run astro --help` | Get help using the Astro CLI                       |
+## Editing & Deployment
+
+1. Clone the repository and install dependencies:
+	```sh
+	pnpm install
+	```
+2. Start the development server:
+	```sh
+	pnpm run dev
+	```
+3. Make your changes (edit JSON files, add pages/components, update assets).
+4. Build for production:
+	```sh
+	pnpm run build
+	```
+5. Preview locally:
+	```sh
+	pnpm run preview
+	```
+6. Deploy to your hosting provider (e.g., Vercel).
+
+## Additional Notes
+
+- All site content is managed via JSON files and Markdown/MDX pages for easy editing.
+- Static assets (images, logos) are in the `public/` directory.
+- For code changes, use the Astro framework and follow component/layout conventions.
+- For questions or help, contact the current club officers (see `clubInfo.json`).
+
+---
+For more information about Astro, see [Astro Documentation](https://docs.astro.build/).
