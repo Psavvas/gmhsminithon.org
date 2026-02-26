@@ -23,17 +23,16 @@ export const POST: APIRoute = async ({ request }) => {
 
 	try {
 		const res = await fetch(
-			`https://emailoctopus.com/api/1.1/lists/${encodeURIComponent(listId)}/contacts`,
-			{
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					api_key: apiKey,
-					email_address: email,
-					tags: ['Newsletter Recipient'],
-					status: 'SUBSCRIBED',
-				}),
-			}
+  			`https://emailoctopus.com/api/1.6/lists/${encodeURIComponent(listId)}/contacts`,
+  			{
+    			method: 'POST',
+    			headers: { 'Content-Type': 'application/json' },
+    			body: JSON.stringify({
+      				api_key: apiKey,
+      				email_address: email,
+      				status: 'SUBSCRIBED',
+    			}),
+  			}
 		);
 
 		if (res.ok || res.status === 409) {
