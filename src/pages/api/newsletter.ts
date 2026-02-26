@@ -23,12 +23,14 @@ export const POST: APIRoute = async ({ request }) => {
 
 	try {
 		const res = await fetch(
-  			`https://emailoctopus.com/api/1.6/lists/${encodeURIComponent(listId)}/contacts`,
+  			`https://api.emailoctopus.com/lists/${encodeURIComponent(listId)}/contacts`,
   			{
     			method: 'POST',
-    			headers: { 'Content-Type': 'application/json' },
+    			headers: {
+      				'Content-Type': 'application/json',
+      				Authorization: `Bearer ${apiKey}`,
+    			},
     			body: JSON.stringify({
-      				api_key: apiKey,
       				email_address: email,
       				status: 'SUBSCRIBED',
     			}),
