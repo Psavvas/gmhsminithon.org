@@ -22,41 +22,38 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	try {
-		const res = await fetch(
-  			`https://api.emailoctopus.com/lists/${encodeURIComponent(listId)}/contacts`,
-			{
-   				method: 'POST',
-    			headers: {
-      				'Content-Type': 'application/json',
-      				Authorization: `Bearer ${apiKey}`,
-    			},
-    			body: JSON.stringify({
-      				email_address: email,
-      				status: 'subscribed',
-				}),
-  			}	
-		);
+  		const res = await fetch(
+    		`https://api.emailoctopus.com/lists/${encodeURIComponent(listId)}/contacts`,
+    		{
+      			method: 'POST',
+      			headers: {
+        			'Content-Type': 'application/json',
+        			Authorization: `Bearer ${apiKey}`,
+      			},
+      			body: JSON.stringify({
+        			email_address: email,
+        			status: 'subscribed',
+     			}),
+    		}
+  		);
 
-		if (res.ok || res.status === 409) {
-			// 409 = already subscribed — treat as success
-			return new Response(JSON.stringify({ success: true }), {
-				status: 200,
-				headers: { 'Content-Type': 'application/json' },
-			});
-		}
+		const raw = await res.text();
 
-		const body = await res.json().catch(() => ({}));
-		const message =
-			(body as { error?: { message?: string } })?.error?.message ??
-			'Something went wrong. Please try again.';
-		return new Response(JSON.stringify({ error: message }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' },
-		});
-	} catch {
-		return new Response(
-			JSON.stringify({ error: 'Unable to reach the newsletter service. Please try again later.' }),
-			{ status: 502, headers: { 'Content-Type': 'application/json' } }
-		);
+  		console.log("STATUS:", res.status);
+  		console.log("RESPONSE:", raw);
+
+  		return new Response(
+    		JSON.stringify({
+      			debugStatus: res.status,
+      			debugResponse: raw,
+    		}),
+    		{ status: 200, headers: { 'Content-Type': 'application/json' } }
+  		);
+	} catch (err) {
+  		console.error("FETCH ERROR:", err);
+  		return new Response(
+    	JSON.stringify({ error: "Fetch failed entirely." }),
+    	{ status: 500, headers: { 'Content-Type': 'application/json' } }
+  		);
 	}
 };
