@@ -1,58 +1,46 @@
 {
   "sponsors": [
     {
-      "name": "ABC Corporation",
-      "tier": "Diamond",
-      "logo": "/sponsors/abc-corporation.png",
-      "website": "https://abccorp.example.com"
-    },
-    {
-      "name": "Tech Innovators Inc",
-      "tier": "Platinum",
-      "logo": "/sponsors/tech-innovators-inc.png",
-      "website": "https://techinnovators.example.com"
-    },
-    {
-      "name": "Local Bank & Trust",
-      "tier": "Gold",
-      "logo": "/sponsors/local-bank-and-trust.png",
-      "website": "https://localbank.example.com"
-    },
-    {
-      "name": "Community Health Services",
-      "tier": "Gold",
-      "logo": "/sponsors/community-health-services.png",
-      "website": "https://communityhealth.example.com"
-    },
-    {
-      "name": "Smith Family Restaurant",
+      "name": "Taylor Gas",
       "tier": "Silver",
-      "logo": "/sponsors/smith-family-restaurant.png",
-      "website": "https://smithrestaurant.example.com"
+      "logo": "/sponsors/taylorGas.png",
+      "website": "https://www.taylorgascompany.com/"
     },
     {
-      "name": "Joe's Hardware",
+      "name": "Deborah O'Donnell Psychologist",
+      "tier": "Silver",
+      "logo": "/sponsors/deborahODonnellPsychologist.jpg",
+      "website": "https://www.deborahodonnellpsychologist.com/"
+    },
+    {
+      "name": "SMCM Anthropology Club",
       "tier": "Bronze",
-      "logo": "/sponsors/joes-hardware.png",
-      "website": ""
+      "logo": "/sponsors/anthropologyClub.png",
+      "website": "https://inside.smcm.edu/anthropology-club"
     },
     {
-      "name": "Downtown Coffee Shop",
+      "name": "Knowledge Boxing Center",
       "tier": "Bronze",
-      "logo": "/sponsors/downtown-coffee-shop.png",
-      "website": ""
+      "logo": "/sponsors/knowledgeBoxingCenter.png",
+      "website": "https://knowledgeboxingcenter.com/"
     },
     {
-      "name": "Green Thumb Nursery",
-      "tier": "Supporter",
-      "logo": "/sponsors/green-thumb-nursery.png",
-      "website": ""
+      "name": "Schneider Orthodontics",
+      "tier": "Gold",
+      "logo": "/sponsors/schneiderOrthodontics.png",
+      "website": "https://www.schneiderbraces.com/"
     },
     {
-      "name": "Peak Performance Gym",
-      "tier": "Supporter",
-      "logo": "/sponsors/peak-performance-gym.png",
-      "website": ""
+      "name": "Street Trenz",
+      "tier": "Bronze",
+      "logo": "/sponsors/streetTrenz.png",
+      "website": "https://www.facebook.com/StreetTrenz1/"
+    },
+    {
+      "name": "Price Cove Properties",
+      "tier": "Platinum",
+      "logo": "/sponsors/priceCoveProperties.jpg",
+      "website": "https://www.visitcovehouse.com/"
     }
   ]
 }
