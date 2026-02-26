@@ -149,11 +149,16 @@ const formatDescription = (content: string | string[] | undefined) => {
 
 						<div class="description-card">
 								<h2>About This Event</h2>
-								{Content ? (
-									<EventMDXContent Content={Content} />
-								) : (
-									<p>{formatDescription(summary)}</p>
-								)}
+								<div set:html={renderMarkdown(
+									rawContent
+										? rawContent
+												.replace(/---[\s\S]*?---/, '') // Remove frontmatter
+												.replace(/import[\s\S]*?;\n?/g, '') // Remove imports
+												.replace(/<Image[\s\S]*?<\/Image>/g, '') // Remove <Image> blocks
+												.replace(/<Fragment[\s\S]*?<\/Fragment>/g, '') // Remove <Fragment> blocks
+												.trim()
+										: formatDescription(summary)
+								)} />
 						</div>
 
 			{(links as string[]).length > 0 && (
