@@ -34,7 +34,7 @@ if (!checkMemberAuth(Astro.request)) {
 			<div class="content">
 				<h3>Instagram</h3>
 				<p>Follow us for updates, event photos, and announcements</p>
-				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="link-button">
+				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="link-button-instagram">
 					Follow @gmhsminithon
 				</a>
 			</div>
@@ -45,7 +45,7 @@ if (!checkMemberAuth(Astro.request)) {
 			<div class="content">
 				<h3>Facebook</h3>
 				<p>Follow Mini-THON's Facebook page for updates and announcements.</p>
-				<a href={clubInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" class="link-button">
+				<a href={clubInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" class="link-button-facebook">
 					Follow @gmhsftk
 				</a>
 			</div>
@@ -55,8 +55,10 @@ if (!checkMemberAuth(Astro.request)) {
 			<div class="icon">📷</div>
 			<div class="content">
 				<h3>TikTok</h3>
-				<p>{clubInfo.socialMedia.tiktok}</p>
-				<p class="note">Updates and upcoming events posted here!</p>
+				<p>Updates and upcoming events posted here!</p>
+				<a href={clubInfo.socialMedia.tiktok} target="_blank" rel="noopener noreferrer" class="link-button-tiktok">
+					Follow @gmhsftk
+				</a>
 			</div>
 		</div>
 
@@ -175,7 +177,7 @@ if (!checkMemberAuth(Astro.request)) {
 		border: 1px solid #4f719e;
 	}
 
-	.com-card.tiktok {
+	.comm-card.tiktok {
 		background: linear-gradient(135deg, #fec4cf, rgba(255, 255, 255, 0.8));
 		border: 1px solid #ff5876;
 	}
@@ -201,9 +203,31 @@ if (!checkMemberAuth(Astro.request)) {
 		margin-bottom: 0.75rem;
 	}
 
-	.link-button {
+	.link-button-instagram {
 		display: inline-block;
 		background: linear-gradient(135deg, #833AB4 0%, #E1306C 100%);
+		color: white;
+		padding: 0.75rem 1.5rem;
+		border-radius: 999px;
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.3s ease;
+	}
+
+	.link-button-facebook {
+		display: inline-block;
+		background: linear-gradient(135deg, #1877F2 0%, #0f4388  100%);
+		color: white;
+		padding: 0.75rem 1.5rem;
+		border-radius: 999px;
+		text-decoration: none;
+		font-weight: 600;
+		transition: all 0.3s ease;
+	}
+
+	.link-button-tiktok {
+		display: inline-block;
+		background: linear-gradient(135deg, #25F4EE 0%, #FE2C55 100%);
 		color: white;
 		padding: 0.75rem 1.5rem;
 		border-radius: 999px;
