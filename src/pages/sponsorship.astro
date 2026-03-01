@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import PublicLayout from '../layouts/PublicLayout.astro';
 import clubInfo from '../data/clubInfo.json';
 
@@ -87,16 +86,14 @@ const tiers = [
 			</div>
 		</div>
 		<div class="intro-photo">
-			<Image
-				src="/clubPictures/trunkOrTreat.jpg"
+			<img
+				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl"
 				alt="Mini-THON volunteers"
-				width={1200}
-				height={800}
-				sizes="(max-width: 900px) 92vw, 520px"
+				width="1200"
+				height="800"
 				class="intro-photo-image"
 				loading="eager"
 				decoding="async"
-				fetchpriority="high"
 			/>
 		</div>
 	</section>

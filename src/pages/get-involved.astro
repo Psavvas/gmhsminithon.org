@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import PublicLayout from '../layouts/PublicLayout.astro';
 import SocialPopup from '../components/SocialPopup.astro';
 import clubInfo from '../data/clubInfo.json';
@@ -25,16 +24,14 @@ export const prerender = true;
 			</div>
 		</div>
 		<div class="intro-photo">
-			<Image
-				src="/clubPictures/endOfYearPicture.jpg"
+			<img
+				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay"
 				alt="Mini-THON volunteers"
-				width={1200}
-				height={800}
-				sizes="(max-width: 768px) 92vw, 520px"
+				width="1200"
+				height="800"
 				class="intro-photo-image"
 				loading="eager"
 				decoding="async"
-				fetchpriority="high"
 			/>
 		</div>
 	</section>
@@ -109,6 +106,12 @@ export const prerender = true;
 		justify-content: flex-start;
 	}
 
+	.intro-photo {
+		max-height: 400px;
+		overflow: hidden;
+		border-radius: 20px;
+	}
+
 	.intro-photo-image {
 		width: 100%;
 		height: 100%;
@@ -117,6 +120,7 @@ export const prerender = true;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
 		display: block;
+		max-height: 400px;
 	}
 
 	.audience-grid {
