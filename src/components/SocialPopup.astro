@@ -100,11 +100,20 @@ import clubInfo from '../data/clubInfo.json';
 	const closeBtn = document.getElementById('social-popup-close');
 	const triggers = document.querySelectorAll('[data-open-social-popup]');
 
+	let savedScrollY = 0;
+
 	function openPopup() {
 		if (!overlay) return;
+		savedScrollY = window.scrollY;
 		overlay.hidden = false;
 		overlay.classList.add('is-open');
+		document.documentElement.style.overflow = 'hidden';
 		document.body.style.overflow = 'hidden';
+		document.body.style.position = 'fixed';
+		document.body.style.top = `-${savedScrollY}px`;
+		document.body.style.left = '0';
+		document.body.style.right = '0';
+		document.body.style.width = '100%';
 		closeBtn?.focus();
 	}
 
@@ -113,8 +122,15 @@ import clubInfo from '../data/clubInfo.json';
 		overlay.classList.remove('is-open');
 		overlay.addEventListener('transitionend', () => {
 			overlay.hidden = true;
+			document.documentElement.style.overflow = '';
+			document.body.style.overflow = '';
+			document.body.style.position = '';
+			document.body.style.top = '';
+			document.body.style.left = '';
+			document.body.style.right = '';
+			document.body.style.width = '';
+			window.scrollTo(0, savedScrollY);
 		}, { once: true });
-		document.body.style.overflow = '';
 	}
 
 	triggers.forEach((trigger) => {
