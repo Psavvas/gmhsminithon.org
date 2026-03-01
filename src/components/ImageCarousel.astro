@@ -1,6 +1,4 @@
 ---
-import { Image } from 'astro:assets';
-
 export interface Props {
 	images: Array<{ src: string; alt: string; caption?: string }>;
 	autoplay?: boolean;
@@ -16,16 +14,14 @@ const carouselId = `carousel-${crypto.randomUUID()}`;
 	<div class="carousel-track">
 		{images.map((image, index) => (
 			<div class="carousel-slide" data-active={index === 0 ? 'true' : undefined}>
-				<Image
+				<img
 					src={image.src}
 					alt={image.alt}
 					class="carousel-image"
-					width={1200}
-					height={675}
-					sizes="(max-width: 900px) 92vw, 520px"
+					width="1200"
+					height="675"
 					loading={priority ? 'eager' : 'lazy'}
 					decoding="async"
-					fetchpriority={priority && index === 0 ? 'high' : 'auto'}
 				/>
 				{image.caption && (
 					<div class="carousel-caption">

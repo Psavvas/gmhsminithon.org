@@ -1,6 +1,6 @@
 ---
-import { Image } from 'astro:assets';
 import PublicLayout from '../layouts/PublicLayout.astro';
+import SocialPopup from '../components/SocialPopup.astro';
 import clubInfo from '../data/clubInfo.json';
 import fundraisingData from '../data/fundraising.json';
 
@@ -18,22 +18,20 @@ export const prerender = true;
 				<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button donate">
 					Donate now
 				</a>
-				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="button instagram">
-					Follow us on Instagram
-				</a>
+				<button class="button social" data-open-social-popup type="button">
+					All social profiles
+				</button>
 			</div>
 		</div>
 		<div class="intro-photo">
-			<Image
-				src="/clubPictures/endOfYearPicture.jpg"
+			<img
+				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay"
 				alt="Mini-THON volunteers"
-				width={1200}
-				height={800}
-				sizes="(max-width: 768px) 92vw, 520px"
+				width="1200"
+				height="800"
 				class="intro-photo-image"
 				loading="eager"
 				decoding="async"
-				fetchpriority="high"
 			/>
 		</div>
 	</section>
@@ -64,6 +62,7 @@ export const prerender = true;
 			</a>
 		</div>
 	</section>
+	<SocialPopup />
 </PublicLayout>
 
 <style>
@@ -107,6 +106,12 @@ export const prerender = true;
 		justify-content: flex-start;
 	}
 
+	.intro-photo {
+		max-height: 400px;
+		overflow: hidden;
+		border-radius: 20px;
+	}
+
 	.intro-photo-image {
 		width: 100%;
 		height: 100%;
@@ -115,6 +120,7 @@ export const prerender = true;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
 		display: block;
+		max-height: 400px;
 	}
 
 	.audience-grid {
@@ -227,15 +233,19 @@ export const prerender = true;
 		align-self: flex-start;
 	}
 
-	.button.instagram {
-		background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #FD1D1D 100%);
+	.button.social {
+		background: linear-gradient(135deg, #2C4672 0%, #6AAAE4 100%);
 		color: var(--white);
-		box-shadow: 0 4px 12px rgba(131, 58, 180, 0.3);
+		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
+		border: none;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: inherit;
 	}
 
-	.button.instagram:hover {
+	.button.social:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(131, 58, 180, 0.4);
+		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
 	}
 
 	.button.donate {
@@ -252,13 +262,13 @@ export const prerender = true;
 		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
 	}
 
-	.button:not(.instagram):not(.donate) {
+	.button:not(.social):not(.donate) {
 		background: var(--brand-ink);
 		color: var(--white);
 		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
 	}
 
-	.button:not(.instagram):not(.donate):hover {
+	.button:not(.social):not(.donate):hover {
 		background: var(--brand-sky);
 		color: var(--brand-ink);
 		transform: translateY(-2px);

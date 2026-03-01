@@ -1,0 +1,434 @@
+---
+import clubInfo from '../data/clubInfo.json';
+---
+
+<!-- Social Popup Modal -->
+<div id="social-popup" class="social-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="social-popup-title" hidden>
+	<div class="social-popup-card">
+		<div class="social-popup-header">
+			<h2 id="social-popup-title">Find Us Online</h2>
+			<button class="social-popup-close" aria-label="Close" id="social-popup-close">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+					<line x1="18" y1="6" x2="6" y2="18"/>
+					<line x1="6" y1="6" x2="18" y2="18"/>
+				</svg>
+			</button>
+		</div>
+
+		<p class="social-popup-desc">Follow us on social media for the latest updates, highlights, and event news.</p>
+
+		<div class="social-links-grid">
+			<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="social-link instagram">
+				<span class="social-icon-wrap">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+						<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+						<circle cx="12" cy="12" r="4"/>
+						<circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+					</svg>
+				</span>
+				<span class="social-label">
+					<span class="social-name">Instagram</span>
+					<span class="social-handle">@gmhsminithon</span>
+				</span>
+				<svg class="social-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+					<line x1="5" y1="12" x2="19" y2="12"/>
+					<polyline points="12 5 19 12 12 19"/>
+				</svg>
+			</a>
+
+			<a href={clubInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" class="social-link facebook">
+				<span class="social-icon-wrap">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+						<path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
+					</svg>
+				</span>
+				<span class="social-label">
+					<span class="social-name">Facebook</span>
+					<span class="social-handle">@gmhsftk</span>
+				</span>
+				<svg class="social-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+					<line x1="5" y1="12" x2="19" y2="12"/>
+					<polyline points="12 5 19 12 12 19"/>
+				</svg>
+			</a>
+
+			<a href={clubInfo.socialMedia.tiktok} target="_blank" rel="noopener noreferrer" class="social-link tiktok">
+				<span class="social-icon-wrap">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+						<path d="M12.5 2c.3 4.2 3.1 6.2 6.5 6.4v3.1c-1.1-.1-2.2-.3-3.2-.7v7.2c0 3.1-2.1 4.8-4.7 4.8-2.7 0-4.6-1.7-4.6-4.5 0-2.7 2-4.5 4.6-4.5.3 0 .6 0 .9.1v2.7c-.2-.1-.5-.1-.8-.1-1.2 0-2.1.8-2.1 2.1 0 1.2.8 2.1 2.1 2.1 1.2 0 2.1-.8 2.1-2.1V2h1.2z"/>
+					</svg>
+				</span>
+				<span class="social-label">
+					<span class="social-name">TikTok</span>
+					<span class="social-handle">@gmhs.minithon</span>
+				</span>
+				<svg class="social-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+					<line x1="5" y1="12" x2="19" y2="12"/>
+					<polyline points="12 5 19 12 12 19"/>
+				</svg>
+			</a>
+		</div>
+
+		<div class="newsletter-section">
+			<div class="newsletter-inner">
+				<div class="newsletter-content" inert>
+					<h3>Newsletter</h3>
+					<p>Subscribe to get event updates delivered to your inbox.</p>
+					<form class="popup-newsletter-form">
+						<div class="popup-newsletter-row">
+							<input type="email" placeholder="Your email address" disabled />
+							<button type="submit" disabled>Subscribe</button>
+						</div>
+					</form>
+				</div>
+				<div class="newsletter-coming-soon" aria-hidden="true">
+					<span class="coming-soon-badge">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+							<circle cx="12" cy="12" r="10"/>
+							<polyline points="12 6 12 12 16 14"/>
+						</svg>
+						Newsletter coming soon
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	const overlay = document.getElementById('social-popup');
+	const closeBtn = document.getElementById('social-popup-close');
+	const triggers = document.querySelectorAll('[data-open-social-popup]');
+
+	// Move popup to <body> root so it escapes any parent stacking contexts (e.g. <main> z-index)
+	if (overlay && overlay.parentElement !== document.body && !overlay.dataset.relocated) {
+		overlay.dataset.relocated = 'true';
+		document.body.appendChild(overlay);
+	}
+
+	function openPopup() {
+		if (!overlay) return;
+		overlay.hidden = false;
+		overlay.classList.add('is-open');
+		closeBtn?.focus();
+	}
+
+	function closePopup() {
+		if (!overlay) return;
+		overlay.classList.remove('is-open');
+		overlay.addEventListener('transitionend', () => {
+			overlay.hidden = true;
+		}, { once: true });
+	}
+
+	triggers.forEach((trigger) => {
+		trigger.addEventListener('click', (e) => {
+			e.preventDefault();
+			openPopup();
+		});
+	});
+
+	closeBtn?.addEventListener('click', closePopup);
+
+	overlay?.addEventListener('click', (e) => {
+		if (e.target === overlay) closePopup();
+	});
+
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && overlay && !overlay.hidden) {
+			closePopup();
+		}
+	});
+</script>
+
+<style>
+	.social-popup-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(12, 20, 35, 0.6);
+		backdrop-filter: blur(4px);
+		z-index: 2000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+		opacity: 0;
+		transition: opacity 0.25s ease;
+	}
+
+	.social-popup-overlay.is-open {
+		opacity: 1;
+	}
+
+	.social-popup-overlay[hidden] {
+		display: none;
+	}
+
+	.social-popup-card {
+		background: #fff;
+		border-radius: 24px;
+		padding: 2rem;
+		width: 100%;
+		max-width: 480px;
+		box-shadow: 0 24px 60px rgba(28, 42, 58, 0.22);
+		transform: translateY(20px) scale(0.97);
+		transition: transform 0.25s ease, opacity 0.25s ease;
+		opacity: 0;
+		max-height: 90vh;
+		overflow-y: auto;
+	}
+
+	.social-popup-overlay.is-open .social-popup-card {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+
+	.social-popup-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
+		gap: 1rem;
+	}
+
+	.social-popup-header h2 {
+		font-family: 'Merriweather', 'Times New Roman', serif;
+		font-size: 1.4rem;
+		font-weight: 700;
+		color: #1C2A3A;
+		margin: 0;
+	}
+
+	.social-popup-close {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 34px;
+		height: 34px;
+		border-radius: 50%;
+		border: none;
+		background: #F4F7FB;
+		color: #3D4C5C;
+		cursor: pointer;
+		flex-shrink: 0;
+		transition: background 0.2s ease, color 0.2s ease;
+	}
+
+	.social-popup-close:hover {
+		background: #D7E2EF;
+		color: #1C2A3A;
+	}
+
+	.social-popup-close svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	.social-popup-desc {
+		font-size: 0.93rem;
+		color: #6A7A8A;
+		line-height: 1.6;
+		margin: 0 0 1.5rem;
+	}
+
+	.social-links-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.social-link {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.85rem 1rem;
+		border-radius: 14px;
+		text-decoration: none;
+		color: inherit;
+		border: 1.5px solid #D7E2EF;
+		background: #F4F7FB;
+		transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+	}
+
+	.social-link:hover {
+		border-color: var(--link-color, #6AAAE4);
+		background: var(--link-bg, rgba(106,170,228,0.07));
+		box-shadow: 0 4px 14px rgba(28, 42, 58, 0.08);
+		transform: translateY(-1px);
+	}
+
+	.social-icon-wrap {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 10px;
+		background: var(--link-icon-bg, #E8EFF7);
+		color: var(--link-icon-color, #2C4672);
+		flex-shrink: 0;
+	}
+
+	.social-icon-wrap svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	.social-label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		flex: 1;
+	}
+
+	.social-name {
+		font-weight: 600;
+		font-size: 0.97rem;
+		color: #1C2A3A;
+	}
+
+	.social-handle {
+		font-size: 0.82rem;
+		color: #6A7A8A;
+	}
+
+	.social-arrow {
+		width: 16px;
+		height: 16px;
+		color: #9AA8B6;
+		flex-shrink: 0;
+		transition: color 0.2s ease, transform 0.2s ease;
+	}
+
+	.social-link:hover .social-arrow {
+		color: var(--link-color, #6AAAE4);
+		transform: translateX(3px);
+	}
+
+	/* Platform-specific colours */
+	.instagram {
+		--link-color: #E1306C;
+		--link-bg: rgba(225, 48, 108, 0.05);
+		--link-icon-bg: rgba(225, 48, 108, 0.1);
+		--link-icon-color: #E1306C;
+	}
+
+	.facebook {
+		--link-color: #1877F2;
+		--link-bg: rgba(24, 119, 242, 0.05);
+		--link-icon-bg: rgba(24, 119, 242, 0.1);
+		--link-icon-color: #1877F2;
+	}
+
+	.tiktok {
+		--link-color: #010101;
+		--link-bg: rgba(1, 1, 1, 0.04);
+		--link-icon-bg: rgba(1, 1, 1, 0.07);
+		--link-icon-color: #010101;
+	}
+
+	/* Newsletter coming soon */
+	.newsletter-section {
+		border-top: 1px solid #D7E2EF;
+		padding-top: 1.25rem;
+	}
+
+	.newsletter-inner {
+		position: relative;
+		border-radius: 14px;
+		overflow: hidden;
+	}
+
+	.newsletter-content {
+		padding: 1.25rem;
+		background: #F4F7FB;
+		border-radius: 14px;
+	}
+
+	.newsletter-content h3 {
+		font-family: 'Merriweather', 'Times New Roman', serif;
+		font-size: 1rem;
+		font-weight: 700;
+		color: #1C2A3A;
+		margin: 0 0 0.35rem;
+	}
+
+	.newsletter-content p {
+		font-size: 0.85rem;
+		color: #6A7A8A;
+		margin: 0 0 0.85rem;
+		line-height: 1.5;
+	}
+
+	.popup-newsletter-row {
+		display: flex;
+		gap: 0;
+		border-radius: 8px;
+		overflow: hidden;
+		border: 1px solid #D7E2EF;
+	}
+
+	.popup-newsletter-row input {
+		flex: 1;
+		padding: 0.55rem 0.9rem;
+		background: #fff;
+		border: none;
+		font-size: 0.85rem;
+		color: #1C2A3A;
+		outline: none;
+		min-width: 0;
+	}
+
+	.popup-newsletter-row button {
+		padding: 0.55rem 1rem;
+		background: #2C4672;
+		color: #fff;
+		font-size: 0.82rem;
+		font-weight: 600;
+		border: none;
+		cursor: pointer;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.newsletter-coming-soon {
+		position: absolute;
+		inset: 0;
+		background: rgba(244, 247, 251, 0.88);
+		backdrop-filter: blur(3px);
+		border-radius: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.coming-soon-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		background: rgba(44, 70, 114, 0.1);
+		border: 1.5px solid rgba(44, 70, 114, 0.2);
+		color: #2C4672;
+		font-weight: 600;
+		font-size: 0.88rem;
+		padding: 0.5rem 1rem;
+		border-radius: 999px;
+	}
+
+	.coming-soon-badge svg {
+		width: 15px;
+		height: 15px;
+		flex-shrink: 0;
+	}
+
+	@media (max-width: 480px) {
+		.social-popup-card {
+			padding: 1.5rem;
+		}
+
+		.social-popup-header h2 {
+			font-size: 1.2rem;
+		}
+	}
+</style>

@@ -16,9 +16,6 @@ if (!event) {
 	return Astro.redirect('/members/upcoming-events');
 }
 
-
-import EventMDXContent from '../../../components/EventMDXContent.astro';
-
 const {
 	title,
 	date,
@@ -54,8 +51,14 @@ const renderMarkdown = (markdown: string) => {
 	html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
 	html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
 
-	// Replace bold text
+	// Replace bold text (must run before italic)
 	html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+
+	// Replace markdown links [text](url)
+	html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+	// Replace italic text (single * only, bold already replaced)
+	html = html.replace(/(?<!\*)\*(?!\*)([^*]+)\*(?!\*)/g, '<em>$1</em>');
 
 	// Process lists
 	const lines = html.split('\n');
@@ -83,7 +86,12 @@ const renderMarkdown = (markdown: string) => {
 				processedLines.push('</ul>');
 				inList = false;
 			}
-			processedLines.push(line);
+			// Wrap non-heading, non-tag lines in <p> tags
+			if (!trimmedLine.startsWith('<')) {
+				processedLines.push(`<p>${line}</p>`);
+			} else {
+				processedLines.push(line);
+			}
 		}
 	}
 
@@ -94,10 +102,43 @@ const renderMarkdown = (markdown: string) => {
 	return processedLines.join('\n');
 };
 
-const formatDescription = (content: string | string[] | undefined) => {
-	if (!content) return '';
-	return Array.isArray(content) ? content.join(' ') : content;
-};
+// Extract public body content (everything outside frontmatter and member-details Fragment)
+let publicBodyHtml = '';
+if (rawContent) {
+	// Extract import variable mappings (e.g., import flyer from 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Z1iVVxHqykyujcLaKXDGJb4sxtT9idN57nwgf')
+	const importMap: Record<string, string> = {};
+	const importRegex = /import\s+(\w+)\s+from\s+['"]([^'"]+)['"]/g;
+	let importMatch;
+	while ((importMatch = importRegex.exec(rawContent)) !== null) {
+		let importPath = importMatch[2];
+		// Convert /public/ paths to / for web serving
+		if (importPath.startsWith('/public/')) {
+			importPath = importPath.replace('/public/', '/');
+		}
+		importMap[importMatch[1]] = importPath;
+	}
+
+	let body = rawContent
+		.replace(/---[\s\S]*?---/, '')             // Remove frontmatter
+		.replace(/import[\s\S]*?;\n?/g, '')        // Remove import statements
+		.replace(/<Fragment[\s\S]*?<\/Fragment>/g, '') // Remove <Fragment> blocks
+		.trim();
+
+	// Convert <Image src={varName} ... /> to <img src="path" ... />
+	body = body.replace(/<Image\s+([\s\S]*?)\/>/g, (_, attrs) => {
+		let imgAttrs = attrs;
+		// Replace src={variable} with src="resolved-path"
+		imgAttrs = imgAttrs.replace(/src=\{(\w+)\}/g, (_m: string, varName: string) => {
+			const resolved = importMap[varName] || '';
+			return `src="${resolved}"`;
+		});
+		// Remove unsupported Astro-specific attributes
+		imgAttrs = imgAttrs.replace(/\s*(loading|decoding|fetchpriority)="[^"]*"/g, '');
+		return `<img ${imgAttrs.trim()} />`;
+	});
+
+	publicBodyHtml = renderMarkdown(body);
+}
 ---
 
 <MemberLayout title={`${title} - Mini-THON`}>
@@ -146,20 +187,10 @@ const formatDescription = (content: string | string[] | undefined) => {
 				</div>
 			)}
 
-
-						<div class="description-card">
-								<h2>About This Event</h2>
-								<div set:html={renderMarkdown(
-									rawContent
-										? rawContent
-												.replace(/---[\s\S]*?---/, '') // Remove frontmatter
-												.replace(/import[\s\S]*?;\n?/g, '') // Remove imports
-												.replace(/<Image[\s\S]*?<\/Image>/g, '') // Remove <Image> blocks
-												.replace(/<Fragment[\s\S]*?<\/Fragment>/g, '') // Remove <Fragment> blocks
-												.trim()
-										: formatDescription(summary)
-								)} />
-						</div>
+			<div class="description-card">
+				<h2>About This Event</h2>
+				<div class="public-event-body" set:html={publicBodyHtml} />
+			</div>
 
 			{(links as string[]).length > 0 && (
 				<div class="event-links-card">
@@ -310,7 +341,59 @@ const formatDescription = (content: string | string[] | undefined) => {
 	.description-card p {
 		color: var(--ink-700);
 		line-height: 1.8;
-		margin: 0;
+		margin: 0 0 0.75rem 0;
+	}
+
+	.description-card p:last-child {
+		margin-bottom: 0;
+	}
+
+	.public-event-body :global(a) {
+		color: var(--brand-ink);
+		font-weight: 600;
+		text-decoration: underline;
+		transition: color 0.2s ease;
+	}
+
+	.public-event-body :global(a:hover) {
+		color: var(--brand-sky);
+	}
+
+	.public-event-body :global(img) {
+		max-width: 100%;
+		height: auto;
+		margin: 1rem 0;
+		border-radius: 12px;
+		box-shadow: var(--shadow-card);
+	}
+
+	.public-event-body :global(iframe) {
+		max-width: 100%;
+		margin: 1rem 0;
+		border-radius: 12px;
+		border: 1px solid var(--border-soft);
+	}
+
+	.public-event-body :global(h2),
+	.public-event-body :global(h3),
+	.public-event-body :global(h4) {
+		margin: 1.25rem 0 0.75rem;
+		color: var(--ink-900);
+	}
+
+	.public-event-body :global(ul) {
+		padding-left: 1.5rem;
+		margin: 0.5rem 0 1rem;
+	}
+
+	.public-event-body :global(li) {
+		color: var(--ink-700);
+		line-height: 1.7;
+		margin-bottom: 0.5rem;
+	}
+
+	.public-event-body :global(em) {
+		color: var(--ink-500);
 	}
 
 	.member-card {

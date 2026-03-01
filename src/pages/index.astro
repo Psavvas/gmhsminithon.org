@@ -1,6 +1,7 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
 import ImageCarousel from '../components/ImageCarousel.astro';
+import SocialPopup from '../components/SocialPopup.astro';
 import fundraisingData from '../data/fundraising.json';
 import clubInfo from '../data/clubInfo.json';
 import { getCurrentYearEvents } from '../utils/events';
@@ -41,10 +42,6 @@ const currentYearEvents = await getCurrentYearEvents();
 const upcomingEvents = currentYearEvents
 	.filter((event) => new Date(event.date) >= today)
 	.slice(0, 3);
-const pastEvents = currentYearEvents
-	.filter((event) => new Date(event.date) < today)
-	.slice(-3)
-	.reverse();
 
 const formatDate = (dateString: string) =>
 	new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -56,20 +53,20 @@ const aboutParagraphs = Array.isArray(clubInfo.about)
 
 // Gallery images for carousel
 const galleryImages = [
-	{ src: '/clubPictures/openHouse.jpg', alt: 'Mini-THON Open House Picture', caption: 'Raising awareness at GMHS open house.' },
-	{ src: '/clubPictures/postBradyFTK.jpg', alt: 'Event Conclusion Picture', caption: 'Conclusion of Brady Runs for the Kids, an epic marathon fundraiser.' },
-	{ src: '/clubPictures/tapingWeisner2.jpg', alt: 'Taping a Teacher to a Wall', caption: 'Taping Mr. Weisner to the wall to raise funds for Four Diamonds.' },
-	{ src: '/clubPictures/stallDay.jpg', alt: 'Stall Day Event Picture', caption: 'Watching teachers count coins during Stall Day.' },
-	{ src: '/clubPictures/setupBradyFTK.jpg', alt: 'Event Setup Picture', caption: 'Preparing for Brady Runs for the Kids.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZLo5fse8vIJdANshRq18ScUf9uGyV2Wlt6j0E', alt: 'Mini-THON Open House Picture', caption: 'Raising awareness at GMHS open house.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZhW4Kp4Jy1QEJSPbKwvsp3dVo68iRY0Gf5gLH', alt: 'Event Conclusion Picture', caption: 'Conclusion of Brady Runs for the Kids, an epic marathon fundraiser.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZVE1xzUqABFznRmg4w5HoI612YGqWjCJQ7fMO', alt: 'Taping a Teacher to a Wall', caption: 'Taping Mr. Weisner to the wall to raise funds for Four Diamonds.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zo4JllQEQD2huKV9srAIqHxzRnjpYCPBmdOw7', alt: 'Stall Day Event Picture', caption: 'Watching teachers count coins during Stall Day.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZwZ9W3HLhbl62BiaGpSHXmTjPdfCMucLnZxr9', alt: 'Event Setup Picture', caption: 'Preparing for Brady Runs for the Kids.' },
 ];
 
 const heroBackgroundImages = [
-	{ src: '/clubPictures/endOfYearPicture.jpg', alt: 'Yearly Fundraising Total Reveal' },
-	{ src: '/clubPictures/setupBradyFTK.jpg', alt: 'Setting Up for an Event' },
-	{ src: '/clubPictures/trunkOrTreat.jpg', alt: 'Community Trunk or Treat' },
-	{ src: '/clubPictures/tapingWeisner1.jpg', alt: 'Taping a teacher to the wall as a fundraiser' },
-	{ src: '/clubPictures/postBradyFTK.jpg', alt: 'Right after a successful event' },
-	{ src: '/clubPictures/openHouse.jpg', alt: 'Manning a booth during Open House' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay', alt: 'Yearly Fundraising Total Reveal' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZwZ9W3HLhbl62BiaGpSHXmTjPdfCMucLnZxr9', alt: 'Setting Up for an Event' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl', alt: 'Community Trunk or Treat' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZNRXuG9fYOADiHNmXlcj8gE4PWTeqKktZfIFv', alt: 'Taping a teacher to the wall as a fundraiser' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZhW4Kp4Jy1QEJSPbKwvsp3dVo68iRY0Gf5gLH', alt: 'Right after a successful event' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZLo5fse8vIJdANshRq18ScUf9uGyV2Wlt6j0E', alt: 'Manning a booth during Open House' },
 ];
 ---
 
@@ -127,29 +124,6 @@ const heroBackgroundImages = [
 						<li class="event-empty">New events coming soon.</li>
 					)}
 				</ul>
-				{pastEvents.length > 0 && (
-					<>
-						<h3 class="past-events-heading">Past events</h3>
-						<ul class="event-list past-event-list">
-							{pastEvents.map((event) => (
-								<li>
-									<div class="event-card-item past">
-										<a class="event-link" href={event.url}>
-											<span class="event-date">{formatDate(event.date)}</span>
-											<div>
-												<p class="event-title">{event.title}</p>
-												<p class="event-desc">{getEventPreview(event.summary)}</p>
-											</div>
-										</a>
-										<div class="event-actions">
-											<a href={event.url} class="event-action">View details</a>
-										</div>
-									</div>
-								</li>
-							))}
-						</ul>
-					</>
-				)}
 				<a href="/events" class="text-link">View all events</a>
 			</div>
 			<div class="grid-card highlight fundraising-card">
@@ -194,10 +168,10 @@ const heroBackgroundImages = [
 					<h3>Join the club</h3>
 					<p>GMHS students can join our club meeting {clubInfo.meetings.general}</p>
 				</a>
-				<a href={clubInfo.socialMedia.instagram} class="link-card" target="_blank" rel="noopener noreferrer">
-					<h3>Follow us</h3>
-					<p>Get the latest stories, highlights, and event updates. Follow us @gmhsminithon</p>
-				</a>
+				<button class="link-card link-card-btn" data-open-social-popup type="button">
+					<h3>All social profiles</h3>
+					<p>Get the latest stories, highlights, and event updates. Follow us on Instagram, Facebook, and TikTok.</p>
+				</button>
 				<a href="/sponsorship" class="link-card">
 					<h3>Sponsor us</h3>
 					<p>Learn about sponsorship opportunities for your business.</p>
@@ -206,6 +180,7 @@ const heroBackgroundImages = [
 			</div>
 		</section>
 	</div>
+	<SocialPopup />
 </PublicLayout>
 
 <script define:vars={{ heroBackgroundImages }}>
@@ -447,6 +422,8 @@ const heroBackgroundImages = [
 		margin: 1.5rem 0 1.5rem;
 		display: grid;
 		gap: 1.2rem;
+		grid-template-rows: repeat(3, auto);
+		min-height: 320px;
 	}
 
 	.event-list li {
@@ -656,6 +633,13 @@ const heroBackgroundImages = [
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
 		transition: transform 0.3s ease, box-shadow 0.3s ease;
+	}
+
+	.link-card-btn {
+		text-align: left;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: inherit;
 	}
 
 	.link-card:hover {

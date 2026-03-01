@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import PublicLayout from '../layouts/PublicLayout.astro';
 import ImageCarousel from '../components/ImageCarousel.astro';
 import clubInfo from '../data/clubInfo.json';
@@ -16,11 +15,11 @@ const aboutContinuedParagraphs = Array.isArray(clubInfo.aboutContinued)
 
 // Team images for carousel
 const teamImages = [
-	{ src: '/clubPictures/midBradyFTK.jpg', alt: 'Middle of a Mini-THON running event', caption: 'In the middle of Brady Runs for the Kids, an epic marathon fundraiser.' },
-	{ src: '/clubPictures/miniTHONStand.jpg', alt: 'Working to raise awareness', caption: 'Working in the community to raise awareness about pediatric cancer & Mini-THON.' },
-	{ src: '/clubPictures/tapingWeisner1.jpg', alt: 'Taping a Teacher to a Wall', caption: 'Taping Mr. Weisner to the wall to raise funds for Four Diamonds.' },
-	{ src: '/clubPictures/runningBradyFTK.jpg', alt: 'Middle of Mini-THON running event', caption: 'Running with Brady during Brady Runs for the Kids.' },
-	{ src: '/clubPictures/trunkOrTreat.jpg', alt: 'Trunk or Treat', caption: 'Giving back to the community and raising awareness during the GMHS Trunk or Treat.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZUXZWjgcZNmpdHoM5jtF8PuR73EyaCwn2WcIb', alt: 'Middle of a Mini-THON running event', caption: 'In the middle of Brady Runs for the Kids, an epic marathon fundraiser.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZklP2OEgR4EzKJSIlr1QZNoOpPc5DqWU9B3ta', alt: 'Working to raise awareness', caption: 'Working in the community to raise awareness about pediatric cancer & Mini-THON.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZNRXuG9fYOADiHNmXlcj8gE4PWTeqKktZfIFv', alt: 'Taping a Teacher to a Wall', caption: 'Taping Mr. Weisner to the wall to raise funds for Four Diamonds.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zc3qhnsTZ8KuGXHxJCFVEBoURI5YdsyzkmWep', alt: 'Middle of Mini-THON running event', caption: 'Running with Brady during Brady Runs for the Kids.' },
+	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl', alt: 'Trunk or Treat', caption: 'Giving back to the community and raising awareness during the GMHS Trunk or Treat.' },
 ];
 ---
 
@@ -35,16 +34,14 @@ const teamImages = [
 		</section>
 
 		<section class="static-image">
-			<Image
-				src="/clubPictures/endOfYearPicture.jpg"
+			<img
+				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay"
 				alt="Mini-THON team"
-				width={1200}
-				height={1600}
-				sizes="(max-width: 900px) 92vw, 520px"
+				width="1200"
+				height="1600"
 				class="static-photo"
 				loading="eager"
 				decoding="async"
-				fetchpriority="high"
 			/>
 		</section>
 	</div>
