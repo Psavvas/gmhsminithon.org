@@ -1,6 +1,7 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
 import ImageCarousel from '../components/ImageCarousel.astro';
+import SocialPopup from '../components/SocialPopup.astro';
 import fundraisingData from '../data/fundraising.json';
 import clubInfo from '../data/clubInfo.json';
 import { getCurrentYearEvents } from '../utils/events';
@@ -194,10 +195,10 @@ const heroBackgroundImages = [
 					<h3>Join the club</h3>
 					<p>GMHS students can join our club meeting {clubInfo.meetings.general}</p>
 				</a>
-				<a href={clubInfo.socialMedia.instagram} class="link-card" target="_blank" rel="noopener noreferrer">
-					<h3>Follow us</h3>
-					<p>Get the latest stories, highlights, and event updates. Follow us @gmhsminithon</p>
-				</a>
+				<button class="link-card link-card-btn" data-open-social-popup type="button">
+					<h3>All social profiles</h3>
+					<p>Get the latest stories, highlights, and event updates. Follow us on Instagram, Facebook, and TikTok.</p>
+				</button>
 				<a href="/sponsorship" class="link-card">
 					<h3>Sponsor us</h3>
 					<p>Learn about sponsorship opportunities for your business.</p>
@@ -206,6 +207,7 @@ const heroBackgroundImages = [
 			</div>
 		</section>
 	</div>
+	<SocialPopup />
 </PublicLayout>
 
 <script define:vars={{ heroBackgroundImages }}>
@@ -656,6 +658,13 @@ const heroBackgroundImages = [
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
 		transition: transform 0.3s ease, box-shadow 0.3s ease;
+	}
+
+	.link-card-btn {
+		text-align: left;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: inherit;
 	}
 
 	.link-card:hover {
