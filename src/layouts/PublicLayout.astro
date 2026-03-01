@@ -126,8 +126,8 @@ const currentPath = Astro.url.pathname;
 					<div class="footer-newsletter">
 						<h3 class="footer-heading">Stay Updated</h3>
 						<p class="footer-newsletter-desc">Subscribe to our newsletter and never miss an event or update.</p>
-						<div class="newsletter-coming-soon-wrapper">
-							<div class="newsletter-coming-soon-overlay" aria-label="Newsletter coming soon">
+						<div class="newsletter-coming-soon-wrapper" aria-describedby="newsletter-coming-soon-msg">
+							<div id="newsletter-coming-soon-msg" class="newsletter-coming-soon-overlay" role="status" aria-label="Newsletter coming soon">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="20" height="20">
 									<circle cx="12" cy="12" r="10"/>
 									<line x1="12" y1="8" x2="12" y2="12"/>
@@ -135,7 +135,7 @@ const currentPath = Astro.url.pathname;
 								</svg>
 								<span>Newsletter Coming Soon</span>
 							</div>
-							<form class="newsletter-form" id="newsletter-form" novalidate aria-hidden="true">
+							<form class="newsletter-form" id="newsletter-form" novalidate aria-hidden="true" aria-describedby="newsletter-coming-soon-msg">
 								<div class="newsletter-input-row">
 									<label for="newsletter-email" class="sr-only">Email address</label>
 									<input
@@ -249,7 +249,7 @@ const currentPath = Astro.url.pathname;
 				document.body.style.overflow = '';
 			}
 
-			// Open modal from any element with data-social-modal attribute
+			// Open modal from any element with data-open-social-modal attribute
 			document.addEventListener('click', (e) => {
 				const target = e.target as Element;
 				if (target?.closest('[data-open-social-modal]')) {
