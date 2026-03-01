@@ -18,9 +18,9 @@ export const prerender = true;
 				<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button donate">
 					Donate now
 				</a>
-				<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="button instagram">
-					Follow us on Instagram
-				</a>
+				<button type="button" data-open-social-modal class="button social-profiles">
+					All Social Profiles
+				</button>
 			</div>
 		</div>
 		<div class="intro-photo">
@@ -227,15 +227,18 @@ export const prerender = true;
 		align-self: flex-start;
 	}
 
-	.button.instagram {
-		background: linear-gradient(135deg, #833AB4 0%, #E1306C 50%, #FD1D1D 100%);
+	.button.social-profiles {
+		background: linear-gradient(135deg, #2C4672 0%, #6AAAE4 100%);
 		color: var(--white);
-		box-shadow: 0 4px 12px rgba(131, 58, 180, 0.3);
+		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
+		border: none;
+		cursor: pointer;
+		font-family: 'Montserrat', 'Helvetica Neue', sans-serif;
 	}
 
-	.button.instagram:hover {
+	.button.social-profiles:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(131, 58, 180, 0.4);
+		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
 	}
 
 	.button.donate {
@@ -252,13 +255,13 @@ export const prerender = true;
 		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
 	}
 
-	.button:not(.instagram):not(.donate) {
+	.button:not(.social-profiles):not(.donate) {
 		background: var(--brand-ink);
 		color: var(--white);
 		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
 	}
 
-	.button:not(.instagram):not(.donate):hover {
+	.button:not(.social-profiles):not(.donate):hover {
 		background: var(--brand-sky);
 		color: var(--brand-ink);
 		transform: translateY(-2px);

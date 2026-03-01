@@ -194,10 +194,10 @@ const heroBackgroundImages = [
 					<h3>Join the club</h3>
 					<p>GMHS students can join our club meeting {clubInfo.meetings.general}</p>
 				</a>
-				<a href={clubInfo.socialMedia.instagram} class="link-card" target="_blank" rel="noopener noreferrer">
+				<button type="button" data-open-social-modal class="link-card link-card-button">
 					<h3>Follow us</h3>
-					<p>Get the latest stories, highlights, and event updates. Follow us @gmhsminithon</p>
-				</a>
+					<p>Get the latest stories, highlights, and event updates on all our social profiles.</p>
+				</button>
 				<a href="/sponsorship" class="link-card">
 					<h3>Sponsor us</h3>
 					<p>Learn about sponsorship opportunities for your business.</p>
@@ -661,6 +661,15 @@ const heroBackgroundImages = [
 	.link-card:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 20px 40px rgba(28, 42, 58, 0.12);
+	}
+
+	.link-card-button {
+		background: var(--surface-raised);
+		border: 1px solid var(--border-soft);
+		cursor: pointer;
+		text-align: left;
+		font-family: inherit;
+		width: 100%;
 	}
 
 	.link-card h3 {

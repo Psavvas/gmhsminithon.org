@@ -126,21 +126,32 @@ const currentPath = Astro.url.pathname;
 					<div class="footer-newsletter">
 						<h3 class="footer-heading">Stay Updated</h3>
 						<p class="footer-newsletter-desc">Subscribe to our newsletter and never miss an event or update.</p>
-						<form class="newsletter-form" id="newsletter-form" novalidate>
-							<div class="newsletter-input-row">
-								<label for="newsletter-email" class="sr-only">Email address</label>
-								<input
-									type="email"
-									id="newsletter-email"
-									name="email"
-									placeholder="Your email address"
-									required
-									autocomplete="email"
-								/>
-								<button type="submit">Subscribe</button>
+						<div class="newsletter-coming-soon-wrapper">
+							<div class="newsletter-coming-soon-overlay" aria-label="Newsletter coming soon">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="20" height="20">
+									<circle cx="12" cy="12" r="10"/>
+									<line x1="12" y1="8" x2="12" y2="12"/>
+									<line x1="12" y1="16" x2="12.01" y2="16"/>
+								</svg>
+								<span>Newsletter Coming Soon</span>
 							</div>
-							<p class="newsletter-status" id="newsletter-status" aria-live="polite"></p>
-						</form>
+							<form class="newsletter-form" id="newsletter-form" novalidate aria-hidden="true">
+								<div class="newsletter-input-row">
+									<label for="newsletter-email" class="sr-only">Email address</label>
+									<input
+										type="email"
+										id="newsletter-email"
+										name="email"
+										placeholder="Your email address"
+										required
+										autocomplete="email"
+										disabled
+									/>
+									<button type="submit" disabled>Subscribe</button>
+								</div>
+								<p class="newsletter-status" id="newsletter-status" aria-live="polite"></p>
+							</form>
+						</div>
 						<h3 class="footer-heading">Contact Us</h3>
 						<p class="footer-newsletter-desc">Send us an email at: <a href="mailto:hello@gmhsminithon.org" style="color:rgba(255,255,255,0.7);text-decoration:underline;font-weight:500;">hello@gmhsminithon.org</a></p>
 					</div>
@@ -153,39 +164,111 @@ const currentPath = Astro.url.pathname;
 			</div>
 		</footer>
 
+		<!-- Social Profiles Modal -->
+		<div id="social-modal" class="social-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="social-modal-title" hidden>
+			<div class="social-modal-panel">
+				<button class="social-modal-close" aria-label="Close social profiles" id="social-modal-close">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" aria-hidden="true">
+						<line x1="18" y1="6" x2="6" y2="18"/>
+						<line x1="6" y1="6" x2="18" y2="18"/>
+					</svg>
+				</button>
+				<div class="social-modal-header">
+					<img src="/masthead-diamond-blue.svg" alt="" class="social-modal-diamond" aria-hidden="true" width="36" height="36" loading="lazy" />
+					<h2 id="social-modal-title">Connect With Us</h2>
+					<p class="social-modal-subtitle">Follow GMHS Mini-THON on social media to stay updated on events, highlights, and more.</p>
+				</div>
+				<div class="social-modal-links">
+					<a href={clubInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="social-modal-link instagram">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="22" height="22">
+							<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+							<circle cx="12" cy="12" r="4"/>
+							<circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+						</svg>
+						<div class="social-modal-link-text">
+							<span class="social-modal-link-name">Instagram</span>
+							<span class="social-modal-link-handle">@gmhsminithon</span>
+						</div>
+						<svg class="social-modal-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="16" height="16">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+					<a href={clubInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" class="social-modal-link facebook">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+							<path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/>
+						</svg>
+						<div class="social-modal-link-text">
+							<span class="social-modal-link-name">Facebook</span>
+							<span class="social-modal-link-handle">GMHS Mini-THON</span>
+						</div>
+						<svg class="social-modal-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="16" height="16">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+					<a href={clubInfo.socialMedia.tiktok} target="_blank" rel="noopener noreferrer" class="social-modal-link tiktok">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="22" height="22">
+							<path d="M12.5 2c.3 4.2 3.1 6.2 6.5 6.4v3.1c-1.1-.1-2.2-.3-3.2-.7v7.2c0 3.1-2.1 4.8-4.7 4.8-2.7 0-4.6-1.7-4.6-4.5 0-2.7 2-4.5 4.6-4.5.3 0 .6 0 .9.1v2.7c-.2-.1-.5-.1-.8-.1-1.2 0-2.1.8-2.1 2.1 0 1.2.8 2.1 2.1 2.1 1.2 0 2.1-.8 2.1-2.1V2h1.2z"/>
+						</svg>
+						<div class="social-modal-link-text">
+							<span class="social-modal-link-name">TikTok</span>
+							<span class="social-modal-link-handle">@gmhs.minithon</span>
+						</div>
+						<svg class="social-modal-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="16" height="16">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+				</div>
+				<div class="social-modal-newsletter">
+					<div class="social-modal-newsletter-badge">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18">
+							<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+							<polyline points="22,6 12,13 2,6"/>
+						</svg>
+						<span>Newsletter — Coming Soon</span>
+					</div>
+					<p class="social-modal-newsletter-text">We're working on a newsletter to keep you in the loop. Check back soon!</p>
+				</div>
+			</div>
+		</div>
+
 		<script>
-			const form = document.getElementById('newsletter-form') as HTMLFormElement | null;
-			const statusEl = document.getElementById('newsletter-status');
+			// Social Modal
+			const socialModal = document.getElementById('social-modal');
+			const socialModalClose = document.getElementById('social-modal-close');
 
-			if (form && statusEl) {
-				form.addEventListener('submit', async (e) => {
-					e.preventDefault();
-					const button = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
-					if (button) button.disabled = true;
-					statusEl.textContent = '';
-					statusEl.className = 'newsletter-status';
-
-					try {
-						const formData = new FormData(form);
-						const res = await fetch('/api/newsletter', { method: 'POST', body: formData });
-						const json = await res.json() as { success?: boolean; error?: string };
-
-						if (json.success) {
-							statusEl.textContent = "✓ You're subscribed! Thank you.";
-							statusEl.classList.add('newsletter-status--success');
-							form.reset();
-						} else {
-							statusEl.textContent = json.error ?? 'Something went wrong. Please try again.';
-							statusEl.classList.add('newsletter-status--error');
-						}
-					} catch {
-						statusEl.textContent = 'Unable to subscribe right now. Please try again later.';
-						statusEl.classList.add('newsletter-status--error');
-					} finally {
-						if (button) button.disabled = false;
-					}
-				});
+			function openSocialModal() {
+				if (!socialModal) return;
+				socialModal.hidden = false;
+				document.body.style.overflow = 'hidden';
+				socialModalClose?.focus();
 			}
+
+			function closeSocialModal() {
+				if (!socialModal) return;
+				socialModal.hidden = true;
+				document.body.style.overflow = '';
+			}
+
+			// Open modal from any element with data-social-modal attribute
+			document.addEventListener('click', (e) => {
+				const target = e.target as Element;
+				if (target?.closest('[data-open-social-modal]')) {
+					e.preventDefault();
+					openSocialModal();
+				}
+			});
+
+			socialModalClose?.addEventListener('click', closeSocialModal);
+
+			socialModal?.addEventListener('click', (e) => {
+				if (e.target === socialModal) closeSocialModal();
+			});
+
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape' && socialModal && !socialModal.hidden) {
+					closeSocialModal();
+				}
+			});
 		</script>
 		<NavBehavior />
 		<SpeedInsights />
@@ -524,6 +607,30 @@ const currentPath = Astro.url.pathname;
 		flex-shrink: 0;
 	}
 
+	@media (max-width: 480px) {
+		.footer-social {
+			gap: 0.5rem;
+		}
+
+		.footer-social-link {
+			padding: 0.5rem;
+			gap: 0;
+			border-radius: 50%;
+			width: 36px;
+			height: 36px;
+			justify-content: center;
+		}
+
+		.footer-social-link span {
+			display: none;
+		}
+
+		.footer-social-link svg {
+			width: 18px;
+			height: 18px;
+		}
+	}
+
 	/* Navigation column */
 	.footer-heading {
 		font-family: 'Merriweather', 'Times New Roman', serif;
@@ -761,6 +868,232 @@ const currentPath = Astro.url.pathname;
 		.nav-links a {
 			font-size: 1.1rem;
 			padding: 0.65rem 1.2rem;
+		}
+	}
+
+	/* Newsletter coming soon */
+	.newsletter-coming-soon-wrapper {
+		position: relative;
+		margin-bottom: 1.5rem;
+	}
+
+	.newsletter-coming-soon-overlay {
+		position: absolute;
+		inset: -0.75rem;
+		background: rgba(28, 42, 58, 0.82);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+		border-radius: 12px;
+		border: 1px solid rgba(106, 170, 228, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		color: var(--white);
+		font-size: 0.92rem;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		z-index: 2;
+		text-align: center;
+	}
+
+	.newsletter-coming-soon-wrapper .newsletter-form {
+		opacity: 0.35;
+		pointer-events: none;
+		user-select: none;
+	}
+
+	/* Social Modal */
+	.social-modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(12, 20, 35, 0.72);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+		z-index: 2000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1.5rem;
+	}
+
+	.social-modal-overlay[hidden] {
+		display: none;
+	}
+
+	.social-modal-panel {
+		background: var(--surface-raised);
+		border-radius: 24px;
+		box-shadow: 0 32px 64px rgba(12, 20, 35, 0.35);
+		max-width: 440px;
+		width: 100%;
+		padding: 2rem;
+		position: relative;
+		animation: modal-enter 0.25s ease both;
+	}
+
+	@keyframes modal-enter {
+		from { opacity: 0; transform: translateY(16px) scale(0.97); }
+		to { opacity: 1; transform: translateY(0) scale(1); }
+	}
+
+	.social-modal-close {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		background: var(--surface);
+		border: 1px solid var(--border-soft);
+		border-radius: 50%;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		color: var(--ink-700);
+		transition: all 0.2s ease;
+	}
+
+	.social-modal-close:hover {
+		background: var(--border-soft);
+		color: var(--ink-900);
+	}
+
+	.social-modal-header {
+		text-align: center;
+		margin-bottom: 1.5rem;
+	}
+
+	.social-modal-diamond {
+		display: block;
+		margin: 0 auto 0.75rem;
+		height: 36px;
+		width: auto;
+	}
+
+	.social-modal-header h2 {
+		font-size: 1.5rem;
+		color: var(--ink-900);
+		margin-bottom: 0.5rem;
+	}
+
+	.social-modal-subtitle {
+		font-size: 0.9rem;
+		color: var(--ink-500);
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.social-modal-links {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.social-modal-link {
+		display: flex;
+		align-items: center;
+		gap: 0.9rem;
+		padding: 0.9rem 1.1rem;
+		border-radius: 14px;
+		text-decoration: none;
+		transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+		border: 1px solid var(--border-soft);
+		background: var(--surface);
+	}
+
+	.social-modal-link:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(28, 42, 58, 0.12);
+	}
+
+	.social-modal-link.instagram {
+		background: linear-gradient(135deg, rgba(131, 58, 180, 0.08), rgba(225, 48, 108, 0.08));
+		border-color: rgba(225, 48, 108, 0.2);
+		color: #c0306a;
+	}
+
+	.social-modal-link.instagram:hover {
+		background: linear-gradient(135deg, rgba(131, 58, 180, 0.14), rgba(225, 48, 108, 0.14));
+	}
+
+	.social-modal-link.facebook {
+		background: rgba(24, 119, 242, 0.07);
+		border-color: rgba(24, 119, 242, 0.2);
+		color: #1877f2;
+	}
+
+	.social-modal-link.facebook:hover {
+		background: rgba(24, 119, 242, 0.13);
+	}
+
+	.social-modal-link.tiktok {
+		background: rgba(0, 0, 0, 0.04);
+		border-color: rgba(0, 0, 0, 0.12);
+		color: var(--ink-900);
+	}
+
+	.social-modal-link.tiktok:hover {
+		background: rgba(0, 0, 0, 0.08);
+	}
+
+	.social-modal-link-text {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+
+	.social-modal-link-name {
+		font-weight: 600;
+		font-size: 0.95rem;
+		color: inherit;
+	}
+
+	.social-modal-link-handle {
+		font-size: 0.8rem;
+		color: var(--ink-500);
+	}
+
+	.social-modal-arrow {
+		flex-shrink: 0;
+		color: var(--ink-500);
+		transition: transform 0.2s ease;
+	}
+
+	.social-modal-link:hover .social-modal-arrow {
+		transform: translateX(3px);
+	}
+
+	.social-modal-newsletter {
+		background: linear-gradient(135deg, rgba(106, 170, 228, 0.1), rgba(44, 70, 114, 0.06));
+		border: 1px solid rgba(106, 170, 228, 0.25);
+		border-radius: 14px;
+		padding: 1rem 1.1rem;
+	}
+
+	.social-modal-newsletter-badge {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: var(--brand-ink);
+		font-weight: 600;
+		font-size: 0.9rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.social-modal-newsletter-text {
+		font-size: 0.83rem;
+		color: var(--ink-500);
+		margin: 0;
+		line-height: 1.55;
+	}
+
+	@media (max-width: 480px) {
+		.social-modal-panel {
+			padding: 1.5rem;
+			border-radius: 20px;
 		}
 	}
 </style>
