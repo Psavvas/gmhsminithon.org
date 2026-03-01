@@ -51,14 +51,14 @@ const renderMarkdown = (markdown: string) => {
 	html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
 	html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
 
-	// Replace bold text
+	// Replace bold text (must run before italic)
 	html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
 
 	// Replace markdown links [text](url)
 	html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
-	// Replace italic text
-	html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+	// Replace italic text (single * only, bold already replaced)
+	html = html.replace(/(?<!\*)\*(?!\*)([^*]+)\*(?!\*)/g, '<em>$1</em>');
 
 	// Process lists
 	const lines = html.split('\n');
@@ -125,10 +125,10 @@ if (rawContent) {
 		.trim();
 
 	// Convert <Image src={varName} ... /> to <img src="path" ... />
-	body = body.replace(/<Image\s+([\s\S]*?)\/>/g, (_match, attrs) => {
+	body = body.replace(/<Image\s+([\s\S]*?)\/>/g, (_, attrs) => {
 		let imgAttrs = attrs;
 		// Replace src={variable} with src="resolved-path"
-		imgAttrs = imgAttrs.replace(/src=\{(\w+)\}/g, (_: string, varName: string) => {
+		imgAttrs = imgAttrs.replace(/src=\{(\w+)\}/g, (_m: string, varName: string) => {
 			const resolved = importMap[varName] || '';
 			return `src="${resolved}"`;
 		});
