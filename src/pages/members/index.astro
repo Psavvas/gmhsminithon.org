@@ -18,12 +18,8 @@ const currentYearEvents = await getCurrentYearEvents();
 
 const upcomingEvents = currentYearEvents
 	.filter((event) => new Date(event.date) >= today)
+	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 	.slice(0, 3);
-
-const pastEvents = currentYearEvents
-	.filter((event) => new Date(event.date) < today)
-	.slice(-3)
-	.reverse();
 
 const allAnnouncements = normalizeAnnouncements(memberAnnouncements.announcements);
 const announcements = getPinnedAnnouncements(allAnnouncements);
@@ -88,45 +84,26 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 		</div>
 	</section>
 
-	{(upcomingEvents.length > 0 || pastEvents.length > 0) && (
-		<section class="upcoming-events">
-			<h2>Upcoming Events</h2>
-			{upcomingEvents.length > 0 ? (
-				<div class="events-list">
-					{upcomingEvents.map(event => (
-						<div class="event-preview">
-							<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
-							<h3>{event.title}</h3>
-							<p class="date">{formatEventDate(event.date, event.time)}</p>
-							<div class="event-actions">
-								<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
-							</div>
+	<section class="upcoming-events">
+		<h2>Upcoming Events</h2>
+		{upcomingEvents.length > 0 ? (
+			<div class="events-list">
+				{upcomingEvents.map(event => (
+					<div class="event-preview">
+						<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
+						<h3>{event.title}</h3>
+						<p class="date">{formatEventDate(event.date, event.time)}</p>
+						<div class="event-actions">
+							<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
 						</div>
-					))}
-				</div>
-			) : (
-				<p class="empty-state">No upcoming events right now.</p>
-			)}
-			{pastEvents.length > 0 && (
-				<>
-					<h3 class="past-events-heading">Past Events</h3>
-					<div class="events-list past-events-list">
-						{pastEvents.map(event => (
-							<div class="event-preview past">
-								<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
-								<h3>{event.title}</h3>
-								<p class="date">{formatEventDate(event.date, event.time)}</p>
-								<div class="event-actions">
-									<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
-								</div>
-							</div>
-						))}
 					</div>
-				</>
-			)}
-			<a href="/members/upcoming-events" class="view-all">View All Events →</a>
-		</section>
-	)}
+				))}
+			</div>
+		) : (
+			<p class="empty-state">No upcoming events right now.</p>
+		)}
+		<a href="/members/upcoming-events" class="view-all">View All Events →</a>
+	</section>
 </MemberLayout>
 
 <style>
@@ -280,22 +257,6 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 		border-radius: 16px;
 		border: 1px solid var(--border-soft);
 		border-left: 4px solid var(--brand-sky);
-	}
-
-	.event-preview.past {
-		border-left-color: var(--brand-sky);
-	}
-
-	.past-events-heading {
-		font-size: 1.2rem;
-		color: var(--ink-800);
-		margin: 1rem 0 0.75rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid var(--border-soft);
-	}
-
-	.past-events-list {
-		margin-bottom: 0.5rem;
 	}
 
 	.event-type {

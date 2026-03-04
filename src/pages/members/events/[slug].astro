@@ -134,7 +134,8 @@ if (rawContent) {
 		});
 		// Remove unsupported Astro-specific attributes
 		imgAttrs = imgAttrs.replace(/\s*(loading|decoding|fetchpriority)="[^"]*"/g, '');
-		return `<img ${imgAttrs.trim()} />`;
+		imgAttrs = imgAttrs.replace(/\s+/g, ' ').trim();
+		return `<img ${imgAttrs} />`;
 	});
 
 	publicBodyHtml = renderMarkdown(body);

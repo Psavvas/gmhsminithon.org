@@ -31,7 +31,6 @@ export const prerender = true;
 				height="800"
 				class="intro-photo-image"
 				loading="eager"
-				decoding="async"
 			/>
 		</div>
 	</section>
@@ -63,6 +62,35 @@ export const prerender = true;
 		</div>
 	</section>
 	<SocialPopup />
+
+	<script>
+		const introGrid = document.querySelector('.intro-grid');
+		const introText = introGrid?.querySelector('.intro-text');
+		const introPhoto = introGrid?.querySelector('.intro-photo');
+		const introImage = introGrid?.querySelector('.intro-photo-image');
+
+		if (introText instanceof HTMLElement && introPhoto instanceof HTMLElement && introImage instanceof HTMLElement) {
+			const syncIntroPhotoHeight = () => {
+				if (window.matchMedia('(max-width: 768px)').matches) {
+					introPhoto.style.height = 'auto';
+					introPhoto.style.maxHeight = 'none';
+					introImage.style.maxHeight = 'none';
+					return;
+				}
+
+				const textHeight = introText.offsetHeight;
+				introPhoto.style.height = `${textHeight}px`;
+				introPhoto.style.maxHeight = `${textHeight}px`;
+				introImage.style.maxHeight = `${textHeight}px`;
+			};
+
+			syncIntroPhotoHeight();
+			window.addEventListener('load', syncIntroPhotoHeight);
+			const observer = new ResizeObserver(syncIntroPhotoHeight);
+			observer.observe(introText);
+			window.addEventListener('resize', syncIntroPhotoHeight);
+		}
+	</script>
 </PublicLayout>
 
 <style>
@@ -85,7 +113,7 @@ export const prerender = true;
 		display: grid;
 		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
 		gap: 2rem;
-		align-items: stretch;
+		align-items: start;
 	}
 
 	.intro-text {
@@ -107,7 +135,7 @@ export const prerender = true;
 	}
 
 	.intro-photo {
-		max-height: 400px;
+		height: auto;
 		overflow: hidden;
 		border-radius: 20px;
 	}
@@ -120,7 +148,6 @@ export const prerender = true;
 		box-shadow: var(--shadow-card);
 		border: 1px solid var(--border-soft);
 		display: block;
-		max-height: 400px;
 	}
 
 	.audience-grid {
@@ -234,7 +261,7 @@ export const prerender = true;
 	}
 
 	.button.social {
-		background: linear-gradient(135deg, #2C4672 0%, #6AAAE4 100%);
+		background: var(--brand-ink);
 		color: var(--white);
 		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
 		border: none;
@@ -244,6 +271,7 @@ export const prerender = true;
 	}
 
 	.button.social:hover {
+		background: var(--brand-ink);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
 	}
