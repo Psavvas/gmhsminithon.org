@@ -46,6 +46,14 @@ const renderMarkdown = (markdown: string) => {
 
 	let html = markdown;
 
+	// Collapse multi-line HTML tags into single lines
+	html = html.replace(/<[a-zA-Z][a-zA-Z0-9]*\b[^>]*>/g, (match) => {
+		if (match.includes('\n')) {
+			return match.replace(/\n\s*/g, ' ');
+		}
+		return match;
+	});
+
 	// Replace headings
 	html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
 	html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
