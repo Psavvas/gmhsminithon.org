@@ -1,93 +1,247 @@
 
 # GMHS Mini-THON Website
 
-This repository contains the official website for Great Mills High School Mini-THON, built with [Astro](https://astro.build/). The site provides information about our club, events, fundraising, and resources for members and sponsors.
+This repository contains the official website for Great Mills High School Mini-THON, built with [Astro](https://astro.build/) and deployed on [Vercel](https://vercel.com/). The site provides information about our club, events, fundraising, and resources for members and sponsors.
 
-## Website Organization
+## Tech Stack
 
-The project is organized as follows:
+- **Framework:** [Astro](https://docs.astro.build/) (static site generator with SSR support)
+- **Hosting:** [Vercel](https://vercel.com/) (via `@astrojs/vercel` adapter)
+- **Content:** JSON data files + MDX pages
+- **Package Manager:** [pnpm](https://pnpm.io/)
+- **Node.js:** 24.x
 
-- `src/pages/` — Main site pages. Each `.astro` or `.mdx` file is a route:
-  - `index.astro`: Homepage
-  - `about.astro`: About the club
-  - `events.astro`: Events overview
-  - `fundraising.astro`: Fundraising info
-  - `get-involved.astro`: How to join or help
-  - `sponsors.astro`, `sponsorship.astro`: Sponsor info
-  - `members/`: Member-only pages (announcements, club info, resources, login, upcoming events)
-  - `events/`: Individual event pages (`.mdx` files)
-  - `api/`: API endpoints (e.g., newsletter)
-- `src/components/` — Reusable UI components (cards, carousels, countdowns, navigation, etc.)
-- `src/layouts/` — Page layouts (public, event, member, etc.)
-- `src/data/` — JSON files for club info, fundraising, announcements, resources, redirects, sponsors
-- `src/utils/` — Utility functions (event handling, authentication, etc.)
-- `public/` — Static assets (images, banners, sponsor logos, etc.)
-- `scripts/` — Utility scripts
+## Project Structure
+
+```
+src/
+├── components/       # Reusable UI components
+│   ├── Card.astro             # Card display component
+│   ├── EventCountdown.astro   # Countdown timer for upcoming events
+│   ├── EventMDXContent.astro  # Renders MDX content for event pages
+│   ├── ImageCarousel.astro    # Image slideshow component
+│   ├── MDXContent.astro       # General MDX content renderer
+│   ├── NavBehavior.astro      # Navigation bar behavior/logic
+│   └── SocialPopup.astro      # Social media links popup
+├── data/             # JSON data files (edit these to update site content)
+│   ├── clubInfo.json            # Officers, mission, meeting times, social media
+│   ├── fundraising.json         # Fundraising totals, goals, and history
+│   ├── memberAnnouncements.json # Member portal announcements
+│   ├── memberResources.json     # Member resource links
+│   ├── redirects.json           # Short URL redirects (e.g., /redirect/donate)
+│   └── sponsors.json            # Sponsor names, tiers, logos, and websites
+├── layouts/          # Page layout templates
+│   ├── EventLayout.astro        # Layout for individual event pages
+│   ├── Layout.astro             # Base layout
+│   ├── MemberEventLayout.astro  # Layout for member-facing event details
+│   ├── MemberLayout.astro       # Layout for member portal pages
+│   └── PublicLayout.astro       # Layout for public-facing pages
+├── pages/            # Site pages (each file = a route)
+│   ├── index.astro              # Homepage
+│   ├── about.astro              # About the club
+│   ├── events.astro             # Events listing page
+│   ├── events/                  # Individual event pages (MDX files)
+│   ├── fundraising.astro        # Fundraising progress and history
+│   ├── get-involved.astro       # How to join or help
+│   ├── sponsors.astro           # Current sponsors display
+│   ├── sponsorship.astro        # Sponsorship info for potential sponsors
+│   ├── members/                 # Member-only portal pages
+│   ├── api/                     # API endpoints (e.g., newsletter)
+│   ├── redirect/[slug].astro    # Dynamic redirect handler
+│   └── 404.astro                # Custom 404 page
+└── utils/            # Utility functions
+    ├── announcements.ts         # Announcement display helpers
+    ├── auth.ts                  # Member authentication logic
+    └── events.ts                # Event data processing
+```
+
+Key configuration files in the project root:
+
+| File | Purpose |
+|---|---|
+| `astro.config.ts` | Astro framework configuration (Vercel adapter, MDX, analytics) |
+| `package.json` | Dependencies and npm scripts |
+| `pnpm-lock.yaml` | Locked dependency versions |
+| `.npmrc` | pnpm configuration |
 
 ## How to Update the Site
 
-### Elected Officers
-- Officers are listed in `src/data/clubInfo.json` under the `officers` array.
-- To update, edit the officer entries (role, name, email) in the JSON file.
+Most site content is managed through JSON files in `src/data/`. Edit these files and the site will automatically reflect your changes on the next deploy.
 
-### Website Description & Mission
-- The club mission and description are in `src/data/clubInfo.json` (`mission`, `about`, `aboutContinued`).
-- Update these fields to change the homepage and about page text.
+### Adding a New Event
 
-### Member Files
-- Member announcements: `src/data/memberAnnouncements.json`
-- Member resources: `src/data/memberResources.json`
-- Club info: `src/data/clubInfo.json`
-- To add or update, edit the relevant JSON files.
+Events are individual MDX files in `src/pages/events/`. Each file becomes a page at `/events/<filename>`.
 
-### New Events
-- Events are listed in `src/pages/events/` as `.mdx` files (one per event).
-- To add a new event:
-  1. Create a new `.mdx` file in `src/pages/events/` (e.g., `new-event.mdx`).
-  2. Fill in the event details (title, date, summary, etc.) using the existing files as templates.
-- Event metadata may also be managed in `src/data/events.json` or similar utility files.
+1. Create a new `.mdx` file in `src/pages/events/` (e.g., `bake-sale.mdx`).
+2. Use this template:
 
-### Fundraising Totals
-- Fundraising data is in `src/data/fundraising.json`.
-- Update `currentTotal`, `goalTotal`, and `currentYear` to reflect new totals and goals.
-- The homepage and fundraising page will automatically show updated values.
+```mdx
+---
+layout: ../../layouts/EventLayout.astro
+title: Your Event Name
+date: MM-DD-YYYY
+location: Event Location
+event_type: type
+summary: A brief one-line description of the event.
+---
 
-### Sponsors
-- Sponsor information is in `src/data/sponsors.json` and images in `public/sponsors/`.
-- To add a sponsor, update the JSON file and add their logo/image to the public folder.
+Public-facing description of the event goes here. This is what everyone sees.
 
-### Announcements & Redirects
-- Announcements: `src/data/memberAnnouncements.json`
-- Redirects: `src/data/redirects.json`
-- Edit these files to update site-wide announcements or add new redirects.
+<Fragment slot="member-details">
 
-## Editing & Deployment
+**Event Lead:** Name
+### Member notes
+- Internal details only visible to logged-in members
 
-1. Clone the repository and install dependencies:
-	```sh
-	pnpm install
-	```
-2. Start the development server:
-	```sh
-	pnpm run dev
-	```
-3. Make your changes (edit JSON files, add pages/components, update assets).
-4. Build for production:
-	```sh
-	pnpm run build
-	```
-5. Preview locally:
-	```sh
-	pnpm run preview
-	```
-6. Deploy to your hosting provider (e.g., Vercel).
+</Fragment>
+```
+
+**Frontmatter fields:**
+- `layout` — Always use `../../layouts/EventLayout.astro`
+- `title` — Event name displayed as the heading
+- `date` — Event date in `MM-DD-YYYY` format
+- `location` — Where the event takes place
+- `event_type` — Category of event (e.g., `race`, `game`, `fundraiser`)
+- `summary` — Short description shown on the events listing page
+
+**Content sections:**
+- The main body (outside `<Fragment>`) is the public event description
+- Content inside `<Fragment slot="member-details">` is only visible to logged-in members
+
+### Updating Sponsor Information
+
+Sponsors are stored in `src/data/sponsors.json`. Each sponsor has:
+
+```json
+{
+  "name": "Sponsor Name",
+  "tier": "Gold",
+  "logo": "https://example.com/logo.png",
+  "website": "https://example.com"
+}
+```
+
+**To add a new sponsor:**
+1. Upload the sponsor's logo image using the upload script (`pnpm run upload`) or add it to a hosted location.
+2. Add a new entry to the `sponsors` array in `src/data/sponsors.json`.
+3. Set the `tier` to one of: `Platinum`, `Gold`, `Silver`, or `Bronze`.
+
+**To remove a sponsor:** Delete their entry from the JSON array.
+
+### Updating Fundraising Data
+
+Edit `src/data/fundraising.json`:
+
+```json
+{
+  "currentYear": 2026,
+  "currentTotal": 3751,
+  "goalTotal": 13000,
+  "history": [
+    { "year": 2025, "total": 12474.54 }
+  ],
+  "donorDriveLink": "https://fourdiamonds.donordrive.com/GMHSMT"
+}
+```
+
+- Update `currentTotal` as donations come in
+- Update `goalTotal` at the start of each year
+- Add previous year totals to the `history` array
+- Update `currentYear` when a new fundraising cycle begins
+
+### Updating Club Officers
+
+Edit the `officers` array in `src/data/clubInfo.json`. Each officer entry has a `role`, `name`, and `email` field. Update these at the start of each school year when new officers are elected.
+
+### Updating Club Info (Mission, Meetings, Social Media)
+
+All in `src/data/clubInfo.json`:
+
+- `mission` — Club mission statement (array of paragraphs)
+- `about` / `aboutContinued` — About page text (arrays of paragraphs)
+- `meetings` — Meeting schedule with `general` and `board` fields
+- `socialMedia` — Links to Instagram, GroupMe, Facebook, TikTok, etc.
+
+### Adding Member Announcements
+
+Edit `src/data/memberAnnouncements.json` to add entries to the `announcements` array:
+
+```json
+{
+  "title": "Announcement Title",
+  "descriptionMdx": "Announcement body text (supports MDX formatting)",
+  "type": "info",
+  "dateAdded": "YYYY-MM-DD",
+  "pin": false
+}
+```
+
+Set `pin: true` to keep an announcement at the top of the list.
+
+### Adding Redirects
+
+Edit `src/data/redirects.json` to create short URLs. Each entry maps a slug to a destination:
+
+```json
+{
+  "slug": "donate",
+  "label": "Donate",
+  "url": "https://fourdiamonds.donordrive.com/GMHSMT"
+}
+```
+
+This creates a redirect at `/redirect/donate` that points to the specified URL.
+
+## Local Development
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 24.x
+- [pnpm](https://pnpm.io/) (automatically managed via corepack)
+
+### Getting Started
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/Psavvas/gmhsminithon.org.git
+   cd gmhsminithon.org
+   ```
+
+2. Enable corepack (for pnpm):
+   ```sh
+   corepack enable
+   ```
+
+3. Install dependencies:
+   ```sh
+   pnpm install
+   ```
+
+4. Start the development server:
+   ```sh
+   pnpm run dev
+   ```
+   The site will be available at `http://localhost:4321`.
+
+5. Make your changes (edit JSON files, add pages/components, update assets).
+
+### Build & Preview
+
+```sh
+pnpm run build     # Build for production
+pnpm run preview   # Preview the production build locally
+```
+
+### Deployment
+
+The site is automatically deployed to [Vercel](https://vercel.com/) when changes are pushed to the main branch. No manual deployment steps are needed.
 
 ## Additional Notes
 
-- All site content is managed via JSON files and Markdown/MDX pages for easy editing.
-- Static assets (images, logos) are in the `public/` directory.
-- For code changes, use the Astro framework and follow component/layout conventions.
-- For questions or help, contact the current club officers (see `clubInfo.json`).
+- All site content is managed via JSON files and MDX pages — no database is required.
+- Static assets (images, logos) can be placed in the `src/assets/` directory or uploaded externally.
+- The member portal (`/members/`) is protected by authentication (see `src/utils/auth.ts`).
+- For questions or help, contact the current club officers (see `src/data/clubInfo.json`).
 
 ---
 For more information about Astro, see [Astro Documentation](https://docs.astro.build/).
