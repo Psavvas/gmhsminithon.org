@@ -1,12 +1,32 @@
 <script>
+	const navbarAnimationStorageKey = 'gmhs-navbar-animated';
+	const animationState = window as Window & { __gmhsNavbarAnimated?: boolean };
 	const navbar = document.querySelector('.navbar');
 	const toggle = document.querySelector('.nav-toggle');
 	const navLinks = document.querySelector('.nav-links');
 
 	if (navbar) {
-		navbar.addEventListener('animationend', () => {
+		let hasAnimated = animationState.__gmhsNavbarAnimated === true;
+		try {
+			hasAnimated = hasAnimated || sessionStorage.getItem(navbarAnimationStorageKey) === 'true';
+		} catch {}
+
+		if (hasAnimated) {
 			navbar.style.animation = 'none';
-		}, { once: true });
+		} else {
+			animationState.__gmhsNavbarAnimated = true;
+			try {
+				sessionStorage.setItem(navbarAnimationStorageKey, 'true');
+			} catch {}
+
+			navbar.addEventListener(
+				'animationend',
+				() => {
+					navbar.style.animation = 'none';
+				},
+				{ once: true }
+			);
+		}
 
 		let lastScrollY = window.scrollY;
 		const hideOffset = 80;
