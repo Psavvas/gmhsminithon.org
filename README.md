@@ -8,7 +8,7 @@ This repository contains the official website for Great Mills High School Mini-T
 - **Framework:** [Astro](https://docs.astro.build/) (static site generator with SSR support)
 - **Hosting:** [Vercel](https://vercel.com/) (via `@astrojs/vercel` adapter)
 - **Content:** JSON data files + MDX pages
-- **Package Manager:** [pnpm](https://pnpm.io/)
+- **Package Manager:** [Bun](https://bun.sh/)
 - **Node.js:** 24.x
 
 ## Project Structure
@@ -61,8 +61,7 @@ Key configuration files in the project root:
 |---|---|
 | `astro.config.ts` | Astro framework configuration (Vercel adapter, MDX, analytics) |
 | `package.json` | Dependencies and npm scripts |
-| `pnpm-lock.yaml` | Locked dependency versions |
-| `.npmrc` | pnpm configuration |
+| `bun.lock` | Locked dependency versions |
 
 ## How to Update the Site
 
@@ -122,7 +121,7 @@ Sponsors are stored in `src/data/sponsors.json`. Each sponsor has:
 ```
 
 **To add a new sponsor:**
-1. Upload the sponsor's logo image using the upload script (`pnpm run upload`) or add it to a hosted location.
+1. Upload the sponsor's logo image using the upload script (`bun run upload`) or add it to a hosted location.
 2. Add a new entry to the `sponsors` array in `src/data/sponsors.json`.
 3. Set the `tier` to one of: `Platinum`, `Gold`, `Silver`, or `Bronze`.
 
@@ -197,7 +196,7 @@ This creates a redirect at `/redirect/donate` that points to the specified URL.
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) 24.x
-- [pnpm](https://pnpm.io/) (automatically managed via corepack)
+- [Bun](https://bun.sh/)
 
 ### Getting Started
 
@@ -207,29 +206,24 @@ This creates a redirect at `/redirect/donate` that points to the specified URL.
    cd gmhsminithon.org
    ```
 
-2. Enable corepack (for pnpm):
+2. Install dependencies:
    ```sh
-   corepack enable
+   bun install
    ```
 
-3. Install dependencies:
+3. Start the development server:
    ```sh
-   pnpm install
-   ```
-
-4. Start the development server:
-   ```sh
-   pnpm run dev
+   bun run dev
    ```
    The site will be available at `http://localhost:4321`.
 
-5. Make your changes (edit JSON files, add pages/components, update assets).
+4. Make your changes (edit JSON files, add pages/components, update assets).
 
 ### Build & Preview
 
 ```sh
-pnpm run build     # Build for production
-pnpm run preview   # Preview the production build locally
+bun run build     # Build for production
+bun run preview   # Preview the production build locally
 ```
 
 ### Deployment
