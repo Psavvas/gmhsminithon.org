@@ -1,15 +1,23 @@
 <script>
 	const navbarAnimationStorageKey = 'gmhs-navbar-animated';
 	const animationState = window as Window & { __gmhsNavbarAnimated?: boolean };
+	const canIgnoreStorageError = (error: unknown) =>
+		error instanceof DOMException && ['QuotaExceededError', 'SecurityError'].includes(error.name);
 	const navbar = document.querySelector('.navbar');
 	const toggle = document.querySelector('.nav-toggle');
 	const navLinks = document.querySelector('.nav-links');
 
 	if (navbar) {
-		let hasAnimated = animationState.__gmhsNavbarAnimated === true;
-		try {
-			hasAnimated = hasAnimated || sessionStorage.getItem(navbarAnimationStorageKey) === 'true';
-		} catch {}
+		const hasAnimatedInMemory = animationState.__gmhsNavbarAnimated === true;
+		let hasAnimatedInStorage = false;
+		if (!hasAnimatedInMemory) {
+			try {
+				hasAnimatedInStorage = sessionStorage.getItem(navbarAnimationStorageKey) === 'true';
+			} catch (error) {
+				if (!canIgnoreStorageError(error)) throw error;
+			}
+		}
+		const hasAnimated = hasAnimatedInMemory || hasAnimatedInStorage;
 
 		if (hasAnimated) {
 			navbar.style.animation = 'none';
@@ -17,7 +25,9 @@
 			animationState.__gmhsNavbarAnimated = true;
 			try {
 				sessionStorage.setItem(navbarAnimationStorageKey, 'true');
-			} catch {}
+			} catch (error) {
+				if (!canIgnoreStorageError(error)) throw error;
+			}
 
 			navbar.addEventListener(
 				'animationend',
