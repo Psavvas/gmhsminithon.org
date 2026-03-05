@@ -1,12 +1,42 @@
 <script>
+	const navbarAnimationStorageKey = 'gmhs-navbar-animated';
+	const animationState = window as Window & { __gmhsNavbarAnimated?: boolean };
+	const canIgnoreStorageError = (error: unknown) =>
+		error instanceof DOMException && ['QuotaExceededError', 'SecurityError'].includes(error.name);
 	const navbar = document.querySelector('.navbar');
 	const toggle = document.querySelector('.nav-toggle');
 	const navLinks = document.querySelector('.nav-links');
 
 	if (navbar) {
-		navbar.addEventListener('animationend', () => {
+		const hasAnimatedInMemory = animationState.__gmhsNavbarAnimated === true;
+		let hasAnimatedInStorage = false;
+		if (!hasAnimatedInMemory) {
+			try {
+				hasAnimatedInStorage = sessionStorage.getItem(navbarAnimationStorageKey) === 'true';
+			} catch (error) {
+				if (!canIgnoreStorageError(error)) throw error;
+			}
+		}
+		const hasAnimated = hasAnimatedInMemory || hasAnimatedInStorage;
+
+		if (hasAnimated) {
 			navbar.style.animation = 'none';
-		}, { once: true });
+		} else {
+			animationState.__gmhsNavbarAnimated = true;
+			try {
+				sessionStorage.setItem(navbarAnimationStorageKey, 'true');
+			} catch (error) {
+				if (!canIgnoreStorageError(error)) throw error;
+			}
+
+			navbar.addEventListener(
+				'animationend',
+				() => {
+					navbar.style.animation = 'none';
+				},
+				{ once: true }
+			);
+		}
 
 		let lastScrollY = window.scrollY;
 		const hideOffset = 80;
