@@ -4,6 +4,9 @@ import mdx from "@astrojs/mdx";
 
 export default defineConfig({
   output: "server",
+  security: {
+    checkOrigin: false,
+  },
   adapter: vercel({
     imageService: true,
     webAnalytics: {
