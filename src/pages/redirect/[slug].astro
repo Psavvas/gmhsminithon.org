@@ -1,151 +1,159 @@
 ---
-import PublicLayout from '../../layouts/PublicLayout.astro';
-import redirects from '../../data/redirects.json';
-import fundraisingData from '../../data/fundraising.json';
+import PublicLayout from "../../layouts/PublicLayout.astro";
+import redirects from "../../data/redirects.json";
+import fundraisingData from "../../data/fundraising.json";
 
 const { slug } = Astro.params;
 const redirect = redirects.find((r) => r.slug === slug);
 
 if (redirect) {
-	return Astro.redirect(redirect.url, 302);
+  return Astro.redirect(redirect.url, 302);
 }
 ---
 
 <PublicLayout title="Redirect Not Found – GMHS Mini-THON">
-	<div class="redirect-container">
-		<div class="redirect-card">
-			<div class="redirect-icon" aria-hidden="true">🔗</div>
-			<h1>Redirect not found</h1>
-			<p class="redirect-message">
-				The shortlink <strong>/redirect/{slug}</strong> doesn't exist yet.
-				If you think this is a mistake, reach out to your club officer to get the link set up.
-			</p>
-			<p class="redirect-cta-text">
-				In the meantime, you can still make a difference —
-				every donation helps fund pediatric cancer research and treatment.
-			</p>
-			<div class="redirect-actions">
-				<a href={fundraisingData.donorDriveLink} class="button primary" target="_blank" rel="noopener noreferrer">
-					Donate now
-				</a>
-				<a href="/" class="button ghost">Go home</a>
-			</div>
-		</div>
-	</div>
+  <div class="redirect-container">
+    <div class="redirect-card">
+      <div class="redirect-icon" aria-hidden="true">🔗</div>
+      <h1>Redirect not found</h1>
+      <p class="redirect-message">
+        The shortlink <strong>/redirect/{slug}</strong> doesn't exist yet. If you
+        think this is a mistake, reach out to your club officer to get the link set
+        up.
+      </p>
+      <p class="redirect-cta-text">
+        In the meantime, you can still make a difference — every donation helps
+        fund pediatric cancer research and treatment.
+      </p>
+      <div class="redirect-actions">
+        <a
+          href={fundraisingData.donorDriveLink}
+          class="button primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Donate now
+        </a>
+        <a href="/" class="button ghost">Go home</a>
+      </div>
+    </div>
+  </div>
 </PublicLayout>
 
 <style>
-	.redirect-container {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 60vh;
-		padding: 2rem 1rem;
-	}
+  .redirect-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 2rem 1rem;
+  }
 
-	.redirect-card {
-		background: var(--surface-raised);
-		border-radius: 24px;
-		padding: 3.5rem 3rem;
-		box-shadow: var(--shadow-soft);
-		border: 1px solid var(--border-soft);
-		max-width: 580px;
-		width: 100%;
-		text-align: center;
-		animation: fade-rise 0.6s ease both;
-	}
+  .redirect-card {
+    background: var(--surface-raised);
+    border-radius: 24px;
+    padding: 3.5rem 3rem;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-soft);
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+    animation: fade-rise 0.6s ease both;
+  }
 
-	.redirect-icon {
-		font-size: 3rem;
-		margin-bottom: 1rem;
-		display: block;
-	}
+  .redirect-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
 
-	h1 {
-		font-size: clamp(1.5rem, 4vw, 2.2rem);
-		margin-bottom: 1.25rem;
-	}
+  h1 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    margin-bottom: 1.25rem;
+  }
 
-	.redirect-message {
-		color: var(--ink-700);
-		line-height: 1.8;
-		margin-bottom: 1rem;
-		font-size: 1.05rem;
-	}
+  .redirect-message {
+    color: var(--ink-700);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+  }
 
-	.redirect-message strong {
-		color: var(--brand-ink);
-		font-weight: 600;
-	}
+  .redirect-message strong {
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
 
-	.redirect-cta-text {
-		color: var(--ink-500);
-		line-height: 1.8;
-		margin-bottom: 2.5rem;
-		font-size: 1rem;
-	}
+  .redirect-cta-text {
+    color: var(--ink-500);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    font-size: 1rem;
+  }
 
-	.redirect-actions {
-		display: flex;
-		gap: 1rem;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
+  .redirect-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 
-	.button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.9rem 1.8rem;
-		border-radius: 999px;
-		text-decoration: none;
-		font-weight: 600;
-		letter-spacing: 0.02em;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
-		border: 1px solid transparent;
-	}
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.9rem 1.8rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+    border: 1px solid transparent;
+  }
 
-	.button.primary {
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		box-shadow: 0 14px 25px rgba(106, 170, 228, 0.3);
-	}
+  .button.primary {
+    background: var(--brand-sky);
+    color: var(--brand-ink);
+    box-shadow: 0 14px 25px rgba(106, 170, 228, 0.3);
+  }
 
-	.button.ghost {
-		background: transparent;
-		color: var(--brand-ink);
-		border-color: var(--brand-ink);
-	}
+  .button.ghost {
+    background: transparent;
+    color: var(--brand-ink);
+    border-color: var(--brand-ink);
+  }
 
-	.button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 18px 35px rgba(28, 42, 58, 0.18);
-	}
+  .button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 35px rgba(28, 42, 58, 0.18);
+  }
 
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-	@media (max-width: 480px) {
-		.redirect-card {
-			padding: 2.5rem 1.5rem;
-		}
+  @media (max-width: 480px) {
+    .redirect-card {
+      padding: 2.5rem 1.5rem;
+    }
 
-		.redirect-actions {
-			flex-direction: column;
-			align-items: center;
-		}
+    .redirect-actions {
+      flex-direction: column;
+      align-items: center;
+    }
 
-		.button {
-			width: 100%;
-			max-width: 280px;
-		}
-	}
+    .button {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
 </style>

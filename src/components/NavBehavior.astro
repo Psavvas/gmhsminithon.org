@@ -1,182 +1,203 @@
 <script>
-	const navbarAnimationStorageKey = 'gmhs-navbar-animated';
-	const animationState = window as Window & { __gmhsNavbarAnimated?: boolean };
-	const canIgnoreStorageError = (error: unknown) =>
-		error instanceof DOMException && ['QuotaExceededError', 'SecurityError'].includes(error.name);
-	const navbar = document.querySelector('.navbar');
-	const toggle = document.querySelector('.nav-toggle');
-	const navLinks = document.querySelector('.nav-links');
+  const navbarAnimationStorageKey = "gmhs-navbar-animated";
+  const animationState = window as Window & { __gmhsNavbarAnimated?: boolean };
+  const canIgnoreStorageError = (error: unknown) =>
+    error instanceof DOMException &&
+    ["QuotaExceededError", "SecurityError"].includes(error.name);
+  const navbar = document.querySelector(".navbar");
+  const toggle = document.querySelector(".nav-toggle");
+  const navLinks = document.querySelector(".nav-links");
 
-	if (navbar) {
-		const hasAnimatedInMemory = animationState.__gmhsNavbarAnimated === true;
-		let hasAnimatedInStorage = false;
-		if (!hasAnimatedInMemory) {
-			try {
-				hasAnimatedInStorage = sessionStorage.getItem(navbarAnimationStorageKey) === 'true';
-			} catch (error) {
-				if (!canIgnoreStorageError(error)) throw error;
-			}
-		}
-		const hasAnimated = hasAnimatedInMemory || hasAnimatedInStorage;
+  if (navbar) {
+    const hasAnimatedInMemory = animationState.__gmhsNavbarAnimated === true;
+    let hasAnimatedInStorage = false;
+    if (!hasAnimatedInMemory) {
+      try {
+        hasAnimatedInStorage =
+          sessionStorage.getItem(navbarAnimationStorageKey) === "true";
+      } catch (error) {
+        if (!canIgnoreStorageError(error)) throw error;
+      }
+    }
+    const hasAnimated = hasAnimatedInMemory || hasAnimatedInStorage;
 
-		if (hasAnimated) {
-			navbar.style.animation = 'none';
-		} else {
-			animationState.__gmhsNavbarAnimated = true;
-			try {
-				sessionStorage.setItem(navbarAnimationStorageKey, 'true');
-			} catch (error) {
-				if (!canIgnoreStorageError(error)) throw error;
-			}
+    if (hasAnimated) {
+      navbar.style.animation = "none";
+    } else {
+      animationState.__gmhsNavbarAnimated = true;
+      try {
+        sessionStorage.setItem(navbarAnimationStorageKey, "true");
+      } catch (error) {
+        if (!canIgnoreStorageError(error)) throw error;
+      }
 
-			navbar.addEventListener(
-				'animationend',
-				() => {
-					navbar.style.animation = 'none';
-				},
-				{ once: true }
-			);
-		}
+      navbar.addEventListener(
+        "animationend",
+        () => {
+          navbar.style.animation = "none";
+        },
+        { once: true },
+      );
+    }
 
-		let lastScrollY = window.scrollY;
-		const hideOffset = 80;
-		const scrollThreshold = 10;
-		const setNavOffset = () => {
-			document.documentElement.style.setProperty('--nav-offset', `${navbar.offsetHeight}px`);
-		};
+    let lastScrollY = window.scrollY;
+    const hideOffset = 80;
+    const scrollThreshold = 10;
+    const setNavOffset = () => {
+      document.documentElement.style.setProperty(
+        "--nav-offset",
+        `${navbar.offsetHeight}px`,
+      );
+    };
 
-		setNavOffset();
-		window.addEventListener('resize', setNavOffset);
+    setNavOffset();
+    window.addEventListener("resize", setNavOffset);
 
-		if ('ResizeObserver' in window) {
-			const observer = new ResizeObserver(() => {
-				setNavOffset();
-			});
-			observer.observe(navbar);
-		}
+    if ("ResizeObserver" in window) {
+      const observer = new ResizeObserver(() => {
+        setNavOffset();
+      });
+      observer.observe(navbar);
+    }
 
-		if (toggle && navLinks) {
-			toggle.addEventListener('click', () => {
-				const isOpen = navbar.classList.toggle('nav-open');
-				toggle.setAttribute('aria-expanded', String(isOpen));
-				navbar.classList.remove('is-hidden');
-				document.body.classList.remove('nav-hidden');
-			});
+    if (toggle && navLinks) {
+      toggle.addEventListener("click", () => {
+        const isOpen = navbar.classList.toggle("nav-open");
+        toggle.setAttribute("aria-expanded", String(isOpen));
+        navbar.classList.remove("is-hidden");
+        document.body.classList.remove("nav-hidden");
+      });
 
-			navLinks.querySelectorAll('a').forEach((link) => {
-				link.addEventListener('click', () => {
-					navbar.classList.remove('nav-open');
-					toggle.setAttribute('aria-expanded', 'false');
-				});
-			});
-		}
+      navLinks.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          navbar.classList.remove("nav-open");
+          toggle.setAttribute("aria-expanded", "false");
+        });
+      });
+    }
 
-		window.addEventListener('scroll', () => {
-			const currentY = window.scrollY;
-			const delta = currentY - lastScrollY;
+    window.addEventListener(
+      "scroll",
+      () => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastScrollY;
 
-			if (!navbar.classList.contains('nav-open')) {
-				if (delta > scrollThreshold && currentY > hideOffset) {
-					navbar.classList.add('is-hidden');
-					document.body.classList.add('nav-hidden');
-				}
+        if (!navbar.classList.contains("nav-open")) {
+          if (delta > scrollThreshold && currentY > hideOffset) {
+            navbar.classList.add("is-hidden");
+            document.body.classList.add("nav-hidden");
+          }
 
-				if (delta < -scrollThreshold || currentY <= hideOffset) {
-					navbar.classList.remove('is-hidden');
-					document.body.classList.remove('nav-hidden');
-				}
-			}
+          if (delta < -scrollThreshold || currentY <= hideOffset) {
+            navbar.classList.remove("is-hidden");
+            document.body.classList.remove("nav-hidden");
+          }
+        }
 
-			lastScrollY = currentY;
-		}, { passive: true });
-	}
+        lastScrollY = currentY;
+      },
+      { passive: true },
+    );
+  }
 </script>
 
 <style>
-	:global(.nav-toggle) {
-		display: none;
-		flex-direction: column;
-		width: 44px;
-		height: 44px;
-		border-radius: 12px;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		background: rgba(255, 255, 255, 0.1);
-		align-items: center;
-		justify-content: center;
-		gap: 4px;
-		padding: 0;
-		cursor: pointer;
-		transition: background 0.2s ease;
-		position: relative;
-		z-index: 1002;
-	}
+  :global(.nav-toggle) {
+    display: none;
+    flex-direction: column;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: relative;
+    z-index: 1002;
+  }
 
-	:global(.nav-toggle:hover) {
-		background: rgba(255, 255, 255, 0.15);
-	}
+  :global(.nav-toggle:hover) {
+    background: rgba(255, 255, 255, 0.15);
+  }
 
-	:global(.nav-toggle-bar) {
-		display: block;
-		width: 20px;
-		height: 2px;
-		background: var(--white, #ffffff);
-		border-radius: 999px;
-		transition: transform 0.3s ease, opacity 0.2s ease;
-	}
+  :global(.nav-toggle-bar) {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--white, #ffffff);
+    border-radius: 999px;
+    transition:
+      transform 0.3s ease,
+      opacity 0.2s ease;
+  }
 
-	@media (max-width: 1120px) {
-		:global(.nav-toggle) {
-			display: flex;
-		}
+  @media (max-width: 1120px) {
+    :global(.nav-toggle) {
+      display: flex;
+    }
 
-		:global(.nav-links) {
-			position: fixed;
-			inset: 0;
-			width: 100%;
-			min-height: 100vh;
-			height: 100dvh;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 1.5rem;
-			padding: 5.5rem 2rem 3rem;
-			background: var(--nav-overlay, linear-gradient(135deg, rgba(44, 70, 114, 0.98), rgba(106, 170, 228, 0.95)));
-			backdrop-filter: blur(20px);
-			opacity: 0;
-			transform: scale(0.98);
-			visibility: hidden;
-			pointer-events: none;
-			z-index: 1001;
-			box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-			transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
-			overflow-y: auto;
-		}
+    :global(.nav-links) {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      min-height: 100vh;
+      height: 100dvh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 5.5rem 2rem 3rem;
+      background: var(
+        --nav-overlay,
+        linear-gradient(
+          135deg,
+          rgba(44, 70, 114, 0.98),
+          rgba(106, 170, 228, 0.95)
+        )
+      );
+      backdrop-filter: blur(20px);
+      opacity: 0;
+      transform: scale(0.98);
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 1001;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        visibility 0.3s ease;
+      overflow-y: auto;
+    }
 
-		:global(.nav-links a) {
-			font-size: 1.2rem;
-			width: auto;
-			text-align: center;
-			padding: 0.75rem 1.5rem;
-			white-space: nowrap;
-		}
+    :global(.nav-links a) {
+      font-size: 1.2rem;
+      width: auto;
+      text-align: center;
+      padding: 0.75rem 1.5rem;
+      white-space: nowrap;
+    }
 
-		:global(.navbar.nav-open .nav-links) {
-			opacity: 1;
-			transform: scale(1);
-			visibility: visible;
-			pointer-events: auto;
-		}
+    :global(.navbar.nav-open .nav-links) {
+      opacity: 1;
+      transform: scale(1);
+      visibility: visible;
+      pointer-events: auto;
+    }
 
-		:global(.navbar.nav-open .nav-toggle-bar:nth-child(1)) {
-			transform: translateY(6px) rotate(45deg);
-		}
+    :global(.navbar.nav-open .nav-toggle-bar:nth-child(1)) {
+      transform: translateY(6px) rotate(45deg);
+    }
 
-		:global(.navbar.nav-open .nav-toggle-bar:nth-child(2)) {
-			opacity: 0;
-		}
+    :global(.navbar.nav-open .nav-toggle-bar:nth-child(2)) {
+      opacity: 0;
+    }
 
-		:global(.navbar.nav-open .nav-toggle-bar:nth-child(3)) {
-			transform: translateY(-6px) rotate(-45deg);
-		}
-	}
+    :global(.navbar.nav-open .nav-toggle-bar:nth-child(3)) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+  }
 </style>

@@ -1,13 +1,21 @@
 ---
-import MemberLayout from '../../layouts/MemberLayout.astro';
-import { checkMemberAuth } from '../../utils/auth';
-import memberAnnouncements from '../../data/memberAnnouncements.json';
-import { formatEventDate, getCurrentYearEvents, getEventTypeClass } from '../../utils/events';
-import { getPinnedAnnouncements, normalizeAnnouncements, renderAnnouncementMdx } from '../../utils/announcements';
+import MemberLayout from "../../layouts/MemberLayout.astro";
+import { checkMemberAuth } from "../../utils/auth";
+import memberAnnouncements from "../../data/memberAnnouncements.json";
+import {
+  formatEventDate,
+  getCurrentYearEvents,
+  getEventTypeClass,
+} from "../../utils/events";
+import {
+  getPinnedAnnouncements,
+  normalizeAnnouncements,
+  renderAnnouncementMdx,
+} from "../../utils/announcements";
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
-  return Astro.redirect('/members/login');
+  return Astro.redirect("/members/login");
 }
 
 const currentYear = new Date().getFullYear();
@@ -17,339 +25,377 @@ today.setHours(0, 0, 0, 0);
 const currentYearEvents = await getCurrentYearEvents();
 
 const upcomingEvents = currentYearEvents
-	.filter((event) => new Date(event.date) >= today)
-	.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-	.slice(0, 3);
+  .filter((event) => new Date(event.date) >= today)
+  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  .slice(0, 3);
 
-const allAnnouncements = normalizeAnnouncements(memberAnnouncements.announcements);
+const allAnnouncements = normalizeAnnouncements(
+  memberAnnouncements.announcements,
+);
 const announcements = getPinnedAnnouncements(allAnnouncements);
 ---
 
 <MemberLayout title="Member Dashboard - Mini-THON">
-	<h1>Welcome to the Member Portal</h1>
-	
-	<section class="announcements">
-		<h2>📌 Pinned Announcements</h2>
-		{announcements.length > 0 ? (
-			announcements.map((announcement) => (
-				<div class={`announcement-card ${announcement.type === 'urgent' ? 'urgent' : ''}`}>
-					<div class="announcement-header">
-						<h3>{announcement.title}</h3>
-						{announcement.dateAdded && (
-							<span class="announcement-date">
-								{new Date(announcement.dateAdded).toLocaleDateString('en-US', {
-									month: 'short',
-									day: 'numeric'
-								})}
-							</span>
-						)}
-					</div>
-					<div class="announcement-body" set:html={renderAnnouncementMdx(announcement.descriptionMdx)} />
-				</div>
-			))
-		) : (
-			<p class="empty-state">No pinned announcements right now. Check the full announcements page for updates.</p>
-		)}
-		<a href="/members/announcements" class="view-all-announcements">View all announcements →</a>
-	</section>
+  <h1>Welcome to the Member Portal</h1>
 
-	<section class="quick-actions">
-		<h2>Quick Actions</h2>
-		<div class="actions-grid">
-			<a href="/members/upcoming-events" class="action-card">
-				<span class="icon">🤝</span>
-				<h3>Upcoming Events</h3>
-				<p>View and sign up for upcoming events</p>
-			</a>
-			<a href="/members/club-info" class="action-card">
-				<span class="icon">📅</span>
-				<h3>Club Info</h3>
-				<p>Meeting times and communications platfroms</p>
-			</a>
-			<a href="/members/resources" class="action-card">
-				<span class="icon">📚</span>
-				<h3>Member Resources</h3>
-				<p>Quick links to files and templates</p>
-			</a>
-			<a href="/members/announcements" class="action-card">
-				<span class="icon">📣</span>
-				<h3>Announcements</h3>
-				<p>Read pinned updates and recent posts</p>
-			</a>
-			<a href="/" class="action-card">
-				<span class="icon">🌐</span>
-				<h3>Public Site</h3>
-				<p>Return to the main website</p>
-			</a>
-		</div>
-	</section>
+  <section class="announcements">
+    <h2>📌 Pinned Announcements</h2>
+    {
+      announcements.length > 0 ? (
+        announcements.map((announcement) => (
+          <div
+            class={`announcement-card ${announcement.type === "urgent" ? "urgent" : ""}`}
+          >
+            <div class="announcement-header">
+              <h3>{announcement.title}</h3>
+              {announcement.dateAdded && (
+                <span class="announcement-date">
+                  {new Date(announcement.dateAdded).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "short",
+                      day: "numeric",
+                    },
+                  )}
+                </span>
+              )}
+            </div>
+            <div
+              class="announcement-body"
+              set:html={renderAnnouncementMdx(announcement.descriptionMdx)}
+            />
+          </div>
+        ))
+      ) : (
+        <p class="empty-state">
+          No pinned announcements right now. Check the full announcements page
+          for updates.
+        </p>
+      )
+    }
+    <a href="/members/announcements" class="view-all-announcements"
+      >View all announcements →</a
+    >
+  </section>
 
-	<section class="upcoming-events">
-		<h2>Upcoming Events</h2>
-		{upcomingEvents.length > 0 ? (
-			<div class="events-list">
-				{upcomingEvents.map(event => (
-					<div class="event-preview">
-						<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
-						<h3>{event.title}</h3>
-						<p class="date">{formatEventDate(event.date, event.time)}</p>
-						<div class="event-actions">
-							<a href={`/members/events/${event.url.replace('/events/', '')}`} class="event-link">Event details</a>
-						</div>
-					</div>
-				))}
-			</div>
-		) : (
-			<p class="empty-state">No upcoming events right now.</p>
-		)}
-		<a href="/members/upcoming-events" class="view-all">View All Events →</a>
-	</section>
+  <section class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <a href="/members/upcoming-events" class="action-card">
+        <span class="icon">🤝</span>
+        <h3>Upcoming Events</h3>
+        <p>View and sign up for upcoming events</p>
+      </a>
+      <a href="/members/club-info" class="action-card">
+        <span class="icon">📅</span>
+        <h3>Club Info</h3>
+        <p>Meeting times and communications platfroms</p>
+      </a>
+      <a href="/members/resources" class="action-card">
+        <span class="icon">📚</span>
+        <h3>Member Resources</h3>
+        <p>Quick links to files and templates</p>
+      </a>
+      <a href="/members/announcements" class="action-card">
+        <span class="icon">📣</span>
+        <h3>Announcements</h3>
+        <p>Read pinned updates and recent posts</p>
+      </a>
+      <a href="/" class="action-card">
+        <span class="icon">🌐</span>
+        <h3>Public Site</h3>
+        <p>Return to the main website</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="upcoming-events">
+    <h2>Upcoming Events</h2>
+    {
+      upcomingEvents.length > 0 ? (
+        <div class="events-list">
+          {upcomingEvents.map((event) => (
+            <div class="event-preview">
+              <span class={`event-type ${getEventTypeClass(event.event_type)}`}>
+                {event.event_type}
+              </span>
+              <h3>{event.title}</h3>
+              <p class="date">{formatEventDate(event.date, event.time)}</p>
+              <div class="event-actions">
+                <a
+                  href={`/members/events/${event.url.replace("/events/", "")}`}
+                  class="event-link"
+                >
+                  Event details
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">No upcoming events right now.</p>
+      )
+    }
+    <a href="/members/upcoming-events" class="view-all">View All Events →</a>
+  </section>
 </MemberLayout>
 
 <style>
-	h1 {
-		font-size: clamp(2rem, 4vw, 2.6rem);
-		color: var(--ink-900);
-		margin-bottom: 2rem;
-	}
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    color: var(--ink-900);
+    margin-bottom: 2rem;
+  }
 
-	section {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		margin-bottom: 2rem;
-	}
+  section {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    margin-bottom: 2rem;
+  }
 
-	h2 {
-		font-size: clamp(1.5rem, 3vw, 1.9rem);
-		color: var(--ink-900);
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--brand-sky);
-	}
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
+    color: var(--ink-900);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--brand-sky);
+  }
 
-	.announcement-card {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
-		padding: 1.5rem;
-		border-radius: 16px;
-		margin-bottom: 1rem;
-		border: 1px solid var(--border-soft);
-		border-left: 4px solid var(--brand-sky);
-	}
+  .announcement-card {
+    background: linear-gradient(
+      135deg,
+      rgba(106, 170, 228, 0.08),
+      rgba(106, 170, 228, 0.03)
+    );
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-soft);
+    border-left: 4px solid var(--brand-sky);
+  }
 
-	.announcement-card.urgent {
-		background: linear-gradient(135deg, rgba(253, 185, 39, 0.18), rgba(255, 255, 255, 0.6));
-		border-left-color: #FDB927;
-	}
+  .announcement-card.urgent {
+    background: linear-gradient(
+      135deg,
+      rgba(253, 185, 39, 0.18),
+      rgba(255, 255, 255, 0.6)
+    );
+    border-left-color: #fdb927;
+  }
 
-	.announcement-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
+  .announcement-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
-	.announcement-card h3 {
-		color: var(--ink-900);
-		margin-bottom: 0.5rem;
-	}
+  .announcement-card h3 {
+    color: var(--ink-900);
+    margin-bottom: 0.5rem;
+  }
 
-	.announcement-card p {
-		color: var(--ink-700);
-		margin: 0;
-		line-height: 1.7;
-	}
+  .announcement-card p {
+    color: var(--ink-700);
+    margin: 0;
+    line-height: 1.7;
+  }
 
-	.announcement-body {
-		color: var(--ink-700);
-		line-height: 1.7;
-	}
+  .announcement-body {
+    color: var(--ink-700);
+    line-height: 1.7;
+  }
 
-	.announcement-body :global(p) {
-		margin: 0.4rem 0;
-	}
+  .announcement-body :global(p) {
+    margin: 0.4rem 0;
+  }
 
-	.announcement-body :global(ul) {
-		margin: 0.5rem 0 0.5rem 1.25rem;
-	}
+  .announcement-body :global(ul) {
+    margin: 0.5rem 0 0.5rem 1.25rem;
+  }
 
-	.announcement-body :global(li) {
-		margin: 0.2rem 0;
-	}
+  .announcement-body :global(li) {
+    margin: 0.2rem 0;
+  }
 
-	.announcement-body :global(a) {
-		color: var(--brand-ink);
-		font-weight: 600;
-	}
+  .announcement-body :global(a) {
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
 
-	.view-all-announcements {
-		display: inline-flex;
-		margin-top: 0.75rem;
-		font-weight: 600;
-		color: var(--brand-ink);
-		text-decoration: none;
-	}
+  .view-all-announcements {
+    display: inline-flex;
+    margin-top: 0.75rem;
+    font-weight: 600;
+    color: var(--brand-ink);
+    text-decoration: none;
+  }
 
-	.view-all-announcements:hover {
-		color: var(--brand-sky);
-	}
+  .view-all-announcements:hover {
+    color: var(--brand-sky);
+  }
 
-	.announcement-date {
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: var(--ink-500);
-	}
+  .announcement-date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-500);
+  }
 
-	.empty-state {
-		color: var(--ink-500);
-		font-size: 1rem;
-	}
+  .empty-state {
+    color: var(--ink-500);
+    font-size: 1rem;
+  }
 
-	.actions-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
-	}
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
 
-	.action-card {
-		background: linear-gradient(135deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
-		color: white;
-		padding: 2rem;
-		border-radius: 20px;
-		text-decoration: none;
-		transition: all 0.3s ease;
-		text-align: center;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-	}
+  .action-card {
+    background: linear-gradient(
+      135deg,
+      rgba(44, 70, 114, 0.95),
+      rgba(44, 70, 114, 0.8)
+    );
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
 
-	.action-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 10px 24px rgba(28, 42, 58, 0.2);
-	}
+  .action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(28, 42, 58, 0.2);
+  }
 
-	.action-card .icon {
-		font-size: 3rem;
-		display: block;
-		margin-bottom: 1rem;
-	}
+  .action-card .icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
 
-	.action-card h3 {
-		color: white;
-		margin-bottom: 0.5rem;
-	}
+  .action-card h3 {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
 
-	.action-card p {
-		color: rgba(255, 255, 255, 0.9);
-		margin: 0;
-	}
+  .action-card p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
 
-	.events-list {
-		display: grid;
-		gap: 1rem;
-	}
+  .events-list {
+    display: grid;
+    gap: 1rem;
+  }
 
-	.event-preview {
-		background: var(--surface-raised);
-		padding: 1.5rem;
-		border-radius: 16px;
-		border: 1px solid var(--border-soft);
-		border-left: 4px solid var(--brand-sky);
-	}
+  .event-preview {
+    background: var(--surface-raised);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-soft);
+    border-left: 4px solid var(--brand-sky);
+  }
 
-	.event-type {
-		display: inline-block;
-		padding: 0.25rem 0.75rem;
-		border-radius: 12px;
-		font-size: 0.85rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		margin-bottom: 0.5rem;
-	}
+  .event-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+  }
 
-	.event-type.gaming {
-		background: #E3F2FD;
-		color: #1976D2;
-	}
+  .event-type.gaming {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
 
-	.event-type.dine-to-donate {
-		background: #FFF3E0;
-		color: #F57C00;
-	}
+  .event-type.dine-to-donate {
+    background: #fff3e0;
+    color: #f57c00;
+  }
 
-	.event-type.fundraiser {
-		background: #F3E5F5;
-		color: #7B1FA2;
-	}
+  .event-type.fundraiser {
+    background: #f3e5f5;
+    color: #7b1fa2;
+  }
 
-	.event-type.sports {
-		background: #E8F5E9;
-		color: #2E7D32;
-	}
+  .event-type.sports {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
 
-	.event-type.race {
-		background: #E0F7FA;
-		color: #006064;
-	}
+  .event-type.race {
+    background: #e0f7fa;
+    color: #006064;
+  }
 
-	.event-preview h3 {
-		color: var(--ink-900);
-		margin-bottom: 0.5rem;
-	}
+  .event-preview h3 {
+    color: var(--ink-900);
+    margin-bottom: 0.5rem;
+  }
 
-	.event-preview .date {
-		color: var(--ink-500);
-		margin: 0;
-		font-size: 0.95rem;
-	}
+  .event-preview .date {
+    color: var(--ink-500);
+    margin: 0;
+    font-size: 0.95rem;
+  }
 
-	.event-actions {
-		display: flex;
-		gap: 0.75rem;
-		margin-top: 0.75rem;
-		flex-wrap: wrap;
-	}
+  .event-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+  }
 
-	.event-link {
-		color: var(--brand-ink);
-		text-decoration: none;
-		font-weight: 600;
-		font-size: 0.95rem;
-		transition: color 0.2s ease;
-	}
+  .event-link {
+    color: var(--brand-ink);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+  }
 
-	.event-link.secondary {
-		color: var(--ink-500);
-	}
+  .event-link.secondary {
+    color: var(--ink-500);
+  }
 
-	.event-link:hover {
-		color: var(--brand-sky);
-	}
+  .event-link:hover {
+    color: var(--brand-sky);
+  }
 
-	.view-all {
-		display: inline-block;
-		margin-top: 1rem;
-		color: var(--brand-ink);
-		text-decoration: none;
-		font-weight: 600;
-		transition: all 0.3s ease;
-	}
+  .view-all {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--brand-ink);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
 
-	.view-all:hover {
-		color: var(--brand-sky);
-		transform: translateX(4px);
-	}
+  .view-all:hover {
+    color: var(--brand-sky);
+    transform: translateX(4px);
+  }
 
-	@media (max-width: 768px) {
-		section {
-			padding: 1.5rem;
-		}
+  @media (max-width: 768px) {
+    section {
+      padding: 1.5rem;
+    }
 
-		.action-card {
-			padding: 1.5rem;
-		}
-	}
+    .action-card {
+      padding: 1.5rem;
+    }
+  }
 </style>

@@ -1,288 +1,330 @@
 ---
-import PublicLayout from '../layouts/PublicLayout.astro';
-import ImageCarousel from '../components/ImageCarousel.astro';
-import clubInfo from '../data/clubInfo.json';
+import PublicLayout from "../layouts/PublicLayout.astro";
+import ImageCarousel from "../components/ImageCarousel.astro";
+import clubInfo from "../data/clubInfo.json";
 
 export const prerender = true;
 
 const aboutParagraphs = Array.isArray(clubInfo.about)
-	? clubInfo.about
-	: clubInfo.about.split('\n\n').filter(Boolean);
+  ? clubInfo.about
+  : clubInfo.about.split("\n\n").filter(Boolean);
 
 const aboutContinuedParagraphs = Array.isArray(clubInfo.aboutContinued)
-	? clubInfo.aboutContinued
-	: clubInfo.aboutContinued.split('\n\n').filter(Boolean);
+  ? clubInfo.aboutContinued
+  : clubInfo.aboutContinued.split("\n\n").filter(Boolean);
 
 // Team images for carousel
 const teamImages = [
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZUXZWjgcZNmpdHoM5jtF8PuR73EyaCwn2WcIb', alt: 'Middle of a Mini-THON running event', caption: 'In the middle of Brady Runs for the Kids, an epic marathon fundraiser.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZklP2OEgR4EzKJSIlr1QZNoOpPc5DqWU9B3ta', alt: 'Working to raise awareness', caption: 'Working in the community to raise awareness about pediatric cancer & Mini-THON.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZNRXuG9fYOADiHNmXlcj8gE4PWTeqKktZfIFv', alt: 'Taping a Teacher to a Wall', caption: 'Taping Mr. Weisner to the wall to raise funds for Four Diamonds.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zc3qhnsTZ8KuGXHxJCFVEBoURI5YdsyzkmWep', alt: 'Middle of Mini-THON running event', caption: 'Running with Brady during Brady Runs for the Kids.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl', alt: 'Trunk or Treat', caption: 'Giving back to the community and raising awareness during the GMHS Trunk or Treat.' },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZUXZWjgcZNmpdHoM5jtF8PuR73EyaCwn2WcIb",
+    alt: "Middle of a Mini-THON running event",
+    caption:
+      "In the middle of Brady Runs for the Kids, an epic marathon fundraiser.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZklP2OEgR4EzKJSIlr1QZNoOpPc5DqWU9B3ta",
+    alt: "Working to raise awareness",
+    caption:
+      "Working in the community to raise awareness about pediatric cancer & Mini-THON.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZNRXuG9fYOADiHNmXlcj8gE4PWTeqKktZfIFv",
+    alt: "Taping a Teacher to a Wall",
+    caption: "Taping Mr. Weisner to the wall to raise funds for Four Diamonds.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zc3qhnsTZ8KuGXHxJCFVEBoURI5YdsyzkmWep",
+    alt: "Middle of Mini-THON running event",
+    caption: "Running with Brady during Brady Runs for the Kids.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl",
+    alt: "Trunk or Treat",
+    caption:
+      "Giving back to the community and raising awareness during the GMHS Trunk or Treat.",
+  },
 ];
 ---
 
 <PublicLayout title="About Us - Mini-THON">
-	<h1>For the Kids</h1>
-	
-	<div class="intro-grid">
-		<section class="description">
-			{aboutParagraphs.map((paragraph) => (
-				<p>{paragraph}</p>
-			))}
-		</section>
+  <h1>For the Kids</h1>
 
-		<section class="static-image">
-			<img
-				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay"
-				alt="Mini-THON team"
-				width="1200"
-				height="1600"
-				class="static-photo"
-				loading="eager"
-			/>
-		</section>
-	</div>
+  <div class="intro-grid">
+    <section class="description">
+      {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+    </section>
 
-	<div class="continued-grid">
-		<!-- Team Carousel -->
-		<section class="carousel-section">
-			<ImageCarousel images={teamImages} autoplay={true} interval={5000} priority={true} />
-		</section>
+    <section class="static-image">
+      <img
+        src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay"
+        alt="Mini-THON team"
+        width="1200"
+        height="1600"
+        class="static-photo"
+        loading="eager"
+      />
+    </section>
+  </div>
 
-		<section class="about-continued">
-			{aboutContinuedParagraphs.map((paragraph) => (
-				<p>{paragraph}</p>
-			))}
-		</section>
-	</div>
+  <div class="continued-grid">
+    <!-- Team Carousel -->
+    <section class="carousel-section">
+      <ImageCarousel
+        images={teamImages}
+        autoplay={true}
+        interval={5000}
+        priority={true}
+      />
+    </section>
 
-	<section class="leadership">
-		<h2>Leadership Team</h2>
-		<div class="officers-grid">
-			{clubInfo.officers.map(officer => (
-				<div class="officer-card">
-					<h3>{officer.role}</h3>
-					<p class="name">{officer.name}</p>
-					<a href={`mailto:${officer.email}`} class="email">{officer.email}</a>
-				</div>
-			))}
-		</div>
-	</section>
+    <section class="about-continued">
+      {aboutContinuedParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+    </section>
+  </div>
+
+  <section class="leadership">
+    <h2>Leadership Team</h2>
+    <div class="officers-grid">
+      {
+        clubInfo.officers.map((officer) => (
+          <div class="officer-card">
+            <h3>{officer.role}</h3>
+            <p class="name">{officer.name}</p>
+            <a href={`mailto:${officer.email}`} class="email">
+              {officer.email}
+            </a>
+          </div>
+        ))
+      }
+    </div>
+  </section>
 </PublicLayout>
 
 <style>
-	h1 {
-		font-size: clamp(2.2rem, 4vw, 3rem);
-		color: var(--ink-900);
-		margin-bottom: 2rem;
-		animation: fade-rise 0.6s ease both;
-	}
+  h1 {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    color: var(--ink-900);
+    margin-bottom: 2rem;
+    animation: fade-rise 0.6s ease both;
+  }
 
-	section {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		margin-bottom: 2rem;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		animation: fade-rise 0.8s ease both;
-	}
+  section {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    animation: fade-rise 0.8s ease both;
+  }
 
-	.intro-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-		gap: 2rem;
-		align-items: stretch;
-		margin-bottom: 2rem;
-	}
+  .intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: stretch;
+    margin-bottom: 2rem;
+  }
 
-	.continued-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-		grid-template-areas: "carousel text";
-		gap: 2rem;
-		align-items: stretch;
-		margin-bottom: 2rem;
-	}
+  .continued-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    grid-template-areas: "carousel text";
+    gap: 2rem;
+    align-items: stretch;
+    margin-bottom: 2rem;
+  }
 
-	.intro-grid > section {
-		margin-bottom: 0;
-	}
+  .intro-grid > section {
+    margin-bottom: 0;
+  }
 
-	.continued-grid > section {
-		margin-bottom: 0;
-	}
+  .continued-grid > section {
+    margin-bottom: 0;
+  }
 
-	.description {
-		background: transparent;
-		border: none;
-		box-shadow: none;
-		padding: 0;
-	}
+  .description {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
 
-	.carousel-section {
-		grid-area: carousel;
-		background: transparent;
-		padding: 0;
-		border: none;
-		box-shadow: none;
-		height: 100%;
-	}
+  .carousel-section {
+    grid-area: carousel;
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    height: 100%;
+  }
 
-	.static-image {
-		background: transparent;
-		padding: 0;
-		border: none;
-		box-shadow: none;
-		height: 100%;
-	}
+  .static-image {
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    height: 100%;
+  }
 
-	.static-image img {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-	}
+  .static-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+  }
 
-	.about-continued {
-		grid-area: text;
-		background: transparent;
-		padding: 0;
-		border: none;
-		box-shadow: none;
-	}
+  .about-continued {
+    grid-area: text;
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+  }
 
-	.continued-grid .carousel-section :global(.carousel-container) {
-		height: 100%;
-	}
+  .continued-grid .carousel-section :global(.carousel-container) {
+    height: 100%;
+  }
 
-	.continued-grid .carousel-section :global(.carousel-track) {
-		height: 100%;
-		aspect-ratio: auto;
-	}
+  .continued-grid .carousel-section :global(.carousel-track) {
+    height: 100%;
+    aspect-ratio: auto;
+  }
 
-	.description { animation-delay: 0.1s; }
-	.static-image { animation-delay: 0.2s; }
-	.carousel-section { animation-delay: 0.3s; }
-	.about-continued { animation-delay: 0.4s; }
-	.leadership { animation-delay: 0.5s; }
+  .description {
+    animation-delay: 0.1s;
+  }
+  .static-image {
+    animation-delay: 0.2s;
+  }
+  .carousel-section {
+    animation-delay: 0.3s;
+  }
+  .about-continued {
+    animation-delay: 0.4s;
+  }
+  .leadership {
+    animation-delay: 0.5s;
+  }
 
-	h2 {
-		font-size: clamp(1.5rem, 3vw, 1.8rem);
-		color: var(--ink-900);
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--brand-sky);
-	}
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 1.8rem);
+    color: var(--ink-900);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--brand-sky);
+  }
 
-	p {
-		line-height: 1.8;
-		color: var(--ink-700);
-		font-size: 1.05rem;
-		margin-bottom: 1rem;
-	}
+  p {
+    line-height: 1.8;
+    color: var(--ink-700);
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+  }
 
-	.officers-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 1.5rem;
-		margin-top: 1.5rem;
-	}
+  .officers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
 
-	.officer-card {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
-		padding: 1.75rem;
-		border-radius: 16px;
-		border: 1px solid var(--border-soft);
-		transition: all 0.3s ease;
-	}
+  .officer-card {
+    background: linear-gradient(
+      135deg,
+      rgba(106, 170, 228, 0.08),
+      rgba(106, 170, 228, 0.03)
+    );
+    padding: 1.75rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-soft);
+    transition: all 0.3s ease;
+  }
 
-	.officer-card:hover {
-		transform: translateY(-4px);
-		box-shadow: var(--shadow-card);
-		border-color: var(--brand-sky);
-	}
+  .officer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+    border-color: var(--brand-sky);
+  }
 
-	.officer-card h3 {
-		color: var(--brand-ink);
-		margin-bottom: 0.5rem;
-		font-size: 1.25rem;
-		font-weight: 600;
-	}
+  .officer-card h3 {
+    color: var(--brand-ink);
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
 
-	.officer-card .name {
-		font-weight: 600;
-		color: var(--ink-900);
-		margin-bottom: 0.5rem;
-		font-size: 1rem;
-	}
+  .officer-card .name {
+    font-weight: 600;
+    color: var(--ink-900);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
 
-	.officer-card .email {
-		color: var(--ink-500);
-		font-size: 0.9rem;
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
+  .officer-card .email {
+    color: var(--ink-500);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
 
-	.officer-card .email:hover {
-		color: var(--brand-sky);
-	}
+  .officer-card .email:hover {
+    color: var(--brand-sky);
+  }
 
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-	@media (max-width: 768px) {
-		.intro-grid {
-			grid-template-columns: 1fr;
-		}
+  @media (max-width: 768px) {
+    .intro-grid {
+      grid-template-columns: 1fr;
+    }
 
-		.continued-grid {
-			grid-template-columns: 1fr;
-			grid-template-areas:
-				"carousel"
-				"text";
-		}
+    .continued-grid {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "carousel"
+        "text";
+    }
 
-		.carousel-section {
-			height: auto;
-		}
+    .carousel-section {
+      height: auto;
+    }
 
-		.continued-grid .carousel-section :global(.carousel-container) {
-			height: auto;
-		}
+    .continued-grid .carousel-section :global(.carousel-container) {
+      height: auto;
+    }
 
-		.static-image img {
-			height: auto;
-		}
+    .static-image img {
+      height: auto;
+    }
 
-		.continued-grid .carousel-section :global(.carousel-track) {
-			height: auto;
-			aspect-ratio: var(--carousel-aspect);
-		}
+    .continued-grid .carousel-section :global(.carousel-track) {
+      height: auto;
+      aspect-ratio: var(--carousel-aspect);
+    }
 
-		.description {
-			padding: 0;
-		}
+    .description {
+      padding: 0;
+    }
 
-		section {
-			padding: 1.5rem;
-		}
+    section {
+      padding: 1.5rem;
+    }
 
-		.officers-grid {
-			grid-template-columns: 1fr;
-		}
-	}
+    .officers-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

@@ -1,176 +1,188 @@
 ---
-import PublicLayout from '../../layouts/PublicLayout.astro';
-import { verifyPassword, setMemberAuthCookie, checkMemberAuth } from '../../utils/auth';
+import PublicLayout from "../../layouts/PublicLayout.astro";
+import {
+  verifyPassword,
+  setMemberAuthCookie,
+  checkMemberAuth,
+} from "../../utils/auth";
 
 // Check if already logged in
 if (checkMemberAuth(Astro.request)) {
-  return Astro.redirect('/members');
+  return Astro.redirect("/members");
 }
 
-let errorMessage = '';
+let errorMessage = "";
 
-if (Astro.request.method === 'POST') {
+if (Astro.request.method === "POST") {
   try {
     const data = await Astro.request.formData();
-    const password = data.get('password')?.toString() || '';
-    
-		if (verifyPassword(password)) {
-			return new Response(null, {
-				status: 302,
-				headers: {
-					Location: '/members',
-					'Set-Cookie': setMemberAuthCookie()
-				}
-			});
+    const password = data.get("password")?.toString() || "";
+
+    if (verifyPassword(password)) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: "/members",
+          "Set-Cookie": setMemberAuthCookie(),
+        },
+      });
     } else {
-      errorMessage = 'Incorrect password. Please try again.';
+      errorMessage = "Incorrect password. Please try again.";
     }
   } catch (error) {
-    errorMessage = 'An error occurred. Please try again.';
+    errorMessage = "An error occurred. Please try again.";
   }
 }
 ---
 
 <PublicLayout title="Member Login - Mini-THON">
-	<div class="login-container">
-		<h1>Member Portal Login</h1>
-		<p class="subtitle">For GMHS Mini-THON members only</p>
-		<p class="info-note">Enter the member password to access the private portal</p>
-		
-		<form method="POST" class="login-form">
-			{errorMessage && (
-				<div class="error-message">{errorMessage}</div>
-			)}
-			
-			<div class="form-group">
-				<label for="password">Password</label>
-				<input 
-					type="password" 
-					id="password" 
-					name="password" 
-					required 
-					autocomplete="current-password"
-					placeholder="Enter member password"
-				/>
-			</div>
-			
-			<button type="submit" class="submit-button">Login</button>
-		</form>
-	</div>
+  <div class="login-container">
+    <h1>Member Portal Login</h1>
+    <p class="subtitle">For GMHS Mini-THON members only</p>
+    <p class="info-note">
+      Enter the member password to access the private portal
+    </p>
+
+    <form method="POST" class="login-form">
+      {errorMessage && <div class="error-message">{errorMessage}</div>}
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          placeholder="Enter member password"
+        />
+      </div>
+
+      <button type="submit" class="submit-button">Login</button>
+    </form>
+  </div>
 </PublicLayout>
 
 <style>
-	.login-container {
-		max-width: 520px;
-		margin: 0 auto;
-		background: var(--surface-raised);
-		padding: 3rem 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-	}
+  .login-container {
+    max-width: 520px;
+    margin: 0 auto;
+    background: var(--surface-raised);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+  }
 
-	h1 {
-		font-size: 2rem;
-		color: var(--ink-900);
-		margin-bottom: 0.5rem;
-		text-align: center;
-	}
+  h1 {
+    font-size: 2rem;
+    color: var(--ink-900);
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
 
-	.subtitle {
-		text-align: center;
-		color: var(--brand-ink);
-		margin-bottom: 0.5rem;
-		font-weight: 600;
-		font-size: 1.05rem;
-	}
+  .subtitle {
+    text-align: center;
+    color: var(--brand-ink);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
 
-	.info-note {
-		text-align: center;
-		color: var(--ink-500);
-		margin-bottom: 2rem;
-		font-size: 0.95rem;
-	}
+  .info-note {
+    text-align: center;
+    color: var(--ink-500);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
 
-	.login-form {
-		margin-bottom: 2rem;
-	}
+  .login-form {
+    margin-bottom: 2rem;
+  }
 
-	.error-message {
-		background: #FFEBEE;
-		color: #C62828;
-		padding: 1rem;
-		border-radius: 12px;
-		margin-bottom: 1.5rem;
-	}
+  .error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+  }
 
-	.form-group {
-		margin-bottom: 1.5rem;
-	}
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
 
-	label {
-		display: block;
-		margin-bottom: 0.5rem;
-		color: var(--ink-900);
-		font-weight: 600;
-	}
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--ink-900);
+    font-weight: 600;
+  }
 
-	input[type="password"] {
-		width: 100%;
-		max-width: 100%;
-		min-width: 0;
-		padding: 0.75rem;
-		border: 2px solid var(--border-soft);
-		border-radius: 12px;
-		font-size: 1rem;
-		transition: border-color 0.3s;
-		box-sizing: border-box;
-	}
+  input[type="password"] {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0.75rem;
+    border: 2px solid var(--border-soft);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+  }
 
-	input[type="password"]:focus {
-		outline: none;
-		border-color: var(--brand-sky);
-	}
+  input[type="password"]:focus {
+    outline: none;
+    border-color: var(--brand-sky);
+  }
 
-	.submit-button {
-		width: 100%;
-		background: linear-gradient(135deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
-		color: white;
-		padding: 1rem;
-		border: none;
-		border-radius: 999px;
-		font-size: 1.1rem;
-		font-weight: bold;
-		cursor: pointer;
-		transition: all 0.3s ease;
-	}
+  .submit-button {
+    width: 100%;
+    background: linear-gradient(
+      135deg,
+      rgba(44, 70, 114, 0.95),
+      rgba(44, 70, 114, 0.8)
+    );
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 
-	.submit-button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(28, 42, 58, 0.2);
-	}
+  .submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(28, 42, 58, 0.2);
+  }
 
-	.help-text {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.1), rgba(106, 170, 228, 0.03));
-		padding: 1.5rem;
-		border-radius: 16px;
-		border-left: 4px solid #FDB927;
-		border: 1px solid var(--border-soft);
-	}
+  .help-text {
+    background: linear-gradient(
+      135deg,
+      rgba(106, 170, 228, 0.1),
+      rgba(106, 170, 228, 0.03)
+    );
+    padding: 1.5rem;
+    border-radius: 16px;
+    border-left: 4px solid #fdb927;
+    border: 1px solid var(--border-soft);
+  }
 
-	.help-text p {
-		margin: 0.5rem 0;
-		color: var(--ink-700);
-		font-size: 0.95rem;
-	}
+  .help-text p {
+    margin: 0.5rem 0;
+    color: var(--ink-700);
+    font-size: 0.95rem;
+  }
 
-	.help-text strong {
-		color: var(--ink-900);
-	}
+  .help-text strong {
+    color: var(--ink-900);
+  }
 
-	@media (max-width: 600px) {
-		.login-container {
-			padding: 2rem 1.5rem;
-		}
-	}
+  @media (max-width: 600px) {
+    .login-container {
+      padding: 2rem 1.5rem;
+    }
+  }
 </style>

@@ -1,858 +1,956 @@
 ---
-import PublicLayout from '../layouts/PublicLayout.astro';
-import ImageCarousel from '../components/ImageCarousel.astro';
-import SocialPopup from '../components/SocialPopup.astro';
-import fundraisingData from '../data/fundraising.json';
-import clubInfo from '../data/clubInfo.json';
-import { getCurrentYearEvents } from '../utils/events';
+import PublicLayout from "../layouts/PublicLayout.astro";
+import ImageCarousel from "../components/ImageCarousel.astro";
+import SocialPopup from "../components/SocialPopup.astro";
+import fundraisingData from "../data/fundraising.json";
+import clubInfo from "../data/clubInfo.json";
+import { getCurrentYearEvents } from "../utils/events";
 
 export const prerender = true;
 
-const currentTotal = fundraisingData.currentTotal.toLocaleString('en-US', {
-	style: 'currency',
-	currency: 'USD',
-	minimumFractionDigits: 0,
-	maximumFractionDigits: 0
+const currentTotal = fundraisingData.currentTotal.toLocaleString("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 });
 
 const goalTotal = fundraisingData.goalTotal ?? 0;
-const goalTotalFormatted = goalTotal.toLocaleString('en-US', {
-	style: 'currency',
-	currency: 'USD',
-	minimumFractionDigits: 0,
-	maximumFractionDigits: 0
+const goalTotalFormatted = goalTotal.toLocaleString("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 });
-const goalProgress = goalTotal > 0 ? Math.min(fundraisingData.currentTotal / goalTotal, 1) : 0;
+const goalProgress =
+  goalTotal > 0 ? Math.min(fundraisingData.currentTotal / goalTotal, 1) : 0;
 const goalProgressPercent = Math.round(goalProgress * 100);
 const remainingTotal = Math.max(goalTotal - fundraisingData.currentTotal, 0);
-const remainingFormatted = remainingTotal.toLocaleString('en-US', {
-	style: 'currency',
-	currency: 'USD',
-	minimumFractionDigits: 0,
-	maximumFractionDigits: 0
+const remainingFormatted = remainingTotal.toLocaleString("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 });
 
 const getEventPreview = (description: string | string[]) =>
-	Array.isArray(description) ? description[0] ?? '' : description;
+  Array.isArray(description) ? (description[0] ?? "") : description;
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const currentYearEvents = await getCurrentYearEvents();
 const upcomingEvents = currentYearEvents
-	.filter((event) => new Date(event.date) >= today)
-	.slice(0, 3);
+  .filter((event) => new Date(event.date) >= today)
+  .slice(0, 3);
 
 const formatDate = (dateString: string) =>
-	new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
 
-const missionLead = Array.isArray(clubInfo.mission) ? clubInfo.mission[0] ?? '' : clubInfo.mission;
+const missionLead = Array.isArray(clubInfo.mission)
+  ? (clubInfo.mission[0] ?? "")
+  : clubInfo.mission;
 const aboutParagraphs = Array.isArray(clubInfo.about)
-	? clubInfo.about
-	: clubInfo.about.split('\n\n').filter(Boolean);
+  ? clubInfo.about
+  : clubInfo.about.split("\n\n").filter(Boolean);
 
 // Gallery images for carousel
 const galleryImages = [
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZLo5fse8vIJdANshRq18ScUf9uGyV2Wlt6j0E', alt: 'Mini-THON Open House Picture', caption: 'Raising awareness at GMHS open house.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZhW4Kp4Jy1QEJSPbKwvsp3dVo68iRY0Gf5gLH', alt: 'Event Conclusion Picture', caption: 'Conclusion of Brady Runs for the Kids, an epic marathon fundraiser.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZVE1xzUqABFznRmg4w5HoI612YGqWjCJQ7fMO', alt: 'Taping a Teacher to a Wall', caption: 'Taping Mr. Weisner to the wall to raise funds for Four Diamonds.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zo4JllQEQD2huKV9srAIqHxzRnjpYCPBmdOw7', alt: 'Stall Day Event Picture', caption: 'Watching teachers count coins during Stall Day.' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZwZ9W3HLhbl62BiaGpSHXmTjPdfCMucLnZxr9', alt: 'Event Setup Picture', caption: 'Preparing for Brady Runs for the Kids.' },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZLo5fse8vIJdANshRq18ScUf9uGyV2Wlt6j0E",
+    alt: "Mini-THON Open House Picture",
+    caption: "Raising awareness at GMHS open house.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZhW4Kp4Jy1QEJSPbKwvsp3dVo68iRY0Gf5gLH",
+    alt: "Event Conclusion Picture",
+    caption:
+      "Conclusion of Brady Runs for the Kids, an epic marathon fundraiser.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZVE1xzUqABFznRmg4w5HoI612YGqWjCJQ7fMO",
+    alt: "Taping a Teacher to a Wall",
+    caption: "Taping Mr. Weisner to the wall to raise funds for Four Diamonds.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zo4JllQEQD2huKV9srAIqHxzRnjpYCPBmdOw7",
+    alt: "Stall Day Event Picture",
+    caption: "Watching teachers count coins during Stall Day.",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZwZ9W3HLhbl62BiaGpSHXmTjPdfCMucLnZxr9",
+    alt: "Event Setup Picture",
+    caption: "Preparing for Brady Runs for the Kids.",
+  },
 ];
 
 const heroBackgroundImages = [
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay', alt: 'Yearly Fundraising Total Reveal' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZwZ9W3HLhbl62BiaGpSHXmTjPdfCMucLnZxr9', alt: 'Setting Up for an Event' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl', alt: 'Community Trunk or Treat' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZNRXuG9fYOADiHNmXlcj8gE4PWTeqKktZfIFv', alt: 'Taping a teacher to the wall as a fundraiser' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZhW4Kp4Jy1QEJSPbKwvsp3dVo68iRY0Gf5gLH', alt: 'Right after a successful event' },
-	{ src: 'https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZLo5fse8vIJdANshRq18ScUf9uGyV2Wlt6j0E', alt: 'Manning a booth during Open House' },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay",
+    alt: "Yearly Fundraising Total Reveal",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZwZ9W3HLhbl62BiaGpSHXmTjPdfCMucLnZxr9",
+    alt: "Setting Up for an Event",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl",
+    alt: "Community Trunk or Treat",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZNRXuG9fYOADiHNmXlcj8gE4PWTeqKktZfIFv",
+    alt: "Taping a teacher to the wall as a fundraiser",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZhW4Kp4Jy1QEJSPbKwvsp3dVo68iRY0Gf5gLH",
+    alt: "Right after a successful event",
+  },
+  {
+    src: "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZLo5fse8vIJdANshRq18ScUf9uGyV2Wlt6j0E",
+    alt: "Manning a booth during Open House",
+  },
 ];
 ---
 
 <PublicLayout title="GMHS Mini-THON">
-	<section class="hero">
-		<div class="hero-background" data-hero-bg-layer="0"></div>
-		<div class="hero-background" data-hero-bg-layer="1"></div>
-		<div class="hero-content">
-			<p class="eyebrow">Great Mills High School</p>
-			<h1>Mini-THON</h1>
-			<p class="lead">{missionLead}</p>
-			<div class="hero-actions">
-				<a href={fundraisingData.donorDriveLink} class="button primary" target="_blank" rel="noopener noreferrer">Donate now</a>
-				<a href="/get-involved" class="button ghost">Get involved</a>
-			</div>
-		</div>
-	</section>
-
-	<div class="page-content">
-		<section class="split">
-			<div class="split-card">
-				<h2>About us</h2>
-				{aboutParagraphs.map((paragraph) => (
-					<p>{paragraph}</p>
-				))}
-				<a href="/about" class="text-link">Read our story</a>
-			</div>
-			<div class="split-card photo-card">
-				<ImageCarousel images={galleryImages} autoplay={true} interval={5000} />
-			</div>
-		</section>
-
-		<section class="grid-section">
-			<div class="grid-card">
-				<h2>Upcoming events</h2>
-				<ul class="event-list">
-					{upcomingEvents.length > 0 ? (
-						upcomingEvents.map((event) => (
-							<li>
-								<div class="event-card-item">
-									<a class="event-link" href={event.url}>
-										<span class="event-date">{formatDate(event.date)}</span>
-										<div>
-											<p class="event-title">{event.title}</p>
-											<p class="event-desc">{getEventPreview(event.summary)}</p>
-										</div>
-									</a>
-									<div class="event-actions">
-										<a href={event.url} class="event-action">View details</a>
-									</div>
-								</div>
-							</li>
-						))
-					) : (
-						<li class="event-empty">New events coming soon.</li>
-					)}
-				</ul>
-				<a href="/events" class="text-link">View all events</a>
-			</div>
-			<div class="grid-card highlight fundraising-card">
-				<div class="fundraising-card-body">
-					<h2>DonorDrive Yearly Total</h2>
-					<p class="big-figure">{currentTotal}</p>
-					<p class="muted">Raised in the {fundraisingData.currentYear} school year through DonorDrive to support pediatric cancer research & treatement. 
-					<div class="fundraising-progress">
-						<div class="progress-header">
-							<span class="progress-label">Goal: {goalTotalFormatted}</span>
-							<span class="progress-value">{goalProgressPercent}%</span>
-						</div>
-						<div
-							class="progress-slider"
-							role="progressbar"
-							aria-label="Fundraising progress"
-							aria-valuemin="0"
-							aria-valuemax="100"
-							aria-valuenow={goalProgressPercent}
-						>
-							<div class="progress-track" style={`--progress: ${goalProgressPercent}%`}>
-								<div class="progress-fill"></div>
-								<div class="progress-thumb"></div>
-							</div>
-						</div>
-						<p class="progress-caption">{remainingFormatted} to reach goal.</p>
-					</div>
-					<p class"muted">Grand total will be announced at the end of the school year.
-				</div>
-				<a href={fundraisingData.donorDriveLink} class="button primary">Make a donation</a>
-			</div>
-		</section>
-
-		<section class="link-section">
-			<h2>Get involved</h2>
-			<div class="links-grid">
-				<a href={fundraisingData.donorDriveLink} class="link-card" target="_blank" rel="noopener noreferrer">
-					<h3>Donate now</h3>
-					<p>Contribute directly through DonorDrive and make an impact. Quick, easy and secure.</p>
-				</a>
-				<a href="/get-involved" class="link-card">
-					<h3>Join the club</h3>
-					<p>GMHS students can join our club meeting {clubInfo.meetings.general}</p>
-				</a>
-				<button class="link-card link-card-btn" data-open-social-popup type="button">
-					<h3>Follow Us</h3>
-					<p>Get the latest stories, highlights, and event updates on our social profiles.</p>
-				</button>
-				<a href="/sponsorship" class="link-card">
-					<h3>Sponsor us</h3>
-					<p>Learn about sponsorship opportunities for your business.</p>
-				</a>
-
-			</div>
-		</section>
-	</div>
-	<SocialPopup />
-</PublicLayout>
-
-<script define:vars={{ heroBackgroundImages }}>
-	const layers = Array.from(document.querySelectorAll('[data-hero-bg-layer]'));
-	if (layers.length < 2) {
-		return;
-	}
-
-	const images = heroBackgroundImages.map((image) => image.src);
-	const overlay = 'linear-gradient(120deg, rgba(12, 20, 35, 0.85), rgba(44, 70, 114, 0.65))';
-	let currentIndex = 0;
-	let activeLayer = 0;
-
-	function setLayerBackground(layer, src) {
-		layer.style.backgroundImage = `${overlay}, url('${src}')`;
-	}
-
-	setLayerBackground(layers[activeLayer], images[currentIndex]);
-	layers[activeLayer].classList.add('is-active');
-	layers.forEach((layer) => layer.classList.add('no-transition'));
-	requestAnimationFrame(() => {
-		layers.forEach((layer) => layer.classList.remove('no-transition'));
-	});
-
-	setInterval(() => {
-		const nextIndex = (currentIndex + 1) % images.length;
-		const nextLayer = activeLayer === 0 ? 1 : 0;
-
-		setLayerBackground(layers[nextLayer], images[nextIndex]);
-		layers[nextLayer].classList.add('is-active');
-		layers[activeLayer].classList.remove('is-active');
-
-		activeLayer = nextLayer;
-		currentIndex = nextIndex;
-	}, 5000);
-</script>
-
-<style>
-	.hero {
-		position: relative;
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		gap: 2.5rem;
-		padding: clamp(4rem, 10vh, 6rem) 3.5rem clamp(2.5rem, 8vh, 4.5rem);
-		border-radius: 0;
-		color: var(--white);
-		box-shadow: var(--shadow-soft);
-		margin-top: 0;
-		margin-bottom: 3.5rem;
-		overflow: hidden;
-		width: 100%;
-		min-height: 100svh;
-		align-items: end;
-		box-sizing: border-box;
-	}
-
-	.hero-background {
-		position: absolute;
-		inset: 0;
-		background-size: cover;
-		background-position: center;
-		opacity: 0;
-		transition: opacity 0.8s ease;
-		z-index: 0;
-	}
-
-	.hero-background.no-transition {
-		transition: none;
-	}
-
-	.hero-background.is-active {
-		opacity: 1;
-	}
-
-	.hero::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background-image:
-			linear-gradient(120deg, rgba(12, 20, 35, 0.35), rgba(44, 70, 114, 0.25));
-		pointer-events: none;
-		z-index: 1;
-	}
-
-	.hero-content {
-		max-width: 620px;
-		padding-bottom: 1rem;
-		align-self: end;
-		position: relative;
-		z-index: 2;
-		animation: fade-rise 0.8s ease both;
-	}
-
-	.hero-content h1 {
-		font-size: clamp(2.8rem, 3vw, 4.2rem);
-		margin-bottom: 1rem;
-		color: var(--white);
-	}
-
-	.eyebrow {
-		text-transform: uppercase;
-		letter-spacing: 0.3em;
-		font-size: 0.75rem;
-		font-weight: 600;
-		opacity: 0.8;
-		margin-bottom: 1rem;
-	}
-
-	.lead {
-		font-size: 1.2rem;
-		line-height: 1.8;
-		max-width: 540px;
-		margin-bottom: 2rem;
-	}
-
-	.hero-actions {
-		display: flex;
-		gap: 1rem;
-		flex-wrap: wrap;
-		margin-bottom: 2rem;
-	}
-
-
-	section {
-		margin-bottom: 3.5rem;
-	}
-
-	.split {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-		gap: 1.5rem;
-		align-items: stretch;
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.1s;
-	}
-
-	.split-card {
-		background: transparent;
-		border-radius: 20px;
-		padding: 2rem;
-		box-shadow: none;
-		border: none;
-		min-width: 0;
-	}
-
-
-	.split-card p {
-		line-height: 1.8;
-		color: var(--ink-700);
-	}
-
-	.photo-card {
-		padding: 0;
-		overflow: hidden;
-		display: flex;
-		border-radius: 20px;
-		aspect-ratio: 4 / 3;
-		min-height: 260px;
-		width: 100%;
-		max-width: 100%;
-	}
-
-	.photo-card :global(.carousel-container),
-	.photo-card :global(.carousel-track) {
-		height: 100%;
-	}
-
-	.photo-card :global(.carousel-track) {
-		aspect-ratio: auto;
-	}
-
-	.photo-card img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		display: block;
-		max-width: 100%;
-		flex-shrink: 0;
-	}
-
-	.grid-section {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 2rem;
-		align-items: stretch;
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.2s;
-	}
-
-	.grid-card {
-		background: var(--surface-raised);
-		border-radius: 20px;
-		padding: 2rem;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		flex: 1 1 280px;
-	}
-
-	.grid-card.highlight {
-		background: linear-gradient(160deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
-		color: var(--white);
-		border: none;
-	}
-
-	.fundraising-card {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-		padding: 1.5rem;
-		min-height: 100%;
-	}
-
-	.fundraising-card-body {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		flex: 1;
-	}
-
-	.grid-card.highlight h2,
-	.grid-card.highlight .muted {
-		color: var(--white);
-	}
-
-	.fundraising-card .muted {
-		margin-bottom: 0;
-	}
-
-	.fundraising-card .button {
-		align-self: stretch;
-		text-align: center;
-		padding: 0.75rem 1.5rem;
-	}
-
-
-	.event-list {
-		list-style: none;
-		padding: 0;
-		margin: 1.5rem 0 1.5rem;
-		display: grid;
-		gap: 1.2rem;
-		grid-template-rows: repeat(3, auto);
-		min-height: 320px;
-	}
-
-	.event-list li {
-		list-style: none;
-	}
-
-	.past-events-heading {
-		font-size: 1.1rem;
-		color: var(--ink-800);
-		margin: 0 0 0.5rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid var(--border-soft);
-	}
-
-	.past-event-list {
-		margin-top: 0.75rem;
-	}
-
-	.event-card-item {
-		display: grid;
-		gap: 0.6rem;
-		padding: 0.35rem 0.4rem;
-		border-radius: 16px;
-		transition: background 0.2s ease;
-	}
-
-	.event-card-item.past {
-		opacity: 0.95;
-	}
-
-	.event-card-item:hover {
-		background: rgba(44, 70, 114, 0.04);
-	}
-
-	.event-link {
-		display: grid;
-		grid-template-columns: 70px 1fr;
-		gap: 1rem;
-		align-items: start;
-		text-decoration: none;
-		color: inherit;
-		width: 100%;
-		box-sizing: border-box;
-	}
-
-	.event-link * {
-		text-decoration: none;
-		color: inherit;
-	}
-
-
-	.event-date {
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: var(--brand-ink);
-		background: rgba(106, 170, 228, 0.15);
-		padding: 0.5rem 0.7rem;
-		border-radius: 12px;
-		text-align: center;
-	}
-
-	.event-title {
-		font-weight: 600;
-		margin: 0 0 0.35rem;
-		color: var(--ink-900);
-	}
-
-	.event-desc {
-		margin: 0;
-		color: var(--ink-700);
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	.event-actions {
-		display: flex;
-		gap: 0.75rem;
-		flex-wrap: wrap;
-		padding-left: calc(70px + 1rem);
-	}
-
-	.event-action {
-		color: var(--brand-ink);
-		font-weight: 600;
-		text-decoration: none;
-		font-size: 0.95rem;
-		transition: color 0.2s ease;
-	}
-
-	.event-action.secondary {
-		color: var(--ink-500);
-	}
-
-	.event-action:hover {
-		color: var(--brand-sky);
-	}
-
-	.event-empty {
-		color: var(--ink-500);
-	}
-
-	.big-figure {
-		font-size: 2.6rem;
-		font-weight: 600;
-		margin: 1rem 0 0.5rem;
-	}
-
-	.fundraising-card .big-figure {
-		font-size: 2.3rem;
-		margin: 0.75rem 0 0.35rem;
-	}
-
-	.fundraising-progress {
-		display: grid;
-		gap: 0.75rem;
-	}
-
-	.fundraising-card .fundraising-progress {
-		gap: 0.5rem;
-	}
-
-	.progress-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		font-weight: 600;
-		letter-spacing: 0.01em;
-	}
-
-	.progress-label {
-		font-size: 0.95rem;
-		opacity: 0.9;
-	}
-
-	.progress-value {
-		font-size: 1.05rem;
-	}
-
-	.progress-slider {
-		width: 100%;
-	}
-
-	.progress-track {
-		position: relative;
-		height: 14px;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.2);
-		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-		--progress: 0%;
-	}
-
-	.progress-fill {
-		position: absolute;
-		inset: 0 auto 0 0;
-		width: var(--progress);
-		background: linear-gradient(90deg, rgba(106, 170, 228, 0.95), rgba(255, 255, 255, 0.95));
-		border-radius: 999px;
-	}
-
-	.progress-thumb {
-		position: absolute;
-		top: 50%;
-		left: var(--progress);
-		transform: translate(-50%, -50%);
-		width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		background: var(--white);
-		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-		border: 2px solid rgba(106, 170, 228, 0.9);
-	}
-
-	.progress-caption {
-		margin: 0;
-		font-size: 0.95rem;
-		opacity: 0.85;
-	}
-
-	.muted {
-		color: var(--ink-500);
-		margin-bottom: 2rem;
-	}
-
-	.link-section h2 {
-		margin-bottom: 1.5rem;
-	}
-
-	.link-section {
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.3s;
-	}
-
-	.links-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.link-card {
-		background: var(--surface-raised);
-		padding: 1.75rem;
-		border-radius: 18px;
-		text-decoration: none;
-		color: inherit;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
-	}
-
-	.link-card-btn {
-		text-align: left;
-		cursor: pointer;
-		font-family: inherit;
-		font-size: inherit;
-	}
-
-	.link-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 20px 40px rgba(28, 42, 58, 0.12);
-	}
-
-	.link-card h3 {
-		margin-bottom: 0.5rem;
-	}
-
-	.link-card p {
-		color: var(--ink-700);
-		margin: 0;
-	}
-
-	.button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.9rem 1.8rem;
-		border-radius: 999px;
-		text-decoration: none;
-		font-weight: 600;
-		letter-spacing: 0.02em;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
-		border: 1px solid transparent;
-	}
-
-	.button.primary {
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		box-shadow: 0 14px 25px rgba(106, 170, 228, 0.3);
-	}
-
-	.button.ghost {
-		background: transparent;
-		color: var(--white);
-		border-color: rgba(255, 255, 255, 0.5);
-	}
-
-	.grid-card.highlight .button.primary {
-		background: var(--white);
-		color: var(--brand-ink);
-	}
-
-	.button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 18px 35px rgba(28, 42, 58, 0.18);
-	}
-
-	.text-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
-		text-decoration: none;
-		color: var(--brand-ink);
-		font-weight: 600;
-		letter-spacing: 0.02em;
-	}
-
-	.text-link::after {
-		content: '→';
-		transition: transform 0.2s ease;
-	}
-
-	.text-link:hover::after {
-		transform: translateX(3px);
-	}
-
-	.page-content {
-		max-width: 1160px;
-		margin: 0 auto;
-		padding: 3rem 1.5rem 2rem;
-		overflow-x: hidden;
-		width: 100%;
-		box-sizing: border-box;
-	}
-
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	:global(main) {
-		width: 100% !important;
-		max-width: none !important;
-		padding: 0 !important;
-		margin: 0 !important;
-	}
-
-	@media (max-width: 768px) {
-		.hero {
-			padding: calc(2.5rem + var(--nav-offset, 0px)) 1.5rem 2.5rem;
-			min-height: auto;
-		}
-
-		.hero-content {
-			padding-bottom: 2rem;
-			max-width: 100%;
-		}
-
-		.hero-content h1 {
-			font-size: clamp(2rem, 8vw, 2.8rem);
-		}
-
-		.hero-actions {
-			flex-direction: column;
-			align-items: flex-start;
-			width: 100%;
-		}
-
-		.hero-actions .button {
-			width: auto;
-			min-width: 200px;
-		}
-
-		.page-content {
-			padding: 2rem 1rem 2rem;
-		}
-
-		.split {
-			grid-template-columns: 1fr;
-			gap: 2rem;
-		}
-
-		.split-card {
-			padding: 1.5rem 1rem;
-		}
-
-		.photo-card {
-			padding: 0;
-			border-radius: 20px;
-			width: 100%;
-			max-width: 100%;
-			overflow: hidden;
-		}
-
-		.photo-card img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-		}
-
-		.event-link {
-			grid-template-columns: 1fr;
-		}
-
-		.event-date {
-			text-align: left;
-			width: fit-content;
-		}
-
-		.event-actions {
-			padding-left: 0;
-		}
-
-		.grid-section {
-			flex-direction: column;
-			margin-bottom: 4.5rem;
-		}
-
-		.fundraising-card {
-			min-height: auto;
-			padding: 1.25rem;
-		}
-
-		.fundraising-card .big-figure {
-			font-size: 2rem;
-		}
-
-		.fundraising-card .button {
-			width: 100%;
-			max-width: 100%;
-			box-sizing: border-box;
-			padding: 0.7rem 1.2rem;
-		}
-
-		.link-section {
-			margin-top: 1rem;
-		}
-
-		.progress-header {
-			flex-wrap: wrap;
-			gap: 0.35rem 1rem;
-		}
-
-		.progress-label {
-			font-size: 0.9rem;
-		}
-
-		.progress-value {
-			font-size: 0.95rem;
-			margin-left: auto;
-		}
-
-		.progress-track {
-			height: 12px;
-		}
-
-		.progress-thumb {
-			width: 18px;
-			height: 18px;
-		}
-
-		.links-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>
+  <section class="hero">
+    <div class="hero-background" data-hero-bg-layer="0"></div>
+    <div class="hero-background" data-hero-bg-layer="1"></div>
+    <div class="hero-content">
+      <p class="eyebrow">Great Mills High School</p>
+      <h1>Mini-THON</h1>
+      <p class="lead">{missionLead}</p>
+      <div class="hero-actions">
+        <a
+          href={fundraisingData.donorDriveLink}
+          class="button primary"
+          target="_blank"
+          rel="noopener noreferrer">Donate now</a
+        >
+        <a href="/get-involved" class="button ghost">Get involved</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-content">
+    <section class="split">
+      <div class="split-card">
+        <h2>About us</h2>
+        {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+        <a href="/about" class="text-link">Read our story</a>
+      </div>
+      <div class="split-card photo-card">
+        <ImageCarousel images={galleryImages} autoplay={true} interval={5000} />
+      </div>
+    </section>
+
+    <section class="grid-section">
+      <div class="grid-card">
+        <h2>Upcoming events</h2>
+        <ul class="event-list">
+          {
+            upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event) => (
+                <li>
+                  <div class="event-card-item">
+                    <a class="event-link" href={event.url}>
+                      <span class="event-date">{formatDate(event.date)}</span>
+                      <div>
+                        <p class="event-title">{event.title}</p>
+                        <p class="event-desc">
+                          {getEventPreview(event.summary)}
+                        </p>
+                      </div>
+                    </a>
+                    <div class="event-actions">
+                      <a href={event.url} class="event-action">
+                        View details
+                      </a>
+                    </div>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li class="event-empty">New events coming soon.</li>
+            )
+          }
+        </ul>
+        <a href="/events" class="text-link">View all events</a>
+      </div>
+      <div class="grid-card highlight fundraising-card">
+        <div class="fundraising-card-body">
+          <h2>DonorDrive Yearly Total</h2>
+          <p class="big-figure">{currentTotal}</p>
+          <p class="muted">
+            Raised in the {fundraisingData.currentYear} school year through DonorDrive
+            to support pediatric cancer research & treatement.
+            <div class="fundraising-progress">
+              <div class="progress-header">
+                <span class="progress-label">Goal: {goalTotalFormatted}</span>
+                <span class="progress-value">{goalProgressPercent}%</span>
+              </div>
+              <div
+                class="progress-slider"
+                role="progressbar"
+                aria-label="Fundraising progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow={goalProgressPercent}
+              >
+                <div
+                  class="progress-track"
+                  style={`--progress: ${goalProgressPercent}%`}
+                >
+                  <div class="progress-fill"></div>
+                  <div class="progress-thumb"></div>
+                </div>
+              </div>
+              <p class="progress-caption">
+                {remainingFormatted} to reach goal.
+              </p>
+            </div>
+            <p class"muted">
+              Grand total will be announced at the end of the school year.
+            </p>
+            <a href={fundraisingData.donorDriveLink} class="button primary"
+              >Make a donation</a
+            >
+          </p>
+        </div>
+
+        <section class="link-section">
+          <h2>Get involved</h2>
+          <div class="links-grid">
+            <a
+              href={fundraisingData.donorDriveLink}
+              class="link-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <h3>Donate now</h3>
+              <p>
+                Contribute directly through DonorDrive and make an impact.
+                Quick, easy and secure.
+              </p>
+            </a>
+            <a href="/get-involved" class="link-card">
+              <h3>Join the club</h3>
+              <p>
+                GMHS students can join our club meeting {
+                  clubInfo.meetings.general
+                }
+              </p>
+            </a>
+            <button
+              class="link-card link-card-btn"
+              data-open-social-popup
+              type="button"
+            >
+              <h3>Follow Us</h3>
+              <p>
+                Get the latest stories, highlights, and event updates on our
+                social profiles.
+              </p>
+            </button>
+            <a href="/sponsorship" class="link-card">
+              <h3>Sponsor us</h3>
+              <p>Learn about sponsorship opportunities for your business.</p>
+            </a>
+          </div>
+        </section>
+      </div>
+      <SocialPopup />
+    </section>
+
+    <script define:vars={{ heroBackgroundImages }}>
+      const layers = Array.from(
+        document.querySelectorAll("[data-hero-bg-layer]"),
+      );
+      if (layers.length < 2) {
+        return;
+      }
+
+      const images = heroBackgroundImages.map((image) => image.src);
+      const overlay =
+        "linear-gradient(120deg, rgba(12, 20, 35, 0.85), rgba(44, 70, 114, 0.65))";
+      let currentIndex = 0;
+      let activeLayer = 0;
+
+      function setLayerBackground(layer, src) {
+        layer.style.backgroundImage = `${overlay}, url('${src}')`;
+      }
+
+      setLayerBackground(layers[activeLayer], images[currentIndex]);
+      layers[activeLayer].classList.add("is-active");
+      layers.forEach((layer) => layer.classList.add("no-transition"));
+      requestAnimationFrame(() => {
+        layers.forEach((layer) => layer.classList.remove("no-transition"));
+      });
+
+      setInterval(() => {
+        const nextIndex = (currentIndex + 1) % images.length;
+        const nextLayer = activeLayer === 0 ? 1 : 0;
+
+        setLayerBackground(layers[nextLayer], images[nextIndex]);
+        layers[nextLayer].classList.add("is-active");
+        layers[activeLayer].classList.remove("is-active");
+
+        activeLayer = nextLayer;
+        currentIndex = nextIndex;
+      }, 5000);
+    </script>
+
+    <style>
+      .hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.5rem;
+        padding: clamp(4rem, 10vh, 6rem) 3.5rem clamp(2.5rem, 8vh, 4.5rem);
+        border-radius: 0;
+        color: var(--white);
+        box-shadow: var(--shadow-soft);
+        margin-top: 0;
+        margin-bottom: 3.5rem;
+        overflow: hidden;
+        width: 100%;
+        min-height: 100svh;
+        align-items: end;
+        box-sizing: border-box;
+      }
+
+      .hero-background {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        z-index: 0;
+      }
+
+      .hero-background.no-transition {
+        transition: none;
+      }
+
+      .hero-background.is-active {
+        opacity: 1;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(
+          120deg,
+          rgba(12, 20, 35, 0.35),
+          rgba(44, 70, 114, 0.25)
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .hero-content {
+        max-width: 620px;
+        padding-bottom: 1rem;
+        align-self: end;
+        position: relative;
+        z-index: 2;
+        animation: fade-rise 0.8s ease both;
+      }
+
+      .hero-content h1 {
+        font-size: clamp(2.8rem, 3vw, 4.2rem);
+        margin-bottom: 1rem;
+        color: var(--white);
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        font-size: 0.75rem;
+        font-weight: 600;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+      }
+
+      .lead {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        max-width: 540px;
+        margin-bottom: 2rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+      }
+
+      section {
+        margin-bottom: 3.5rem;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+        gap: 1.5rem;
+        align-items: stretch;
+        animation: fade-rise 0.8s ease both;
+        animation-delay: 0.1s;
+      }
+
+      .split-card {
+        background: transparent;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: none;
+        border: none;
+        min-width: 0;
+      }
+
+      .split-card p {
+        line-height: 1.8;
+        color: var(--ink-700);
+      }
+
+      .photo-card {
+        padding: 0;
+        overflow: hidden;
+        display: flex;
+        border-radius: 20px;
+        aspect-ratio: 4 / 3;
+        min-height: 260px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .photo-card :global(.carousel-container),
+      .photo-card :global(.carousel-track) {
+        height: 100%;
+      }
+
+      .photo-card :global(.carousel-track) {
+        aspect-ratio: auto;
+      }
+
+      .photo-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        max-width: 100%;
+        flex-shrink: 0;
+      }
+
+      .grid-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        align-items: stretch;
+        animation: fade-rise 0.8s ease both;
+        animation-delay: 0.2s;
+      }
+
+      .grid-card {
+        background: var(--surface-raised);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--border-soft);
+        flex: 1 1 280px;
+      }
+
+      .grid-card.highlight {
+        background: linear-gradient(
+          160deg,
+          rgba(44, 70, 114, 0.95),
+          rgba(44, 70, 114, 0.8)
+        );
+        color: var(--white);
+        border: none;
+      }
+
+      .fundraising-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        min-height: 100%;
+      }
+
+      .fundraising-card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex: 1;
+      }
+
+      .grid-card.highlight h2,
+      .grid-card.highlight .muted {
+        color: var(--white);
+      }
+
+      .fundraising-card .muted {
+        margin-bottom: 0;
+      }
+
+      .fundraising-card .button {
+        align-self: stretch;
+        text-align: center;
+        padding: 0.75rem 1.5rem;
+      }
+
+      .event-list {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0 1.5rem;
+        display: grid;
+        gap: 1.2rem;
+        grid-template-rows: repeat(3, auto);
+        min-height: 320px;
+      }
+
+      .event-list li {
+        list-style: none;
+      }
+
+      .past-events-heading {
+        font-size: 1.1rem;
+        color: var(--ink-800);
+        margin: 0 0 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border-soft);
+      }
+
+      .past-event-list {
+        margin-top: 0.75rem;
+      }
+
+      .event-card-item {
+        display: grid;
+        gap: 0.6rem;
+        padding: 0.35rem 0.4rem;
+        border-radius: 16px;
+        transition: background 0.2s ease;
+      }
+
+      .event-card-item.past {
+        opacity: 0.95;
+      }
+
+      .event-card-item:hover {
+        background: rgba(44, 70, 114, 0.04);
+      }
+
+      .event-link {
+        display: grid;
+        grid-template-columns: 70px 1fr;
+        gap: 1rem;
+        align-items: start;
+        text-decoration: none;
+        color: inherit;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .event-link * {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .event-date {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--brand-ink);
+        background: rgba(106, 170, 228, 0.15);
+        padding: 0.5rem 0.7rem;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .event-title {
+        font-weight: 600;
+        margin: 0 0 0.35rem;
+        color: var(--ink-900);
+      }
+
+      .event-desc {
+        margin: 0;
+        color: var(--ink-700);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .event-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        padding-left: calc(70px + 1rem);
+      }
+
+      .event-action {
+        color: var(--brand-ink);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: color 0.2s ease;
+      }
+
+      .event-action.secondary {
+        color: var(--ink-500);
+      }
+
+      .event-action:hover {
+        color: var(--brand-sky);
+      }
+
+      .event-empty {
+        color: var(--ink-500);
+      }
+
+      .big-figure {
+        font-size: 2.6rem;
+        font-weight: 600;
+        margin: 1rem 0 0.5rem;
+      }
+
+      .fundraising-card .big-figure {
+        font-size: 2.3rem;
+        margin: 0.75rem 0 0.35rem;
+      }
+
+      .fundraising-progress {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .fundraising-card .fundraising-progress {
+        gap: 0.5rem;
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+
+      .progress-label {
+        font-size: 0.95rem;
+        opacity: 0.9;
+      }
+
+      .progress-value {
+        font-size: 1.05rem;
+      }
+
+      .progress-slider {
+        width: 100%;
+      }
+
+      .progress-track {
+        position: relative;
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+        --progress: 0%;
+      }
+
+      .progress-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--progress);
+        background: linear-gradient(
+          90deg,
+          rgba(106, 170, 228, 0.95),
+          rgba(255, 255, 255, 0.95)
+        );
+        border-radius: 999px;
+      }
+
+      .progress-thumb {
+        position: absolute;
+        top: 50%;
+        left: var(--progress);
+        transform: translate(-50%, -50%);
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--white);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+        border: 2px solid rgba(106, 170, 228, 0.9);
+      }
+
+      .progress-caption {
+        margin: 0;
+        font-size: 0.95rem;
+        opacity: 0.85;
+      }
+
+      .muted {
+        color: var(--ink-500);
+        margin-bottom: 2rem;
+      }
+
+      .link-section h2 {
+        margin-bottom: 1.5rem;
+      }
+
+      .link-section {
+        animation: fade-rise 0.8s ease both;
+        animation-delay: 0.3s;
+      }
+
+      .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .link-card {
+        background: var(--surface-raised);
+        padding: 1.75rem;
+        border-radius: 18px;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--border-soft);
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .link-card-btn {
+        text-align: left;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .link-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(28, 42, 58, 0.12);
+      }
+
+      .link-card h3 {
+        margin-bottom: 0.5rem;
+      }
+
+      .link-card p {
+        color: var(--ink-700);
+        margin: 0;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.9rem 1.8rem;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+        border: 1px solid transparent;
+      }
+
+      .button.primary {
+        background: var(--brand-sky);
+        color: var(--brand-ink);
+        box-shadow: 0 14px 25px rgba(106, 170, 228, 0.3);
+      }
+
+      .button.ghost {
+        background: transparent;
+        color: var(--white);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .grid-card.highlight .button.primary {
+        background: var(--white);
+        color: var(--brand-ink);
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 35px rgba(28, 42, 58, 0.18);
+      }
+
+      .text-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        text-decoration: none;
+        color: var(--brand-ink);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      .text-link::after {
+        content: "→";
+        transition: transform 0.2s ease;
+      }
+
+      .text-link:hover::after {
+        transform: translateX(3px);
+      }
+
+      .page-content {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 2rem;
+        overflow-x: hidden;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      @keyframes fade-rise {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      :global(main) {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      @media (max-width: 768px) {
+        .hero {
+          padding: calc(2.5rem + var(--nav-offset, 0px)) 1.5rem 2.5rem;
+          min-height: auto;
+        }
+
+        .hero-content {
+          padding-bottom: 2rem;
+          max-width: 100%;
+        }
+
+        .hero-content h1 {
+          font-size: clamp(2rem, 8vw, 2.8rem);
+        }
+
+        .hero-actions {
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%;
+        }
+
+        .hero-actions .button {
+          width: auto;
+          min-width: 200px;
+        }
+
+        .page-content {
+          padding: 2rem 1rem 2rem;
+        }
+
+        .split {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .split-card {
+          padding: 1.5rem 1rem;
+        }
+
+        .photo-card {
+          padding: 0;
+          border-radius: 20px;
+          width: 100%;
+          max-width: 100%;
+          overflow: hidden;
+        }
+
+        .photo-card img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .event-link {
+          grid-template-columns: 1fr;
+        }
+
+        .event-date {
+          text-align: left;
+          width: fit-content;
+        }
+
+        .event-actions {
+          padding-left: 0;
+        }
+
+        .grid-section {
+          flex-direction: column;
+          margin-bottom: 4.5rem;
+        }
+
+        .fundraising-card {
+          min-height: auto;
+          padding: 1.25rem;
+        }
+
+        .fundraising-card .big-figure {
+          font-size: 2rem;
+        }
+
+        .fundraising-card .button {
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          padding: 0.7rem 1.2rem;
+        }
+
+        .link-section {
+          margin-top: 1rem;
+        }
+
+        .progress-header {
+          flex-wrap: wrap;
+          gap: 0.35rem 1rem;
+        }
+
+        .progress-label {
+          font-size: 0.9rem;
+        }
+
+        .progress-value {
+          font-size: 0.95rem;
+          margin-left: auto;
+        }
+
+        .progress-track {
+          height: 12px;
+        }
+
+        .progress-thumb {
+          width: 18px;
+          height: 18px;
+        }
+
+        .links-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </div></PublicLayout
+>

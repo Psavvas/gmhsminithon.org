@@ -1,269 +1,339 @@
 ---
-import Analytics from '@vercel/analytics/astro';
-import SpeedInsights from '@vercel/speed-insights/astro';
-import NavBehavior from '../components/NavBehavior.astro';
+import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
+import NavBehavior from "../components/NavBehavior.astro";
 
 export interface Props {
-	title: string;
-	description?: string;
+  title: string;
+  description?: string;
 }
 
 const { title, description = "Mini-THON Member Portal" } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="description" content={description} />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link rel="icon" type="image/svg+xml" href="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<Analytics />
-	</head>
-	<body>
-		<nav class="navbar">
-			<div class="nav-container">
-				<a href="/members" class="logo">GMHS Mini-THON Members</a>
-				<button class="nav-toggle" type="button" aria-controls="member-nav" aria-expanded="false">
-					<span class="nav-toggle-bar"></span>
-					<span class="nav-toggle-bar"></span>
-					<span class="nav-toggle-bar"></span>
-				</button>
-				<ul class="nav-links" id="member-nav">
-					<li><a href="/members" class={currentPath === '/members' ? 'active' : ''}>Dashboard</a></li>
-					<li><a href="/members/upcoming-events" class={currentPath.startsWith('/members/upcoming-events') || currentPath.startsWith('/members/events/') ? 'active' : ''}>Events</a></li>
-					<li><a href="/members/announcements" class={currentPath === '/members/announcements' ? 'active' : ''}>Announcements</a></li>
-					<li><a href="/members/club-info" class={currentPath === '/members/club-info' ? 'active' : ''}>Club Info</a></li>
-					<li><a href="/members/resources" class={currentPath === '/members/resources' ? 'active' : ''}>Member Resources</a></li>
-					<li><a href="/" class="return-main">Return to Main Site</a></li>
-				</ul>
-			</div>
-		</nav>
-		<main>
-			<slot />
-		</main>
-		<footer>
-			<div class="footer-container">
-				<p>&copy; {new Date().getFullYear()} Great Mills High School Mini-THON.</p>
-				<p class="footer-legal">Mini-THON® and Four Diamonds Mini-THON® are registered trademarks. The Diamond Masthead and DonorDrive® are owned by their respective trademark holders. Used with permission.</p>
-			</div>
-		</footer>
-		<NavBehavior />
-		<SpeedInsights />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao"
+    />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <Analytics />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/members" class="logo">GMHS Mini-THON Members</a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-controls="member-nav"
+          aria-expanded="false"
+        >
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </button>
+        <ul class="nav-links" id="member-nav">
+          <li>
+            <a
+              href="/members"
+              class={currentPath === "/members" ? "active" : ""}>Dashboard</a
+            >
+          </li>
+          <li>
+            <a
+              href="/members/upcoming-events"
+              class={currentPath.startsWith("/members/upcoming-events") ||
+              currentPath.startsWith("/members/events/")
+                ? "active"
+                : ""}>Events</a
+            >
+          </li>
+          <li>
+            <a
+              href="/members/announcements"
+              class={currentPath === "/members/announcements" ? "active" : ""}
+              >Announcements</a
+            >
+          </li>
+          <li>
+            <a
+              href="/members/club-info"
+              class={currentPath === "/members/club-info" ? "active" : ""}
+              >Club Info</a
+            >
+          </li>
+          <li>
+            <a
+              href="/members/resources"
+              class={currentPath === "/members/resources" ? "active" : ""}
+              >Member Resources</a
+            >
+          </li>
+          <li><a href="/" class="return-main">Return to Main Site</a></li>
+        </ul>
+      </div>
+    </nav>
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <div class="footer-container">
+        <p>
+          &copy; {new Date().getFullYear()} Great Mills High School Mini-THON.
+        </p>
+        <p class="footer-legal">
+          Mini-THON® and Four Diamonds Mini-THON® are registered trademarks. The
+          Diamond Masthead and DonorDrive® are owned by their respective
+          trademark holders. Used with permission.
+        </p>
+      </div>
+    </footer>
+    <NavBehavior />
+    <SpeedInsights />
+  </body>
 </html>
 
 <style>
-	:root {
-		--brand-ink: #2C4672;
-		--brand-sky: #6AAAE4;
-		--ink-900: #1C2A3A;
-		--ink-700: #3D4C5C;
-		--ink-500: #6A7A8A;
-		--surface: #F4F7FB;
-		--surface-raised: #FFFFFF;
-		--border-soft: #D7E2EF;
-		--white: #FFFFFF;
-		--shadow-soft: 0 18px 45px rgba(28, 42, 58, 0.12);
-		--shadow-card: 0 12px 30px rgba(28, 42, 58, 0.08);
-		--nav-overlay: linear-gradient(135deg, rgba(44, 70, 114, 0.98), rgba(106, 170, 228, 0.95));
-		--nav-offset: 84px;
-	}
+  :root {
+    --brand-ink: #2c4672;
+    --brand-sky: #6aaae4;
+    --ink-900: #1c2a3a;
+    --ink-700: #3d4c5c;
+    --ink-500: #6a7a8a;
+    --surface: #f4f7fb;
+    --surface-raised: #ffffff;
+    --border-soft: #d7e2ef;
+    --white: #ffffff;
+    --shadow-soft: 0 18px 45px rgba(28, 42, 58, 0.12);
+    --shadow-card: 0 12px 30px rgba(28, 42, 58, 0.08);
+    --nav-overlay: linear-gradient(
+      135deg,
+      rgba(44, 70, 114, 0.98),
+      rgba(106, 170, 228, 0.95)
+    );
+    --nav-offset: 84px;
+  }
 
-	* {
-		box-sizing: border-box;
-		margin: 0;
-		padding: 0;
-	}
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-	html {
-		font-family: 'Montserrat', 'Helvetica Neue', 'Noto Sans', sans-serif;
-		background-color: var(--surface);
-		color: var(--ink-900);
-		overflow-x: hidden;
-	}
+  html {
+    font-family: "Montserrat", "Helvetica Neue", "Noto Sans", sans-serif;
+    background-color: var(--surface);
+    color: var(--ink-900);
+    overflow-x: hidden;
+  }
 
-	body {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-		position: relative;
-		background: radial-gradient(circle at 10% 10%, rgba(106, 170, 228, 0.18), transparent 45%),
-			linear-gradient(140deg, rgba(44, 70, 114, 0.05), transparent 35%),
-			var(--surface);
-		overflow-x: hidden;
-		padding-top: 0;
-	}
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    background:
+      radial-gradient(
+        circle at 10% 10%,
+        rgba(106, 170, 228, 0.18),
+        transparent 45%
+      ),
+      linear-gradient(140deg, rgba(44, 70, 114, 0.05), transparent 35%),
+      var(--surface);
+    overflow-x: hidden;
+    padding-top: 0;
+  }
 
-	body::before {
-		content: '';
-		position: fixed;
-		inset: 0;
-		background: linear-gradient(120deg, rgba(44, 70, 114, 0.08), rgba(106, 170, 228, 0.06));
-		pointer-events: none;
-		z-index: 0;
-	}
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      rgba(44, 70, 114, 0.08),
+      rgba(106, 170, 228, 0.06)
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
 
-	main,
-	.navbar,
-	footer {
-		position: relative;
-		z-index: 1;
-	}
+  main,
+  .navbar,
+  footer {
+    position: relative;
+    z-index: 1;
+  }
 
-	body.nav-hidden {
-		padding-top: 0;
-	}
+  body.nav-hidden {
+    padding-top: 0;
+  }
 
-	:global(h1),
-	:global(h2),
-	:global(h3) {
-		font-family: 'Merriweather', 'Times New Roman', serif;
-		letter-spacing: 0.01em;
-		color: var(--ink-900);
-	}
+  :global(h1),
+  :global(h2),
+  :global(h3) {
+    font-family: "Merriweather", "Times New Roman", serif;
+    letter-spacing: 0.01em;
+    color: var(--ink-900);
+  }
 
-	.navbar {
-		background: linear-gradient(120deg, rgba(44, 70, 114, 0.98), rgba(44, 70, 114, 0.92));
-		color: var(--white);
-		padding: 1rem 0;
-		box-shadow: 0 4px 20px rgba(28, 42, 58, 0.15);
-		backdrop-filter: blur(14px);
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 1000;
-		transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-	}
+  .navbar {
+    background: linear-gradient(
+      120deg,
+      rgba(44, 70, 114, 0.98),
+      rgba(44, 70, 114, 0.92)
+    );
+    color: var(--white);
+    padding: 1rem 0;
+    box-shadow: 0 4px 20px rgba(28, 42, 58, 0.15);
+    backdrop-filter: blur(14px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      background 0.25s ease;
+  }
 
-	.navbar.is-hidden {
-		transform: translateY(-100%);
-		box-shadow: none;
-	}
+  .navbar.is-hidden {
+    transform: translateY(-100%);
+    box-shadow: none;
+  }
 
-	.nav-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 1.5rem;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-	.logo {
-		font-size: 1.15rem;
-		font-weight: 600;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--white);
-		text-decoration: none;
-	}
+  .logo {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+  }
 
-	.nav-links {
-		display: flex;
-		list-style: none;
-		gap: 1.25rem;
-		align-items: center;
-	}
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 1.25rem;
+    align-items: center;
+  }
 
-	.nav-links a {
-		color: var(--white);
-		text-decoration: none;
-		transition: all 0.3s ease;
-		padding: 0.5rem 0;
-		border-bottom: 2px solid transparent;
-		font-weight: 500;
-		font-size: 0.95rem;
-	}
+  .nav-links a {
+    color: var(--white);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
 
-	.nav-links a:hover,
-	.nav-links a.active {
-		color: var(--brand-sky);
-		border-bottom-color: var(--brand-sky);
-	}
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--brand-sky);
+    border-bottom-color: var(--brand-sky);
+  }
 
-	.return-main {
-		background-color: var(--brand-sky);
-		color: var(--brand-ink) !important;
-		padding: 0.45rem 1rem !important;
-		border-radius: 999px;
-		font-weight: 600;
-		border-bottom: 2px solid transparent !important;
-		transition: all 0.3s ease;
-	}
+  .return-main {
+    background-color: var(--brand-sky);
+    color: var(--brand-ink) !important;
+    padding: 0.45rem 1rem !important;
+    border-radius: 999px;
+    font-weight: 600;
+    border-bottom: 2px solid transparent !important;
+    transition: all 0.3s ease;
+  }
 
-	.return-main:hover {
-		background-color: var(--white);
-		color: var(--brand-ink) !important;
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
-	}
+  .return-main:hover {
+    background-color: var(--white);
+    color: var(--brand-ink) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
+  }
 
-	main {
-		flex: 1;
-		max-width: 1160px;
-		margin: 0 auto;
-		padding: calc(3rem + var(--nav-offset, 0px)) 2rem 4rem;
-		width: 100%;
-	}
+  main {
+    flex: 1;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: calc(3rem + var(--nav-offset, 0px)) 2rem 4rem;
+    width: 100%;
+  }
 
-	footer {
-		background: linear-gradient(120deg, rgba(44, 70, 114, 0.98), rgba(44, 70, 114, 0.9));
-		color: var(--white);
-		padding: 1.75rem 0;
-		margin-top: 2rem;
-		text-align: center;
-	}
+  footer {
+    background: linear-gradient(
+      120deg,
+      rgba(44, 70, 114, 0.98),
+      rgba(44, 70, 114, 0.9)
+    );
+    color: var(--white);
+    padding: 1.75rem 0;
+    margin-top: 2rem;
+    text-align: center;
+  }
 
-	.footer-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
 
-	footer p {
-		margin: 0.35rem 0;
-	}
+  footer p {
+    margin: 0.35rem 0;
+  }
 
-	.footer-legal {
-		font-size: 0.85rem;
-		line-height: 1.4;
-	}
+  .footer-legal {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
 
-	@media (max-width: 1120px) {
-		.nav-container {
-			flex-direction: row;
-			gap: 1rem;
-			padding: 0 1.5rem;
-		}
+  @media (max-width: 1120px) {
+    .nav-container {
+      flex-direction: row;
+      gap: 1rem;
+      padding: 0 1.5rem;
+    }
 
-		.nav-links {
-			gap: 1rem;
-			font-size: 0.85rem;
-		}
+    .nav-links {
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
 
-		.logo {
-			font-size: 1.1rem;
-		}
-	}
+    .logo {
+      font-size: 1.1rem;
+    }
+  }
 
-	@media (max-width: 480px) {
-		.logo {
-			font-size: 1rem;
-		}
+  @media (max-width: 480px) {
+    .logo {
+      font-size: 1rem;
+    }
 
-		.nav-container {
-			padding: 0 1rem;
-		}
-	}
+    .nav-container {
+      padding: 0 1rem;
+    }
+  }
 </style>

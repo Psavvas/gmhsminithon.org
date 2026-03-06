@@ -1,6 +1,6 @@
 ---
 // Renders the main MDX content for an event, used for both public and member event pages
-import type { AstroComponentFactory } from 'astro';
+import type { AstroComponentFactory } from "astro";
 
 interface Props {
   Content: AstroComponentFactory;
@@ -14,16 +14,16 @@ const { Content } = Astro.props;
 </div>
 
 <style>
-.event-mdx-content {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: var(--ink-700);
-}
-.event-mdx-content img {
-  max-width: 100%;
-  height: auto;
-  margin: 1rem 0;
-  border-radius: 12px;
-  box-shadow: var(--shadow-card);
-}
+  .event-mdx-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--ink-700);
+  }
+  .event-mdx-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+  }
 </style>

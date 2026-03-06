@@ -1,320 +1,357 @@
 ---
-import PublicLayout from '../layouts/PublicLayout.astro';
-import sponsorsData from '../data/sponsors.json';
+import PublicLayout from "../layouts/PublicLayout.astro";
+import sponsorsData from "../data/sponsors.json";
 
 export const prerender = true;
 
 const tierOrder = [
-	{ name: 'Diamond', diamonds: 6 },
-	{ name: 'Platinum', diamonds: 5 },
-	{ name: 'Gold', diamonds: 4 },
-	{ name: 'Silver', diamonds: 3 },
-	{ name: 'Bronze', diamonds: 2 },
-	{ name: 'Supporter', diamonds: 1 },
+  { name: "Diamond", diamonds: 6 },
+  { name: "Platinum", diamonds: 5 },
+  { name: "Gold", diamonds: 4 },
+  { name: "Silver", diamonds: 3 },
+  { name: "Bronze", diamonds: 2 },
+  { name: "Supporter", diamonds: 1 },
 ];
-const tiersWithoutLogos = new Set(['supporter', 'bronze']);
+const tiersWithoutLogos = new Set(["supporter", "bronze"]);
 const tierSections = tierOrder
-	.map((tier) => ({
-		...tier,
-		sponsors: sponsorsData.sponsors.filter(
-			(sponsor) => (sponsor.tier || '').toLowerCase() === tier.name.toLowerCase()
-		)
-	}))
-	.filter((tier) => tier.sponsors.length > 0);
+  .map((tier) => ({
+    ...tier,
+    sponsors: sponsorsData.sponsors.filter(
+      (sponsor) =>
+        (sponsor.tier || "").toLowerCase() === tier.name.toLowerCase(),
+    ),
+  }))
+  .filter((tier) => tier.sponsors.length > 0);
 ---
 
 <PublicLayout title="Our Sponsors - Mini-THON">
-	<h1>Our Sponsors</h1>
-	
-	<section class="intro">
-		<p>We are grateful to our generous sponsors who make our mission possible. Their support helps us raise money and awareness to support Four Diamonds' mission.</p>
-		<p><a href="/sponsorship" class="sponsor-cta">Interested in becoming a sponsor?</a></p>
-	</section>
+  <h1>Our Sponsors</h1>
 
-	{tierSections.map(tier => (
-		<section class="sponsor-tier">
-			<h2 class={`tier-${tier.name.toLowerCase()} tier-heading`}>
-				<span>{tier.name} Sponsors</span>
-				<span class="tier-diamonds" aria-hidden="true">
-					{Array.from({ length: tier.diamonds }).map(() => (
-						<img
-							src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao"
-							alt=""
-							width="18"
-							height="18"
-							class="tier-diamond-icon"
-							loading="lazy"
-						/>
-					))}
-				</span>
-			</h2>
-			<div class="sponsors-grid">
-				{tier.sponsors.map(sponsor => (
-					<div class="sponsor-card">
-						{sponsor.website ? (
-							<a href={sponsor.website} target="_blank" rel="noopener noreferrer" class="sponsor-link">
-								{!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
-									<div class="sponsor-logo">
-										<img
-											src={sponsor.logo}
-											alt={sponsor.name}
-											width="320"
-											height="160"
-											class="sponsor-logo-image"
-											loading="lazy"
-											onerror="this.style.display='none'"
-										/>
-									</div>
-								)}
-								<h3>{sponsor.name}</h3>
-							</a>
-						) : (
-							<div class="sponsor-no-link">
-								{!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
-									<div class="sponsor-logo">
-										<img
-											src={sponsor.logo}
-											alt={sponsor.name}
-											width="320"
-											height="160"
-											class="sponsor-logo-image"
-											loading="lazy"
-											onerror="this.style.display='none'"
-										/>
-									</div>
-								)}
-								<h3>{sponsor.name}</h3>
-							</div>
-						)}
-					</div>
-				))}
-			</div>
-		</section>
-	))}
+  <section class="intro">
+    <p>
+      We are grateful to our generous sponsors who make our mission possible.
+      Their support helps us raise money and awareness to support Four Diamonds'
+      mission.
+    </p>
+    <p>
+      <a href="/sponsorship" class="sponsor-cta"
+        >Interested in becoming a sponsor?</a
+      >
+    </p>
+  </section>
 
-	<section class="thank-you">
-		<h2>Thank You!</h2>
-		<p>Your support makes a real difference in the lives of children and families fighting pediatric cancer.</p>
-	</section>
+  {
+    tierSections.map((tier) => (
+      <section class="sponsor-tier">
+        <h2 class={`tier-${tier.name.toLowerCase()} tier-heading`}>
+          <span>{tier.name} Sponsors</span>
+          <span class="tier-diamonds" aria-hidden="true">
+            {Array.from({ length: tier.diamonds }).map(() => (
+              <img
+                src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao"
+                alt=""
+                width="18"
+                height="18"
+                class="tier-diamond-icon"
+                loading="lazy"
+              />
+            ))}
+          </span>
+        </h2>
+        <div class="sponsors-grid">
+          {tier.sponsors.map((sponsor) => (
+            <div class="sponsor-card">
+              {sponsor.website ? (
+                <a
+                  href={sponsor.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="sponsor-link"
+                >
+                  {!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
+                    <div class="sponsor-logo">
+                      <img
+                        src={sponsor.logo}
+                        alt={sponsor.name}
+                        width="320"
+                        height="160"
+                        class="sponsor-logo-image"
+                        loading="lazy"
+                        onerror="this.style.display='none'"
+                      />
+                    </div>
+                  )}
+                  <h3>{sponsor.name}</h3>
+                </a>
+              ) : (
+                <div class="sponsor-no-link">
+                  {!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
+                    <div class="sponsor-logo">
+                      <img
+                        src={sponsor.logo}
+                        alt={sponsor.name}
+                        width="320"
+                        height="160"
+                        class="sponsor-logo-image"
+                        loading="lazy"
+                        onerror="this.style.display='none'"
+                      />
+                    </div>
+                  )}
+                  <h3>{sponsor.name}</h3>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="thank-you">
+    <h2>Thank You!</h2>
+    <p>
+      Your support makes a real difference in the lives of children and families
+      fighting pediatric cancer.
+    </p>
+  </section>
 </PublicLayout>
 
 <style>
-	h1 {
-		font-size: clamp(2.2rem, 4vw, 3rem);
-		color: var(--ink-900);
-		margin-bottom: 2rem;
-		animation: fade-rise 0.6s ease both;
-	}
+  h1 {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    color: var(--ink-900);
+    margin-bottom: 2rem;
+    animation: fade-rise 0.6s ease both;
+  }
 
-	section {
-		margin-bottom: 2.5rem;
-		animation: fade-rise 0.8s ease both;
-	}
+  section {
+    margin-bottom: 2.5rem;
+    animation: fade-rise 0.8s ease both;
+  }
 
-	section:nth-child(2) { animation-delay: 0.1s; }
-	section:nth-child(3) { animation-delay: 0.15s; }
-	section:nth-child(4) { animation-delay: 0.2s; }
-	section:nth-child(5) { animation-delay: 0.25s; }
-	section:nth-child(6) { animation-delay: 0.3s; }
+  section:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  section:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+  section:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+  section:nth-child(5) {
+    animation-delay: 0.25s;
+  }
+  section:nth-child(6) {
+    animation-delay: 0.3s;
+  }
 
-	.showcase-section {
-		margin-bottom: 3rem;
-	}
+  .showcase-section {
+    margin-bottom: 3rem;
+  }
 
-	.intro {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-	}
+  .intro {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+  }
 
-	.intro p {
-		font-size: 1.05rem;
-		line-height: 1.8;
-		color: var(--ink-700);
-		margin-bottom: 1rem;
-	}
+  .intro p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--ink-700);
+    margin-bottom: 1rem;
+  }
 
-	.sponsor-cta {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		padding: 0.9rem 1.8rem;
-		border-radius: 999px;
-		text-decoration: none;
-		font-weight: 600;
-		letter-spacing: 0.02em;
-		transition: all 0.3s ease;
-		box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
-	}
+  .sponsor-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--brand-sky);
+    color: var(--brand-ink);
+    padding: 0.9rem 1.8rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
+  }
 
-	.sponsor-cta:hover {
-		background: var(--brand-ink);
-		color: var(--white);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
-	}
+  .sponsor-cta:hover {
+    background: var(--brand-ink);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
+  }
 
-	.sponsor-tier {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-	}
+  .sponsor-tier {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+  }
 
-	h2 {
-		font-size: clamp(1.5rem, 3vw, 1.8rem);
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid;
-	}
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 1.8rem);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid;
+  }
 
-	.tier-heading {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
+  .tier-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
-	.tier-diamonds {
-		display: inline-flex;
-		gap: 0.35rem;
-		align-items: center;
-	}
+  .tier-diamonds {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+  }
 
-	.tier-diamond-icon {
-		width: 18px;
-		height: 18px;
-		fill: currentColor;
-	}
+  .tier-diamond-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
 
-	.tier-supporter {
-		color: #5B6B7A;
-		border-bottom-color: #5B6B7A;
-	}
+  .tier-supporter {
+    color: #5b6b7a;
+    border-bottom-color: #5b6b7a;
+  }
 
-	.tier-gold {
-		color: #D4AF37;
-		border-bottom-color: #D4AF37;
-	}
+  .tier-gold {
+    color: #d4af37;
+    border-bottom-color: #d4af37;
+  }
 
-	.tier-platinum {
-		color: #7E8B9B;
-		border-bottom-color: #7E8B9B;
-	}
+  .tier-platinum {
+    color: #7e8b9b;
+    border-bottom-color: #7e8b9b;
+  }
 
-	.tier-diamond {
-		color: #2F6B99;
-		border-bottom-color: #2F6B99;
-	}
+  .tier-diamond {
+    color: #2f6b99;
+    border-bottom-color: #2f6b99;
+  }
 
-	.tier-silver {
-		color: #9AA0A6;
-		border-bottom-color: #9AA0A6;
-	}
+  .tier-silver {
+    color: #9aa0a6;
+    border-bottom-color: #9aa0a6;
+  }
 
-	.tier-bronze {
-		color: #CD7F32;
-		border-bottom-color: #CD7F32;
-	}
+  .tier-bronze {
+    color: #cd7f32;
+    border-bottom-color: #cd7f32;
+  }
 
-	.sponsors-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 1.5rem;
-	}
+  .sponsors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
 
-	.sponsor-card {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.05), rgba(106, 170, 228, 0.02));
-		padding: 1.75rem;
-		border-radius: 16px;
-		border: 1px solid var(--border-soft);
-		transition: all 0.3s ease;
-	}
+  .sponsor-card {
+    background: linear-gradient(
+      135deg,
+      rgba(106, 170, 228, 0.05),
+      rgba(106, 170, 228, 0.02)
+    );
+    padding: 1.75rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-soft);
+    transition: all 0.3s ease;
+  }
 
-	.sponsor-card:hover {
-		transform: translateY(-4px);
-		box-shadow: var(--shadow-card);
-		border-color: var(--brand-sky);
-	}
+  .sponsor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+    border-color: var(--brand-sky);
+  }
 
-	.sponsor-link,
-	.sponsor-no-link {
-		text-decoration: none;
-		color: inherit;
-		display: block;
-	}
+  .sponsor-link,
+  .sponsor-no-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
 
-	.sponsor-logo {
-		height: 120px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 1rem;
-		background: var(--white);
-		border-radius: 12px;
-		padding: 1rem;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-	}
+  .sponsor-logo {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
 
-	.sponsor-logo-image {
-		max-width: 100%;
-		max-height: 100%;
-		object-fit: contain;
-	}
+  .sponsor-logo-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
 
-	.sponsor-card h3 {
-		text-align: center;
-		color: var(--brand-ink);
-		font-size: 1.15rem;
-		font-weight: 600;
-	}
+  .sponsor-card h3 {
+    text-align: center;
+    color: var(--brand-ink);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
 
-	.thank-you {
-		background: linear-gradient(160deg, rgba(44, 70, 114, 0.95), rgba(44, 70, 114, 0.8));
-		color: var(--white);
-		padding: 3rem 2rem;
-		border-radius: 20px;
-		text-align: center;
-		box-shadow: var(--shadow-card);
-	}
+  .thank-you {
+    background: linear-gradient(
+      160deg,
+      rgba(44, 70, 114, 0.95),
+      rgba(44, 70, 114, 0.8)
+    );
+    color: var(--white);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
 
-	.thank-you h2 {
-		color: var(--white);
-		border-bottom: none;
-		margin-bottom: 1rem;
-	}
+  .thank-you h2 {
+    color: var(--white);
+    border-bottom: none;
+    margin-bottom: 1rem;
+  }
 
-	.thank-you p {
-		font-size: 1.2rem;
-		margin: 0;
-		color: var(--white);
-	}
+  .thank-you p {
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--white);
+  }
 
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-	@media (max-width: 768px) {
-		.intro,
-		.sponsor-tier {
-			padding: 1.5rem;
-		}
+  @media (max-width: 768px) {
+    .intro,
+    .sponsor-tier {
+      padding: 1.5rem;
+    }
 
-		.sponsors-grid {
-			grid-template-columns: 1fr;
-		}
-	}
+    .sponsors-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

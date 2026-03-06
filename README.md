@@ -1,4 +1,3 @@
-
 # GMHS Mini-THON Website
 
 This repository contains the official website for Great Mills High School Mini-THON, built with [Astro](https://astro.build/) and deployed on [Vercel](https://vercel.com/). The site provides information about our club, events, fundraising, and resources for members and sponsors.
@@ -57,11 +56,11 @@ src/
 
 Key configuration files in the project root:
 
-| File | Purpose |
-|---|---|
+| File              | Purpose                                                        |
+| ----------------- | -------------------------------------------------------------- |
 | `astro.config.ts` | Astro framework configuration (Vercel adapter, MDX, analytics) |
-| `package.json` | Dependencies and npm scripts |
-| `bun.lock` | Locked dependency versions |
+| `package.json`    | Dependencies and npm scripts                                   |
+| `bun.lock`        | Locked dependency versions                                     |
 
 ## How to Update the Site
 
@@ -89,13 +88,16 @@ Public-facing description of the event goes here. This is what everyone sees.
 <Fragment slot="member-details">
 
 **Event Lead:** Name
+
 ### Member notes
+
 - Internal details only visible to logged-in members
 
 </Fragment>
 ```
 
 **Frontmatter fields:**
+
 - `layout` — Always use `../../layouts/EventLayout.astro`
 - `title` — Event name displayed as the heading
 - `date` — Event date in `MM-DD-YYYY` format
@@ -104,6 +106,7 @@ Public-facing description of the event goes here. This is what everyone sees.
 - `summary` — Short description shown on the events listing page
 
 **Content sections:**
+
 - The main body (outside `<Fragment>`) is the public event description
 - Content inside `<Fragment slot="member-details">` is only visible to logged-in members
 
@@ -121,6 +124,7 @@ Sponsors are stored in `src/data/sponsors.json`. Each sponsor has:
 ```
 
 **To add a new sponsor:**
+
 1. Upload the sponsor's logo image using the upload script (`bun run upload`) or add it to a hosted location.
 2. Add a new entry to the `sponsors` array in `src/data/sponsors.json`.
 3. Set the `tier` to one of: `Platinum`, `Gold`, `Silver`, or `Bronze`.
@@ -136,9 +140,7 @@ Edit `src/data/fundraising.json`:
   "currentYear": 2026,
   "currentTotal": 3751,
   "goalTotal": 13000,
-  "history": [
-    { "year": 2025, "total": 12474.54 }
-  ],
+  "history": [{ "year": 2025, "total": 12474.54 }],
   "donorDriveLink": "https://fourdiamonds.donordrive.com/GMHSMT"
 }
 ```
@@ -201,20 +203,24 @@ This creates a redirect at `/redirect/donate` that points to the specified URL.
 ### Getting Started
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/Psavvas/gmhsminithon.org.git
    cd gmhsminithon.org
    ```
 
 2. Install dependencies:
+
    ```sh
    bun install
    ```
 
 3. Start the development server:
+
    ```sh
    bun run dev
    ```
+
    The site will be available at `http://localhost:4321`.
 
 4. Make your changes (edit JSON files, add pages/components, update assets).
@@ -238,4 +244,5 @@ The site is automatically deployed to [Vercel](https://vercel.com/) when changes
 - For questions or help, contact the current club officers (see `src/data/clubInfo.json`).
 
 ---
+
 For more information about Astro, see [Astro Documentation](https://docs.astro.build/).

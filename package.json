@@ -8,7 +8,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "format": "prettier . --write",
     "astro": "astro",
     "upload": "node scripts/upload-to-uploadthing.js",
     "upload:clean": "node scripts/upload-to-uploadthing.js --delete-old --update-refs"
@@ -18,7 +18,10 @@
     "@astrojs/vercel": "9.0.4",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",
-    "astro": "^5.1.1",
+    "astro": "^5.18.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "react": "18.3.1",
     "uploadthing": "^7.7.4"
   }

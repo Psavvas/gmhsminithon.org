@@ -1,351 +1,394 @@
 ---
-import PublicLayout from '../layouts/PublicLayout.astro';
-import clubInfo from '../data/clubInfo.json';
+import PublicLayout from "../layouts/PublicLayout.astro";
+import clubInfo from "../data/clubInfo.json";
 
 export const prerender = true;
 
 const tiers = [
-	{
-		name: 'Supporter',
-		tone: 'supporter',
-		amount: '$50+',
-		description: 'A great entry point for businesses looking to show community support and contribute to the fight against pediatric cancer.',
-		benefits: [
-			'Business name listed on the Mini-THON website',
-			'Recognition on posters at Mini-THON events'
-		]
-	},
-	{
-		name: 'Bronze',
-		tone: 'bronze',
-		amount: '$100+',
-		description: 'Ideal for small businesses seeking increased visibility while supporting a meaningful cause.',
-		benefits: [
-			'All Supporter benefits',
-			'Recognition on social media posts and event flyers',
-			'Business name listed on the Mini-THON website'
-		]
-	},
-	{
-		name: 'Silver',
-		tone: 'silver',
-		amount: '$250+',
-		description: 'A strong option for businesses wanting brand visibility at school events and online.',
-		benefits: [
-			'All Bronze benefits',
-			'Small logo on the back of Mini-THON shirts',
-			'Logo displayed on the Mini-THON website',
-			'Recognition on an individual advertisement banner at the event'
-		]
-	},
-	{
-		name: 'Gold',
-		tone: 'gold',
-		amount: '$500+',
-		description: 'Designed for businesses seeking prominent exposure across multiple Mini-THON platforms.',
-		benefits: [
-			'All Silver benefits',
-			'Large logo on the back of Mini-THON shirts',
-			'Recognition on the event’s Donor Drive webpage'
-		]
-	},
-	{
-		name: 'Platinum',
-		tone: 'platinum',
-		amount: '$1,000+',
-		description: 'A premium tier offering expanded branding opportunities and high-level recognition.',
-		benefits: [
-			'All Gold benefits',
-			'Enhanced placement on promotional materials',
-			'Additional recognition at major Mini-THON events'
-		]
-	},
-	{
-		name: 'Diamond',
-		tone: 'diamond',
-		amount: '$1,500+',
-		description: 'Our top tier, providing maximum visibility and community presence for committed partners.',
-		benefits: [
-			'All Platinum benefits',
-			'Recognition on the marquee outside Great Mills High School',
-			'Priority logo placement on shirts, banners, and the website'
-		]
-	}
+  {
+    name: "Supporter",
+    tone: "supporter",
+    amount: "$50+",
+    description:
+      "A great entry point for businesses looking to show community support and contribute to the fight against pediatric cancer.",
+    benefits: [
+      "Business name listed on the Mini-THON website",
+      "Recognition on posters at Mini-THON events",
+    ],
+  },
+  {
+    name: "Bronze",
+    tone: "bronze",
+    amount: "$100+",
+    description:
+      "Ideal for small businesses seeking increased visibility while supporting a meaningful cause.",
+    benefits: [
+      "All Supporter benefits",
+      "Recognition on social media posts and event flyers",
+      "Business name listed on the Mini-THON website",
+    ],
+  },
+  {
+    name: "Silver",
+    tone: "silver",
+    amount: "$250+",
+    description:
+      "A strong option for businesses wanting brand visibility at school events and online.",
+    benefits: [
+      "All Bronze benefits",
+      "Small logo on the back of Mini-THON shirts",
+      "Logo displayed on the Mini-THON website",
+      "Recognition on an individual advertisement banner at the event",
+    ],
+  },
+  {
+    name: "Gold",
+    tone: "gold",
+    amount: "$500+",
+    description:
+      "Designed for businesses seeking prominent exposure across multiple Mini-THON platforms.",
+    benefits: [
+      "All Silver benefits",
+      "Large logo on the back of Mini-THON shirts",
+      "Recognition on the event’s Donor Drive webpage",
+    ],
+  },
+  {
+    name: "Platinum",
+    tone: "platinum",
+    amount: "$1,000+",
+    description:
+      "A premium tier offering expanded branding opportunities and high-level recognition.",
+    benefits: [
+      "All Gold benefits",
+      "Enhanced placement on promotional materials",
+      "Additional recognition at major Mini-THON events",
+    ],
+  },
+  {
+    name: "Diamond",
+    tone: "diamond",
+    amount: "$1,500+",
+    description:
+      "Our top tier, providing maximum visibility and community presence for committed partners.",
+    benefits: [
+      "All Platinum benefits",
+      "Recognition on the marquee outside Great Mills High School",
+      "Priority logo placement on shirts, banners, and the website",
+    ],
+  },
 ];
 ---
 
 <PublicLayout title="Sponsorships - Mini-THON">
-	<h1>Sponsorships</h1>
+  <h1>Sponsorships</h1>
 
-	<section class="intro-grid">
-		<div class="intro-text">
-			<p>Our business partners help Mini-THON support families affected by pediatric cancer. Sponsorships fund care, research, and community support while connecting your brand with a mission-driven audience.</p>
-			<p>Review the six sponsorship tiers below and reach out when you are ready to get involved.</p>
-			<div class="intro-actions">
-				<a href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`} class="button primary">Sponsor and make a difference!</a>
-			</div>
-		</div>
-		<div class="intro-photo">
-			<img
-				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl"
-				alt="Mini-THON volunteers"
-				width="1200"
-				height="800"
-				class="intro-photo-image"
-				loading="eager"
-			/>
-		</div>
-	</section>
+  <section class="intro-grid">
+    <div class="intro-text">
+      <p>
+        Our business partners help Mini-THON support families affected by
+        pediatric cancer. Sponsorships fund care, research, and community
+        support while connecting your brand with a mission-driven audience.
+      </p>
+      <p>
+        Review the six sponsorship tiers below and reach out when you are ready
+        to get involved.
+      </p>
+      <div class="intro-actions">
+        <a
+          href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`}
+          class="button primary">Sponsor and make a difference!</a
+        >
+      </div>
+    </div>
+    <div class="intro-photo">
+      <img
+        src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl"
+        alt="Mini-THON volunteers"
+        width="1200"
+        height="800"
+        class="intro-photo-image"
+        loading="eager"
+      />
+    </div>
+  </section>
 
-	<section class="tiers-section">
-		<h2>Our Sponsorship Tiers</h2>
-		<div class="tiers-grid">
-			{tiers.map((tier) => (
-				<div class={`tier-card ${tier.tone}`}>
-					<h3>{tier.name} — {tier.amount}</h3>
-					<p>{tier.description}</p>
-					<h4>Benefits:</h4>
-					<ul>
-						{tier.benefits.map((benefit) => (
-							<li>{benefit}</li>
-						))}
-					</ul>
-				</div>
-			))}
-		</div>
-	</section>
+  <section class="tiers-section">
+    <h2>Our Sponsorship Tiers</h2>
+    <div class="tiers-grid">
+      {
+        tiers.map((tier) => (
+          <div class={`tier-card ${tier.tone}`}>
+            <h3>
+              {tier.name} — {tier.amount}
+            </h3>
+            <p>{tier.description}</p>
+            <h4>Benefits:</h4>
+            <ul>
+              {tier.benefits.map((benefit) => (
+                <li>{benefit}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
 
-	<section class="contact-section">
-		<h2>Ready to Sponsor?</h2>
-		<p>We will gladly help you choose the right tier and share a sponsorship packet with full benefits and timelines.</p>
-		<div class="contact-actions">
-			<a href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`} class="button primary">Start a sponsorship</a>
-			<a href="/sponsors" class="button">Meet our current sponsors</a>
-		</div>
-	</section>
+  <section class="contact-section">
+    <h2>Ready to Sponsor?</h2>
+    <p>
+      We will gladly help you choose the right tier and share a sponsorship
+      packet with full benefits and timelines.
+    </p>
+    <div class="contact-actions">
+      <a
+        href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`}
+        class="button primary">Start a sponsorship</a
+      >
+      <a href="/sponsors" class="button">Meet our current sponsors</a>
+    </div>
+  </section>
 </PublicLayout>
 
 <style>
-	h1 {
-		font-size: clamp(2.2rem, 4vw, 3rem);
-		color: var(--ink-900);
-		margin-bottom: 2rem;
-		animation: fade-rise 0.6s ease both;
-	}
+  h1 {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    color: var(--ink-900);
+    margin-bottom: 2rem;
+    animation: fade-rise 0.6s ease both;
+  }
 
-	section {
-		margin-bottom: 3rem;
-		animation: fade-rise 0.8s ease both;
-	}
+  section {
+    margin-bottom: 3rem;
+    animation: fade-rise 0.8s ease both;
+  }
 
-	section:nth-child(2) { animation-delay: 0.1s; }
-	section:nth-child(3) { animation-delay: 0.2s; }
-	section:nth-child(4) { animation-delay: 0.3s; }
+  section:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  section:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  section:nth-child(4) {
+    animation-delay: 0.3s;
+  }
 
-	.intro-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-		gap: 2rem;
-		align-items: stretch;
-	}
+  .intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: stretch;
+  }
 
-	.intro-text {
-		font-size: 1.05rem;
-		line-height: 1.8;
-		color: var(--ink-700);
-	}
+  .intro-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--ink-700);
+  }
 
-	.intro-text p {
-		margin-bottom: 1rem;
-	}
+  .intro-text p {
+    margin-bottom: 1rem;
+  }
 
-	.intro-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		margin-top: 1.5rem;
-	}
+  .intro-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
 
-	.intro-photo {
-		border-radius: 20px;
-		overflow: hidden;
-		min-height: clamp(200px, 30vw, 300px);
-		aspect-ratio: 16 / 9;
-		width: 100%;
-	}
+  .intro-photo {
+    border-radius: 20px;
+    overflow: hidden;
+    min-height: clamp(200px, 30vw, 300px);
+    aspect-ratio: 16 / 9;
+    width: 100%;
+  }
 
-	.intro-photo-image {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		display: block;
-	}
+  .intro-photo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    display: block;
+  }
 
-	.tiers-section h2,
-	.contact-section h2 {
-		font-size: clamp(1.5rem, 3vw, 1.8rem);
-		color: var(--ink-900);
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--brand-sky);
-	}
+  .tiers-section h2,
+  .contact-section h2 {
+    font-size: clamp(1.5rem, 3vw, 1.8rem);
+    color: var(--ink-900);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--brand-sky);
+  }
 
+  .tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    row-gap: 1.75rem;
+  }
 
-	.tiers-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		column-gap: 1.5rem;
-		row-gap: 1.75rem;
-	}
+  .tier-card {
+    background: var(--surface-raised);
+    border-radius: 18px;
+    padding: 1.75rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    border-top: 4px solid var(--brand-ink);
+  }
 
-	.tier-card {
-		background: var(--surface-raised);
-		border-radius: 18px;
-		padding: 1.75rem;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		border-top: 4px solid var(--brand-ink);
-	}
+  .tier-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--brand-ink);
+  }
 
-	.tier-card h3 {
-		font-size: 1.25rem;
-		margin-bottom: 0.75rem;
-		color: var(--brand-ink);
-	}
+  .tier-card p {
+    color: var(--ink-700);
+    line-height: 1.7;
+    margin-bottom: 0.85rem;
+  }
 
-	.tier-card p {
-		color: var(--ink-700);
-		line-height: 1.7;
-		margin-bottom: 0.85rem;
-	}
+  .tier-card h4 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+    color: var(--ink-900);
+  }
 
-	.tier-card h4 {
-		font-size: 1rem;
-		margin: 0 0 0.5rem;
-		color: var(--ink-900);
-	}
+  .tier-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--ink-700);
+    line-height: 1.7;
+  }
 
-	.tier-card ul {
-		margin: 0;
-		padding-left: 1.2rem;
-		color: var(--ink-700);
-		line-height: 1.7;
-	}
+  .tier-card li + li {
+    margin-top: 0.25rem;
+  }
 
-	.tier-card li + li {
-		margin-top: 0.25rem;
-	}
+  .tier-card.diamond {
+    border-top-color: #2f6b99;
+  }
+  .tier-card.platinum {
+    border-top-color: #7e8b9b;
+  }
+  .tier-card.gold {
+    border-top-color: #d4af37;
+  }
+  .tier-card.silver {
+    border-top-color: #9aa0a6;
+  }
+  .tier-card.bronze {
+    border-top-color: #cd7f32;
+  }
+  .tier-card.supporter {
+    border-top-color: #5b6b7a;
+  }
 
-	.tier-card.diamond { border-top-color: #2F6B99; }
-	.tier-card.platinum { border-top-color: #7E8B9B; }
-	.tier-card.gold { border-top-color: #D4AF37; }
-	.tier-card.silver { border-top-color: #9AA0A6; }
-	.tier-card.bronze { border-top-color: #CD7F32; }
-	.tier-card.supporter { border-top-color: #5B6B7A; }
+  .contact-section {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+  }
 
-	.contact-section {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-	}
+  .contact-section p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--ink-700);
+    margin-bottom: 1.25rem;
+  }
 
-	.contact-section p {
-		font-size: 1.05rem;
-		line-height: 1.8;
-		color: var(--ink-700);
-		margin-bottom: 1.25rem;
-	}
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 
-	.contact-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-	}
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.9rem 1.8rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: all 0.3s ease;
+  }
 
-	.button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.9rem 1.8rem;
-		border-radius: 999px;
-		text-decoration: none;
-		font-weight: 600;
-		letter-spacing: 0.02em;
-		transition: all 0.3s ease;
-	}
+  .button.primary {
+    background: var(--brand-ink);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
+  }
 
-	.button.primary {
-		background: var(--brand-ink);
-		color: var(--white);
-		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
-	}
+  .button.primary:hover {
+    background: var(--brand-sky);
+    color: var(--brand-ink);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
+  }
 
-	.button.primary:hover {
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
-	}
+  .button.ghost {
+    background: transparent;
+    color: var(--brand-ink);
+    border: 1px solid var(--border-soft);
+    box-shadow: none;
+  }
 
-	.button.ghost {
-		background: transparent;
-		color: var(--brand-ink);
-		border: 1px solid var(--border-soft);
-		box-shadow: none;
-	}
+  .button.ghost:hover {
+    background: var(--brand-sky);
+    color: var(--brand-ink);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(106, 170, 228, 0.3);
+  }
 
-	.button.ghost:hover {
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.3);
-	}
+  .button:not(.primary):not(.ghost) {
+    background: var(--brand-ink);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
+  }
 
-	.button:not(.primary):not(.ghost) {
-		background: var(--brand-ink);
-		color: var(--white);
-		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
-	}
+  .button:not(.primary):not(.ghost):hover {
+    background: var(--brand-sky);
+    color: var(--brand-ink);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
+  }
 
-	.button:not(.primary):not(.ghost):hover {
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
-	}
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
+  @media (max-width: 900px) {
+    .intro-grid {
+      grid-template-columns: 1fr;
+    }
 
-	@media (max-width: 900px) {
-		.intro-grid {
-			grid-template-columns: 1fr;
-		}
+    .tiers-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
 
-		.tiers-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
+  @media (max-width: 768px) {
+    .contact-section {
+      padding: 1.5rem;
+    }
 
-	@media (max-width: 768px) {
-		.contact-section {
-			padding: 1.5rem;
-		}
-
-		.tiers-grid {
-			grid-template-columns: 1fr;
-		}
-	}
+    .tiers-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

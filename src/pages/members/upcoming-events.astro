@@ -1,11 +1,16 @@
 ---
-import MemberLayout from '../../layouts/MemberLayout.astro';
-import { checkMemberAuth } from '../../utils/auth';
-import { formatEventDate, getCurrentYearEvents, getEventDateTimeValue, getEventTypeClass } from '../../utils/events';
+import MemberLayout from "../../layouts/MemberLayout.astro";
+import { checkMemberAuth } from "../../utils/auth";
+import {
+  formatEventDate,
+  getCurrentYearEvents,
+  getEventDateTimeValue,
+  getEventTypeClass,
+} from "../../utils/events";
 
 // Check authentication
 if (!checkMemberAuth(Astro.request)) {
-  return Astro.redirect('/members/login');
+  return Astro.redirect("/members/login");
 }
 
 const currentYear = new Date().getFullYear();
@@ -17,258 +22,286 @@ const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
 const pastEvents = events.filter((event) => new Date(event.date) < today);
 
 const formatDescription = (content: string | string[] | undefined) => {
-	if (!content) return '';
-	return Array.isArray(content) ? content.join(' ') : content;
+  if (!content) return "";
+  return Array.isArray(content) ? content.join(" ") : content;
 };
 
 const getMemberEventUrl = (publicUrl: string | undefined) => {
-	if (!publicUrl) return '/members/upcoming-events';
-	const slug = publicUrl.replace('/events/', '');
-	return `/members/events/${slug}`;
+  if (!publicUrl) return "/members/upcoming-events";
+  const slug = publicUrl.replace("/events/", "");
+  return `/members/events/${slug}`;
 };
 ---
 
 <MemberLayout title="Upcoming Events - Mini-THON">
-	<h1>Upcoming Events</h1>
-	
-	<section class="intro">
-		<p>Sign up for volunteer shifts for our upcoming events! Click on any event below to see member-specific details, volunteer needs, and sign-up information.</p>
-	</section>
+  <h1>Upcoming Events</h1>
 
-	{upcomingEvents.length === 0 && pastEvents.length === 0 ? (
-		<section class="no-events">
-			<p>No events scheduled for {currentYear} yet. Check back soon!</p>
-		</section>
-	) : (
-		<>
-			{upcomingEvents.length > 0 ? (
-				<div class="events-grid">
-					{upcomingEvents.map(event => (
-						<article class="event-card">
-							<div class="event-header">
-								<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
-								<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
-							</div>
-							<h2>{event.title}</h2>
-							{event.location && (
-								<p class="location">📍 {event.location}</p>
-							)}
-							<p class="description">{formatDescription(event.summary)}</p>
-							<a href={getMemberEventUrl(event.url)} class="read-more">
-								View Details & Sign Up →
-							</a>
-						</article>
-					))}
-				</div>
-			) : (
-				<section class="no-events">
-					<p>No upcoming events for {currentYear}. Check back soon!</p>
-				</section>
-			)}
+  <section class="intro">
+    <p>
+      Sign up for volunteer shifts for our upcoming events! Click on any event
+      below to see member-specific details, volunteer needs, and sign-up
+      information.
+    </p>
+  </section>
 
-			{pastEvents.length > 0 && (
-				<section class="past-events">
-					<h2>Past Events</h2>
-					<div class="events-grid">
-						{pastEvents.map(event => (
-							<article class="event-card past">
-								<div class="event-header">
-									<span class={`event-type ${getEventTypeClass(event.event_type)}`}>{event.event_type}</span>
-									<time datetime={getEventDateTimeValue(event.date, event.time)}>{formatEventDate(event.date, event.time)}</time>
-								</div>
-								<h2>{event.title}</h2>
-								{event.location && (
-									<p class="location">📍 {event.location}</p>
-								)}
-								<p class="description">{formatDescription(event.summary)}</p>
-								<a href={getMemberEventUrl(event.url)} class="read-more">
-									View Details →
-								</a>
-							</article>
-						))}
-					</div>
-				</section>
-			)}
-		</>
-	)}
+  {
+    upcomingEvents.length === 0 && pastEvents.length === 0 ? (
+      <section class="no-events">
+        <p>No events scheduled for {currentYear} yet. Check back soon!</p>
+      </section>
+    ) : (
+      <>
+        {upcomingEvents.length > 0 ? (
+          <div class="events-grid">
+            {upcomingEvents.map((event) => (
+              <article class="event-card">
+                <div class="event-header">
+                  <span
+                    class={`event-type ${getEventTypeClass(event.event_type)}`}
+                  >
+                    {event.event_type}
+                  </span>
+                  <time
+                    datetime={getEventDateTimeValue(event.date, event.time)}
+                  >
+                    {formatEventDate(event.date, event.time)}
+                  </time>
+                </div>
+                <h2>{event.title}</h2>
+                {event.location && <p class="location">📍 {event.location}</p>}
+                <p class="description">{formatDescription(event.summary)}</p>
+                <a href={getMemberEventUrl(event.url)} class="read-more">
+                  View Details & Sign Up →
+                </a>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <section class="no-events">
+            <p>No upcoming events for {currentYear}. Check back soon!</p>
+          </section>
+        )}
+
+        {pastEvents.length > 0 && (
+          <section class="past-events">
+            <h2>Past Events</h2>
+            <div class="events-grid">
+              {pastEvents.map((event) => (
+                <article class="event-card past">
+                  <div class="event-header">
+                    <span
+                      class={`event-type ${getEventTypeClass(event.event_type)}`}
+                    >
+                      {event.event_type}
+                    </span>
+                    <time
+                      datetime={getEventDateTimeValue(event.date, event.time)}
+                    >
+                      {formatEventDate(event.date, event.time)}
+                    </time>
+                  </div>
+                  <h2>{event.title}</h2>
+                  {event.location && (
+                    <p class="location">📍 {event.location}</p>
+                  )}
+                  <p class="description">{formatDescription(event.summary)}</p>
+                  <a href={getMemberEventUrl(event.url)} class="read-more">
+                    View Details →
+                  </a>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+      </>
+    )
+  }
 </MemberLayout>
 
 <style>
-	h1 {
-		font-size: clamp(2rem, 4vw, 2.5rem);
-		color: var(--ink-900);
-		margin-bottom: 2rem;
-		animation: fade-rise 0.6s ease both;
-	}
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    color: var(--ink-900);
+    margin-bottom: 2rem;
+    animation: fade-rise 0.6s ease both;
+  }
 
-	.intro {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		margin-bottom: 2rem;
-		font-size: 1.05rem;
-		line-height: 1.8;
-		color: var(--ink-700);
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.1s;
-	}
+  .intro {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--ink-700);
+    animation: fade-rise 0.8s ease both;
+    animation-delay: 0.1s;
+  }
 
-	.intro p {
-		margin: 0;
-	}
+  .intro p {
+    margin: 0;
+  }
 
-	.no-events {
-		background: var(--surface-raised);
-		padding: 3rem 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		text-align: center;
-		font-size: 1.2rem;
-		color: var(--ink-500);
-	}
+  .no-events {
+    background: var(--surface-raised);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--ink-500);
+  }
 
-	.events-grid {
-		display: grid;
-		gap: 2rem;
-	}
+  .events-grid {
+    display: grid;
+    gap: 2rem;
+  }
 
-	.past-events {
-		margin-top: 3rem;
-	}
+  .past-events {
+    margin-top: 3rem;
+  }
 
-	.past-events h2 {
-		font-size: clamp(1.6rem, 3vw, 2rem);
-		color: var(--ink-900);
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--border-soft);
-	}
+  .past-events h2 {
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    color: var(--ink-900);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-soft);
+  }
 
-	.event-card {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		border-left: 4px solid var(--brand-sky);
-		transition: all 0.3s ease;
-		animation: fade-rise 0.8s ease both;
-	}
+  .event-card {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    border-left: 4px solid var(--brand-sky);
+    transition: all 0.3s ease;
+    animation: fade-rise 0.8s ease both;
+  }
 
-	.event-card:nth-child(1) { animation-delay: 0.2s; }
-	.event-card:nth-child(2) { animation-delay: 0.3s; }
-	.event-card:nth-child(3) { animation-delay: 0.4s; }
-	.event-card:nth-child(4) { animation-delay: 0.5s; }
+  .event-card:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  .event-card:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  .event-card:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  .event-card:nth-child(4) {
+    animation-delay: 0.5s;
+  }
 
-	.event-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 12px 30px rgba(28, 42, 58, 0.12);
-		border-left-color: var(--brand-ink);
-	}
+  .event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(28, 42, 58, 0.12);
+    border-left-color: var(--brand-ink);
+  }
 
-	.event-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1rem;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
+  .event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 
-	.event-type {
-		display: inline-block;
-		padding: 0.35rem 0.85rem;
-		border-radius: 999px;
-		font-size: 0.8rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
+  .event-type {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
-	.event-type.gaming {
-		background: rgba(106, 170, 228, 0.15);
-		color: var(--brand-ink);
-	}
+  .event-type.gaming {
+    background: rgba(106, 170, 228, 0.15);
+    color: var(--brand-ink);
+  }
 
-	.event-type.dine-to-donate {
-		background: rgba(255, 152, 0, 0.15);
-		color: #E65100;
-	}
+  .event-type.dine-to-donate {
+    background: rgba(255, 152, 0, 0.15);
+    color: #e65100;
+  }
 
-	.event-type.fundraiser {
-		background: rgba(156, 39, 176, 0.15);
-		color: #6A1B9A;
-	}
+  .event-type.fundraiser {
+    background: rgba(156, 39, 176, 0.15);
+    color: #6a1b9a;
+  }
 
-	.event-type.sports {
-		background: rgba(76, 175, 80, 0.15);
-		color: #2E7D32;
-	}
+  .event-type.sports {
+    background: rgba(76, 175, 80, 0.15);
+    color: #2e7d32;
+  }
 
-	.event-type.race {
-		background: rgba(0, 188, 212, 0.15);
-		color: #006064;
-	}
+  .event-type.race {
+    background: rgba(0, 188, 212, 0.15);
+    color: #006064;
+  }
 
-	time {
-		color: var(--ink-500);
-		font-size: 0.95rem;
-		font-weight: 500;
-	}
+  time {
+    color: var(--ink-500);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
 
-	.event-card h2 {
-		font-size: clamp(1.5rem, 3vw, 1.8rem);
-		color: var(--ink-900);
-		margin-bottom: 0.5rem;
-	}
+  .event-card h2 {
+    font-size: clamp(1.5rem, 3vw, 1.8rem);
+    color: var(--ink-900);
+    margin-bottom: 0.5rem;
+  }
 
-	.location {
-		color: var(--ink-600);
-		font-size: 0.95rem;
-		margin-bottom: 1rem;
-		font-weight: 500;
-	}
+  .location {
+    color: var(--ink-600);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
 
-	.description {
-		line-height: 1.8;
-		color: var(--ink-700);
-		margin-bottom: 1rem;
-	}
+  .description {
+    line-height: 1.8;
+    color: var(--ink-700);
+    margin-bottom: 1rem;
+  }
 
-	.read-more {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
-		color: var(--brand-ink);
-		text-decoration: none;
-		font-weight: 600;
-		transition: all 0.3s ease;
-		margin-top: 0.5rem;
-	}
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--brand-ink);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+  }
 
-	.read-more:hover {
-		color: var(--brand-sky);
-		gap: 0.6rem;
-	}
+  .read-more:hover {
+    color: var(--brand-sky);
+    gap: 0.6rem;
+  }
 
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-	@media (max-width: 768px) {
-		.intro,
-		.event-card {
-			padding: 1.5rem;
-		}
-	}
+  @media (max-width: 768px) {
+    .intro,
+    .event-card {
+      padding: 1.5rem;
+    }
+  }
 </style>

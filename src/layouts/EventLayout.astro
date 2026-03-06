@@ -1,415 +1,461 @@
 ---
-import PublicLayout from './PublicLayout.astro';
-import EventCountdown from '../components/EventCountdown.astro';
-import { checkMemberAuth } from '../utils/auth';
-import { formatEventDate, getEventDateTimeValue, getEventTypeClass } from '../utils/events';
+import PublicLayout from "./PublicLayout.astro";
+import EventCountdown from "../components/EventCountdown.astro";
+import { checkMemberAuth } from "../utils/auth";
+import {
+  formatEventDate,
+  getEventDateTimeValue,
+  getEventTypeClass,
+} from "../utils/events";
 
 const { frontmatter } = Astro.props;
 const {
-	title,
-	date,
-	time,
-	location,
-	event_type: eventType,
-	links = []
+  title,
+  date,
+  time,
+  location,
+  event_type: eventType,
+  links = [],
 } = frontmatter;
 
 const fullDate = formatEventDate(date, time);
 const eventDateTime = getEventDateTimeValue(date, time);
 
 const isMember = checkMemberAuth(Astro.request);
-const hasMemberDetails = Astro.slots.has('member-details');
+const hasMemberDetails = Astro.slots.has("member-details");
 ---
 
 <PublicLayout title={`${title} - Mini-THON`}>
-	<article class="event-detail">
-		<header class="event-hero">
-			<div class="event-hero-content">
-				<div class="event-meta">
-					<span class={`event-type ${getEventTypeClass(eventType)}`}>{eventType}</span>
-				</div>
-				<h1>{title}</h1>
-				<div class="event-info-row">
-					<div class="event-info-item">
-						<span class="info-icon" aria-hidden="true">
-							<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-								<path d="M12 6.75a.75.75 0 0 1 .75.75v4.44l3.02 1.74a.75.75 0 1 1-.75 1.3l-3.4-1.96a.75.75 0 0 1-.37-.65V7.5a.75.75 0 0 1 .75-.75Z" fill="currentColor" />
-								<path d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5Zm0 1.5a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Z" fill="currentColor" />
-							</svg>
-						</span>
-						<time datetime={eventDateTime}>{fullDate}</time>
-					</div>
-					{location && (
-						<div class="event-info-item">
-							<span class="info-icon" aria-hidden="true">
-								<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-									<path d="M12 2.5a7 7 0 0 0-7 7c0 5.25 6.16 11.2 6.42 11.45a.82.82 0 0 0 1.16 0c.26-.25 6.42-6.2 6.42-11.45a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor" />
-							</svg>
-						</span>
-						<span>{location}</span>
-						</div>
-					)}
-				</div>
-			</div>
-			<div class="event-countdown-wrapper">
-				<EventCountdown eventDate={eventDateTime} />
-			</div>
-		</header>
+  <article class="event-detail">
+    <header class="event-hero">
+      <div class="event-hero-content">
+        <div class="event-meta">
+          <span class={`event-type ${getEventTypeClass(eventType)}`}
+            >{eventType}</span
+          >
+        </div>
+        <h1>{title}</h1>
+        <div class="event-info-row">
+          <div class="event-info-item">
+            <span class="info-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                role="img"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="M12 6.75a.75.75 0 0 1 .75.75v4.44l3.02 1.74a.75.75 0 1 1-.75 1.3l-3.4-1.96a.75.75 0 0 1-.37-.65V7.5a.75.75 0 0 1 .75-.75Z"
+                  fill="currentColor"></path>
+                <path
+                  d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5Zm0 1.5a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Z"
+                  fill="currentColor"></path>
+              </svg>
+            </span>
+            <time datetime={eventDateTime}>{fullDate}</time>
+          </div>
+          {
+            location && (
+              <div class="event-info-item">
+                <span class="info-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 2.5a7 7 0 0 0-7 7c0 5.25 6.16 11.2 6.42 11.45a.82.82 0 0 0 1.16 0c.26-.25 6.42-6.2 6.42-11.45a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span>{location}</span>
+              </div>
+            )
+          }
+        </div>
+      </div>
+      <div class="event-countdown-wrapper">
+        <EventCountdown eventDate={eventDateTime} />
+      </div>
+    </header>
 
-		<section class="event-content">
-			<div class="description-card">
-				<h2>About This Event</h2>
-				<slot />
-			</div>
+    <section class="event-content">
+      <div class="description-card">
+        <h2>About This Event</h2>
+        <slot />
+      </div>
 
-			{hasMemberDetails && (
-				<div class="member-details-card" id="member-details">
-					<div class="member-details-header">
-						<h3>Member Details</h3>
-						<span class="member-badge">Members only</span>
-					</div>
-					{isMember ? (
-						<div class="member-details-body">
-							<slot name="member-details" />
-						</div>
-					) : (
-						<div class="member-locked">
-							<p>Log in to view volunteer needs, shift details, and member-only updates for this event.</p>
-							<a href="/members/login" class="member-login-link">Member login →</a>
-						</div>
-					)}
-				</div>
-			)}
+      {
+        hasMemberDetails && (
+          <div class="member-details-card" id="member-details">
+            <div class="member-details-header">
+              <h3>Member Details</h3>
+              <span class="member-badge">Members only</span>
+            </div>
+            {isMember ? (
+              <div class="member-details-body">
+                <slot name="member-details" />
+              </div>
+            ) : (
+              <div class="member-locked">
+                <p>
+                  Log in to view volunteer needs, shift details, and member-only
+                  updates for this event.
+                </p>
+                <a href="/members/login" class="member-login-link">
+                  Member login →
+                </a>
+              </div>
+            )}
+          </div>
+        )
+      }
 
-			{links.length > 0 && (
-				<div class="event-links-card">
-					<h3>Related Links</h3>
-					<ul>
-						{links.map((link: string) => (
-							<li>
-								<a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
-		</section>
+      {
+        links.length > 0 && (
+          <div class="event-links-card">
+            <h3>Related Links</h3>
+            <ul>
+              {links.map((link: string) => (
+                <li>
+                  <a href={link} target="_blank" rel="noopener noreferrer">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </section>
 
-		<footer class="event-footer">
-			<a href="/events" class="back-link">← Back to Events</a>
-		</footer>
-	</article>
+    <footer class="event-footer">
+      <a href="/events" class="back-link">← Back to Events</a>
+    </footer>
+  </article>
 </PublicLayout>
 
 <style>
-	.event-detail {
-		max-width: 1000px;
-		margin: 0 auto;
-	}
+  .event-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
 
-	.event-hero {
-		background: var(--surface-raised);
-		padding: 2.25rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		margin-bottom: 2rem;
-		display: grid;
-		grid-template-columns: 1fr auto;
-		gap: 2rem;
-		align-items: center;
-		animation: fade-rise 0.6s ease both;
-	}
+  .event-hero {
+    background: var(--surface-raised);
+    padding: 2.25rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: center;
+    animation: fade-rise 0.6s ease both;
+  }
 
-	.event-meta {
-		margin-bottom: 0.75rem;
-	}
+  .event-meta {
+    margin-bottom: 0.75rem;
+  }
 
-	.event-type {
-		display: inline-block;
-		padding: 0.3rem 0.75rem;
-		border-radius: 999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-	}
+  .event-type {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
 
-	.event-type.gaming {
-		background: rgba(106, 170, 228, 0.18);
-		color: var(--brand-ink);
-	}
+  .event-type.gaming {
+    background: rgba(106, 170, 228, 0.18);
+    color: var(--brand-ink);
+  }
 
-	.event-type.dine-to-donate {
-		background: rgba(255, 152, 0, 0.18);
-		color: #E65100;
-	}
+  .event-type.dine-to-donate {
+    background: rgba(255, 152, 0, 0.18);
+    color: #e65100;
+  }
 
-	.event-type.fundraiser {
-		background: rgba(156, 39, 176, 0.15);
-		color: #6A1B9A;
-	}
+  .event-type.fundraiser {
+    background: rgba(156, 39, 176, 0.15);
+    color: #6a1b9a;
+  }
 
-	.event-type.sports {
-		background: rgba(76, 175, 80, 0.15);
-		color: #2E7D32;
-	}
+  .event-type.sports {
+    background: rgba(76, 175, 80, 0.15);
+    color: #2e7d32;
+  }
 
-	.event-type.race {
-		background: rgba(0, 188, 212, 0.15);
-		color: #006064;
-	}
+  .event-type.race {
+    background: rgba(0, 188, 212, 0.15);
+    color: #006064;
+  }
 
-	h1 {
-		font-size: clamp(2rem, 4vw, 2.8rem);
-		color: var(--ink-900);
-		margin: 0 0 1.25rem 0;
-		line-height: 1.2;
-	}
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    color: var(--ink-900);
+    margin: 0 0 1.25rem 0;
+    line-height: 1.2;
+  }
 
-	.event-info-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5rem;
-		align-items: center;
-	}
+  .event-info-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+  }
 
-	.event-info-item {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 1.05rem;
-		font-weight: 600;
-		color: var(--ink-900);
-	}
+  .event-info-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink-900);
+  }
 
-	.info-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		border-radius: 10px;
-		background: rgba(106, 170, 228, 0.15);
-		color: var(--brand-ink);
-	}
+  .info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(106, 170, 228, 0.15);
+    color: var(--brand-ink);
+  }
 
-	.info-icon svg {
-		width: 18px;
-		height: 18px;
-	}
+  .info-icon svg {
+    width: 18px;
+    height: 18px;
+  }
 
-	.event-countdown-wrapper {
-		min-width: 260px;
-	}
+  .event-countdown-wrapper {
+    min-width: 260px;
+  }
 
-	.event-content {
-		display: grid;
-		gap: 1.5rem;
-		margin-bottom: 2rem;
-	}
+  .event-content {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
 
-	.description-card {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.1s;
-	}
+  .description-card {
+    background: var(--surface-raised);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    animation: fade-rise 0.8s ease both;
+    animation-delay: 0.1s;
+  }
 
-	.description-card h2 {
-		font-size: 1.5rem;
-		color: var(--ink-900);
-		margin-bottom: 1.25rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--brand-sky);
-	}
+  .description-card h2 {
+    font-size: 1.5rem;
+    color: var(--ink-900);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--brand-sky);
+  }
 
-	.event-links-card {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
-		padding: 1.5rem;
-		border-radius: 16px;
-		border: 1px solid var(--border-soft);
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.2s;
-	}
+  .event-links-card {
+    background: linear-gradient(
+      135deg,
+      rgba(106, 170, 228, 0.08),
+      rgba(106, 170, 228, 0.03)
+    );
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-soft);
+    animation: fade-rise 0.8s ease both;
+    animation-delay: 0.2s;
+  }
 
-	.member-details-card {
-		background: linear-gradient(135deg, rgba(44, 70, 114, 0.08), rgba(106, 170, 228, 0.05));
-		padding: 1.75rem;
-		border-radius: 18px;
-		border: 1px solid var(--border-soft);
-		box-shadow: var(--shadow-card);
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.15s;
-	}
+  .member-details-card {
+    background: linear-gradient(
+      135deg,
+      rgba(44, 70, 114, 0.08),
+      rgba(106, 170, 228, 0.05)
+    );
+    padding: 1.75rem;
+    border-radius: 18px;
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-card);
+    animation: fade-rise 0.8s ease both;
+    animation-delay: 0.15s;
+  }
 
-	.member-details-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		margin-bottom: 1rem;
-	}
+  .member-details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
 
-	.member-details-header h3 {
-		font-size: 1.3rem;
-		color: var(--ink-900);
-		margin: 0;
-	}
+  .member-details-header h3 {
+    font-size: 1.3rem;
+    color: var(--ink-900);
+    margin: 0;
+  }
 
-	.member-badge {
-		background: rgba(44, 70, 114, 0.12);
-		color: var(--brand-ink);
-		padding: 0.35rem 0.75rem;
-		border-radius: 999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-	}
+  .member-badge {
+    background: rgba(44, 70, 114, 0.12);
+    color: var(--brand-ink);
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
 
-	.member-details-body :global(h4),
-	.member-details-body :global(h5) {
-		margin: 1.25rem 0 0.5rem;
-		color: var(--ink-900);
-	}
+  .member-details-body :global(h4),
+  .member-details-body :global(h5) {
+    margin: 1.25rem 0 0.5rem;
+    color: var(--ink-900);
+  }
 
-	.member-details-body :global(p),
-	.member-details-body :global(li) {
-		color: var(--ink-700);
-		line-height: 1.7;
-	}
+  .member-details-body :global(p),
+  .member-details-body :global(li) {
+    color: var(--ink-700);
+    line-height: 1.7;
+  }
 
-	.member-details-body :global(ul) {
-		padding-left: 1.25rem;
-		margin: 0.5rem 0 0;
-	}
+  .member-details-body :global(ul) {
+    padding-left: 1.25rem;
+    margin: 0.5rem 0 0;
+  }
 
-	.member-locked {
-		background: var(--white);
-		border-radius: 14px;
-		padding: 1.25rem;
-		border: 1px solid var(--border-soft);
-	}
+  .member-locked {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 1.25rem;
+    border: 1px solid var(--border-soft);
+  }
 
-	.member-locked p {
-		margin: 0 0 0.75rem 0;
-		color: var(--ink-700);
-	}
+  .member-locked p {
+    margin: 0 0 0.75rem 0;
+    color: var(--ink-700);
+  }
 
-	.member-login-link {
-		color: var(--brand-ink);
-		font-weight: 600;
-		text-decoration: none;
-		transition: color 0.2s ease, transform 0.2s ease;
-		display: inline-flex;
-		gap: 0.4rem;
-		align-items: center;
-	}
+  .member-login-link {
+    color: var(--brand-ink);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
 
-	.member-login-link:hover {
-		color: var(--brand-sky);
-		transform: translateX(4px);
-	}
+  .member-login-link:hover {
+    color: var(--brand-sky);
+    transform: translateX(4px);
+  }
 
-	.event-links-card h3 {
-		font-size: 1.2rem;
-		color: var(--brand-ink);
-		margin-bottom: 1rem;
-	}
+  .event-links-card h3 {
+    font-size: 1.2rem;
+    color: var(--brand-ink);
+    margin-bottom: 1rem;
+  }
 
-	.event-links-card ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: grid;
-		gap: 0.5rem;
-	}
+  .event-links-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
 
-	.event-links-card li {
-		margin: 0;
-	}
+  .event-links-card li {
+    margin: 0;
+  }
 
-	.event-links-card a {
-		color: var(--brand-ink);
-		text-decoration: none;
-		word-break: break-all;
-		transition: color 0.2s ease;
-		display: inline-block;
-		padding: 0.25rem 0;
-	}
+  .event-links-card a {
+    color: var(--brand-ink);
+    text-decoration: none;
+    word-break: break-all;
+    transition: color 0.2s ease;
+    display: inline-block;
+    padding: 0.25rem 0;
+  }
 
-	.event-links-card a:hover {
-		color: var(--brand-sky);
-		text-decoration: underline;
-	}
+  .event-links-card a:hover {
+    color: var(--brand-sky);
+    text-decoration: underline;
+  }
 
-	.event-footer {
-		padding-top: 2rem;
-		border-top: 2px solid var(--border-soft);
-		animation: fade-rise 0.8s ease both;
-		animation-delay: 0.3s;
-	}
+  .event-footer {
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-soft);
+    animation: fade-rise 0.8s ease both;
+    animation-delay: 0.3s;
+  }
 
-	.back-link {
-		color: var(--brand-ink);
-		text-decoration: none;
-		font-weight: 600;
-		font-size: 1rem;
-		transition: all 0.3s;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
+  .back-link {
+    color: var(--brand-ink);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-	.back-link:hover {
-		color: var(--brand-sky);
-		transform: translateX(-4px);
-	}
+  .back-link:hover {
+    color: var(--brand-sky);
+    transform: translateX(-4px);
+  }
 
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-	@media (max-width: 900px) {
-		.event-hero {
-			grid-template-columns: 1fr;
-			align-items: start;
-		}
+  @media (max-width: 900px) {
+    .event-hero {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
 
-		.event-countdown-wrapper {
-			min-width: auto;
-		}
-	}
+    .event-countdown-wrapper {
+      min-width: auto;
+    }
+  }
 
-	@media (max-width: 768px) {
-		.event-hero {
-			padding: 1.5rem;
-			gap: 1.5rem;
-		}
+  @media (max-width: 768px) {
+    .event-hero {
+      padding: 1.5rem;
+      gap: 1.5rem;
+    }
 
-		h1 {
-			font-size: 1.75rem;
-		}
+    h1 {
+      font-size: 1.75rem;
+    }
 
-		.event-info-row {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 1rem;
-		}
+    .event-info-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
 
-		.description-card {
-			padding: 1.5rem;
-		}
-	}
+    .description-card {
+      padding: 1.5rem;
+    }
+  }
 </style>

@@ -1,16 +1,16 @@
 const MEMBER_PASSWORD = import.meta.env.MEMBER_PASSWORD;
 
 export function checkMemberAuth(request: Request): boolean {
-  const cookies = parseCookies(request.headers.get('cookie') || '');
-  return cookies.memberAuth === 'true';
+  const cookies = parseCookies(request.headers.get("cookie") || "");
+  return cookies.memberAuth === "true";
 }
 
 export function setMemberAuthCookie(): string {
-  return 'memberAuth=true; Path=/; Max-Age=86400; SameSite=Strict';
+  return "memberAuth=true; Path=/; Max-Age=86400; SameSite=Strict";
 }
 
 export function clearMemberAuthCookie(): string {
-  return 'memberAuth=; Path=/; Max-Age=0';
+  return "memberAuth=; Path=/; Max-Age=0";
 }
 
 export function verifyPassword(password: string): boolean {
@@ -19,12 +19,15 @@ export function verifyPassword(password: string): boolean {
 
 function parseCookies(cookieString: string): Record<string, string> {
   return cookieString
-    .split(';')
-    .map(cookie => cookie.trim().split('='))
-    .reduce((acc, [key, value]) => {
-      if (key && value) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, string>);
+    .split(";")
+    .map((cookie) => cookie.trim().split("="))
+    .reduce(
+      (acc, [key, value]) => {
+        if (key && value) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 }

@@ -1,339 +1,392 @@
 ---
-import PublicLayout from '../layouts/PublicLayout.astro';
-import SocialPopup from '../components/SocialPopup.astro';
-import clubInfo from '../data/clubInfo.json';
-import fundraisingData from '../data/fundraising.json';
+import PublicLayout from "../layouts/PublicLayout.astro";
+import SocialPopup from "../components/SocialPopup.astro";
+import clubInfo from "../data/clubInfo.json";
+import fundraisingData from "../data/fundraising.json";
 
 export const prerender = true;
 ---
 
 <PublicLayout title="Get Involved - Mini-THON">
-	<h1>Get Involved</h1>
+  <h1>Get Involved</h1>
 
-	<section class="intro-grid">
-		<div class="intro-text">
-			<p>There are many ways to support Mini-THON and help us fight pediatric cancer. Whether you're a student, business owner, or parent, you can make a difference.</p>
-			<p>Start where you feel most connected. Join the club, donate, attend events, or explore sponsorship options for your business.</p>
-			<div class="intro-actions">
-				<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button donate">
-					Donate now
-				</a>
-				<button class="button social" data-open-social-popup type="button">
-					All social profiles
-				</button>
-			</div>
-		</div>
-		<div class="intro-photo">
-			<img
-				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay"
-				alt="Mini-THON volunteers"
-				width="1200"
-				height="800"
-				class="intro-photo-image"
-				loading="eager"
-			/>
-		</div>
-	</section>
+  <section class="intro-grid">
+    <div class="intro-text">
+      <p>
+        There are many ways to support Mini-THON and help us fight pediatric
+        cancer. Whether you're a student, business owner, or parent, you can
+        make a difference.
+      </p>
+      <p>
+        Start where you feel most connected. Join the club, donate, attend
+        events, or explore sponsorship options for your business.
+      </p>
+      <div class="intro-actions">
+        <a
+          href={fundraisingData.donorDriveLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="button donate"
+        >
+          Donate now
+        </a>
+        <button class="button social" data-open-social-popup type="button">
+          All social profiles
+        </button>
+      </div>
+    </div>
+    <div class="intro-photo">
+      <img
+        src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZkSWGQyR4EzKJSIlr1QZNoOpPc5DqWU9B3tay"
+        alt="Mini-THON volunteers"
+        width="1200"
+        height="800"
+        class="intro-photo-image"
+        loading="eager"
+      />
+    </div>
+  </section>
 
-	<section class="audience-grid">
-		<div id="students" class="audience-card">
-			<h2>Students</h2>
-			<p>GMHS Students: Join Mini-THON and help make an impact!
-			<p><strong>Meetings:</strong> {clubInfo.meetings.general}</p>
-			<p>No experience needed. We welcome students who want to make a real impact while building leadership and teamwork skills.</p>
-			<a href={`mailto:${clubInfo.contact.email}?subject=I'd like to get more information about joining Mini-THON`} class="button ">Let us know of your intrest</a>
-		</div>
+  <section class="audience-grid">
+    <div id="students" class="audience-card">
+      <h2>Students</h2>
+      <p>
+        GMHS Students: Join Mini-THON and help make an impact!
+        <p><strong>Meetings:</strong> {clubInfo.meetings.general}</p>
+        <p>
+          No experience needed. We welcome students who want to make a real
+          impact while building leadership and teamwork skills.
+        </p>
+        <a
+          href={`mailto:${clubInfo.contact.email}?subject=I'd like to get more information about joining Mini-THON`}
+          class="button">Let us know of your intrest</a
+        >
+      </p>
 
-		<div id="businesses" class="audience-card">
-			<h2>Businesses</h2>
-			<p>Partner with us to support families facing pediatric cancer.</p>
-			<p>Sponsorships help fund care while connecting your business with our school community.</p>
-			<p>Learn how your business can be recognized across events, materials, and digital touchpoints.</p>
-			<a href="/sponsorship" class="button">View sponsorship options</a>
-		</div>
+      <div id="businesses" class="audience-card">
+        <h2>Businesses</h2>
+        <p>Partner with us to support families facing pediatric cancer.</p>
+        <p>
+          Sponsorships help fund care while connecting your business with our
+          school community.
+        </p>
+        <p>
+          Learn how your business can be recognized across events, materials,
+          and digital touchpoints.
+        </p>
+        <a href="/sponsorship" class="button">View sponsorship options</a>
+      </div>
 
-		<div id="parents" class="audience-card">
-			<h2>Community</h2>
-			<p>Every dollar donated supports Four Diamonds's pediatric cancer treatement and research.</p>
-			<p class="compact">Support our year-round events on the <a href="/events">Events page</a>.</p>
-			<a href={fundraisingData.donorDriveLink} target="_blank" rel="noopener noreferrer" class="button">
-				Donate via DonorDrive
-			</a>
-		</div>
-	</section>
-	<SocialPopup />
+      <div id="parents" class="audience-card">
+        <h2>Community</h2>
+        <p>
+          Every dollar donated supports Four Diamonds's pediatric cancer
+          treatement and research.
+        </p>
+        <p class="compact">
+          Support our year-round events on the <a href="/events">Events page</a
+          >.
+        </p>
+        <a
+          href={fundraisingData.donorDriveLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="button"
+        >
+          Donate via DonorDrive
+        </a>
+      </div>
+    </div>
+    <SocialPopup />
 
-	<script>
-		const introGrid = document.querySelector('.intro-grid');
-		const introText = introGrid?.querySelector('.intro-text');
-		const introPhoto = introGrid?.querySelector('.intro-photo');
-		const introImage = introGrid?.querySelector('.intro-photo-image');
+    <script>
+      const introGrid = document.querySelector(".intro-grid");
+      const introText = introGrid?.querySelector(".intro-text");
+      const introPhoto = introGrid?.querySelector(".intro-photo");
+      const introImage = introGrid?.querySelector(".intro-photo-image");
 
-		if (introText instanceof HTMLElement && introPhoto instanceof HTMLElement && introImage instanceof HTMLElement) {
-			const syncIntroPhotoHeight = () => {
-				if (window.matchMedia('(max-width: 768px)').matches) {
-					introPhoto.style.height = 'auto';
-					introPhoto.style.maxHeight = 'none';
-					introImage.style.maxHeight = 'none';
-					return;
-				}
+      if (
+        introText instanceof HTMLElement &&
+        introPhoto instanceof HTMLElement &&
+        introImage instanceof HTMLElement
+      ) {
+        const syncIntroPhotoHeight = () => {
+          if (window.matchMedia("(max-width: 768px)").matches) {
+            introPhoto.style.height = "auto";
+            introPhoto.style.maxHeight = "none";
+            introImage.style.maxHeight = "none";
+            return;
+          }
 
-				const textHeight = introText.offsetHeight;
-				introPhoto.style.height = `${textHeight}px`;
-				introPhoto.style.maxHeight = `${textHeight}px`;
-				introImage.style.maxHeight = `${textHeight}px`;
-			};
+          const textHeight = introText.offsetHeight;
+          introPhoto.style.height = `${textHeight}px`;
+          introPhoto.style.maxHeight = `${textHeight}px`;
+          introImage.style.maxHeight = `${textHeight}px`;
+        };
 
-			syncIntroPhotoHeight();
-			window.addEventListener('load', syncIntroPhotoHeight);
-			const observer = new ResizeObserver(syncIntroPhotoHeight);
-			observer.observe(introText);
-			window.addEventListener('resize', syncIntroPhotoHeight);
-		}
-	</script>
-</PublicLayout>
+        syncIntroPhotoHeight();
+        window.addEventListener("load", syncIntroPhotoHeight);
+        const observer = new ResizeObserver(syncIntroPhotoHeight);
+        observer.observe(introText);
+        window.addEventListener("resize", syncIntroPhotoHeight);
+      }
+    </script>
+  </section>
 
-<style>
-	h1 {
-		font-size: clamp(2.2rem, 4vw, 3rem);
-		color: var(--ink-900);
-		margin-bottom: 2rem;
-		animation: fade-rise 0.6s ease both;
-	}
+  <style>
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      color: var(--ink-900);
+      margin-bottom: 2rem;
+      animation: fade-rise 0.6s ease both;
+    }
 
-	section {
-		margin-bottom: 3rem;
-		animation: fade-rise 0.8s ease both;
-	}
+    section {
+      margin-bottom: 3rem;
+      animation: fade-rise 0.8s ease both;
+    }
 
-	section:nth-child(2) { animation-delay: 0.1s; }
-	section:nth-child(3) { animation-delay: 0.2s; }
+    section:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+    section:nth-child(3) {
+      animation-delay: 0.2s;
+    }
 
-	.intro-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-		gap: 2rem;
-		align-items: start;
-	}
+    .intro-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 2rem;
+      align-items: start;
+    }
 
-	.intro-text {
-		font-size: 1.05rem;
-		line-height: 1.8;
-		color: var(--ink-700);
-	}
+    .intro-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--ink-700);
+    }
 
-	.intro-text p {
-		margin-bottom: 1rem;
-	}
+    .intro-text p {
+      margin-bottom: 1rem;
+    }
 
-	.intro-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		margin-top: 1.5rem;
-		justify-content: flex-start;
-	}
+    .intro-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      justify-content: flex-start;
+    }
 
-	.intro-photo {
-		height: auto;
-		overflow: hidden;
-		border-radius: 20px;
-	}
+    .intro-photo {
+      height: auto;
+      overflow: hidden;
+      border-radius: 20px;
+    }
 
-	.intro-photo-image {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		display: block;
-	}
+    .intro-photo-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-soft);
+      display: block;
+    }
 
-	.audience-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 1.5rem;
-	}
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
 
-	.audience-card {
-		background: var(--surface-raised);
-		padding: 2rem;
-		border-radius: 20px;
-		box-shadow: var(--shadow-card);
-		border: 1px solid var(--border-soft);
-		display: flex;
-		flex-direction: column;
-	}
+    .audience-card {
+      background: var(--surface-raised);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-soft);
+      display: flex;
+      flex-direction: column;
+    }
 
-	.audience-card h2 {
-		font-size: clamp(1.5rem, 3vw, 1.9rem);
-		color: var(--ink-900);
-		margin-bottom: 1.25rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--brand-sky);
-	}
+    .audience-card h2 {
+      font-size: clamp(1.5rem, 3vw, 1.9rem);
+      color: var(--ink-900);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--brand-sky);
+    }
 
-	.audience-card p {
-		line-height: 1.8;
-		margin-bottom: 1rem;
-		color: var(--ink-700);
-	}
+    .audience-card p {
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      color: var(--ink-700);
+    }
 
-	.gmhs-note {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.15), rgba(106, 170, 228, 0.08));
-		padding: 0.75rem 1.25rem;
-		border-radius: 12px;
-		border-left: 4px solid var(--brand-sky);
-		font-size: 1rem;
-		color: var(--brand-ink) !important;
-		margin: 1rem 0;
-	}
+    .gmhs-note {
+      background: linear-gradient(
+        135deg,
+        rgba(106, 170, 228, 0.15),
+        rgba(106, 170, 228, 0.08)
+      );
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      border-left: 4px solid var(--brand-sky);
+      font-size: 1rem;
+      color: var(--brand-ink) !important;
+      margin: 1rem 0;
+    }
 
-	.audience-card ul {
-		margin-left: 1.5rem;
-		margin-bottom: 1.5rem;
-	}
+    .audience-card ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
 
-	.audience-card li {
-		margin-bottom: 0.75rem;
-		line-height: 1.6;
-		color: var(--ink-700);
-	}
+    .audience-card li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+      color: var(--ink-700);
+    }
 
-	.audience-card a {
-		color: var(--brand-ink);
-		font-weight: 500;
-		transition: color 0.2s ease;
-	}
+    .audience-card a {
+      color: var(--brand-ink);
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
 
-	.audience-card a:hover {
-		color: var(--brand-sky);
-	}
+    .audience-card a:hover {
+      color: var(--brand-sky);
+    }
 
-	.social-links {
-		display: flex;
-		gap: 2rem;
-		align-items: flex-start;
-		flex-wrap: wrap;
-		margin-top: 1.5rem;
-	}
+    .social-links {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
 
-	.groupme-info {
-		background: linear-gradient(135deg, rgba(106, 170, 228, 0.08), rgba(106, 170, 228, 0.03));
-		padding: 1.25rem;
-		border-radius: 12px;
-		border: 1px solid var(--border-soft);
-		flex: 1;
-		min-width: 250px;
-	}
+    .groupme-info {
+      background: linear-gradient(
+        135deg,
+        rgba(106, 170, 228, 0.08),
+        rgba(106, 170, 228, 0.03)
+      );
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      flex: 1;
+      min-width: 250px;
+    }
 
-	.groupme-info p {
-		margin: 0.5rem 0;
-		color: var(--ink-700);
-	}
+    .groupme-info p {
+      margin: 0.5rem 0;
+      color: var(--ink-700);
+    }
 
-	.groupme-info .code {
-		font-family: 'Courier New', monospace;
-		font-weight: 600;
-		color: var(--brand-ink);
-		background: var(--white);
-		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
-		display: inline-block;
-	}
+    .groupme-info .code {
+      font-family: "Courier New", monospace;
+      font-weight: 600;
+      color: var(--brand-ink);
+      background: var(--white);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
 
-	.button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.9rem 1.8rem;
-		border-radius: 999px;
-		text-decoration: none;
-		font-weight: 600;
-		letter-spacing: 0.02em;
-		transition: all 0.3s ease;
-	}
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.9rem 1.8rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: all 0.3s ease;
+    }
 
-	.audience-card .button {
-		margin-top: auto;
-		align-self: flex-start;
-	}
+    .audience-card .button {
+      margin-top: auto;
+      align-self: flex-start;
+    }
 
-	.button.social {
-		background: var(--brand-ink);
-		color: var(--white);
-		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
-		border: none;
-		cursor: pointer;
-		font-family: inherit;
-		font-size: inherit;
-	}
+    .button.social {
+      background: var(--brand-ink);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: inherit;
+    }
 
-	.button.social:hover {
-		background: var(--brand-ink);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
-	}
+    .button.social:hover {
+      background: var(--brand-ink);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
+    }
 
-	.button.donate {
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		font-size: 1.1rem;
-		box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
-	}
+    .button.donate {
+      background: var(--brand-sky);
+      color: var(--brand-ink);
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
+    }
 
-	.button.donate:hover {
-		background: var(--brand-ink);
-		color: var(--white);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
-	}
+    .button.donate:hover {
+      background: var(--brand-ink);
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
+    }
 
-	.button:not(.social):not(.donate) {
-		background: var(--brand-ink);
-		color: var(--white);
-		box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
-	}
+    .button:not(.social):not(.donate) {
+      background: var(--brand-ink);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(44, 70, 114, 0.3);
+    }
 
-	.button:not(.social):not(.donate):hover {
-		background: var(--brand-sky);
-		color: var(--brand-ink);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
-	}
+    .button:not(.social):not(.donate):hover {
+      background: var(--brand-sky);
+      color: var(--brand-ink);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(44, 70, 114, 0.4);
+    }
 
-	.compact {
-		margin-top: 0.75rem;
-	}
+    .compact {
+      margin-top: 0.75rem;
+    }
 
-	@keyframes fade-rise {
-		from {
-			opacity: 0;
-			transform: translateY(16px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
+    @keyframes fade-rise {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-	@media (max-width: 768px) {
-		.intro-grid {
-			grid-template-columns: 1fr;
-		}
+    @media (max-width: 768px) {
+      .intro-grid {
+        grid-template-columns: 1fr;
+      }
 
-		.audience-card {
-			padding: 1.5rem;
-		}
+      .audience-card {
+        padding: 1.5rem;
+      }
 
-		.social-links {
-			flex-direction: column;
-			gap: 1rem;
-		}
+      .social-links {
+        flex-direction: column;
+        gap: 1rem;
+      }
 
-		.groupme-info {
-			min-width: 100%;
-		}
-	}
-</style>
+      .groupme-info {
+        min-width: 100%;
+      }
+    }
+  </style></PublicLayout
+>
