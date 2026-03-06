@@ -7,8 +7,7 @@ This repository contains the official website for Great Mills High School Mini-T
 - **Framework:** [Astro](https://docs.astro.build/) (static site generator with SSR support)
 - **Hosting:** [Vercel](https://vercel.com/) (via `@astrojs/vercel` adapter)
 - **Content:** JSON data files + MDX pages
-- **Package Manager:** [Bun](https://bun.sh/)
-- **Node.js:** 24.x
+- **Runtime & Package Manager:** [Bun](https://bun.sh/)
 
 ## Project Structure
 
