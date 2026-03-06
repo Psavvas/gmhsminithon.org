@@ -50,52 +50,50 @@ export const prerender = true;
   <section class="audience-grid">
     <div id="students" class="audience-card">
       <h2>Students</h2>
+      <p>GMHS Students: Join Mini-THON and help make an impact!</p>
+      <p><strong>Meetings:</strong> {clubInfo.meetings.general}</p>
       <p>
-        GMHS Students: Join Mini-THON and help make an impact!
-        <p><strong>Meetings:</strong> {clubInfo.meetings.general}</p>
-        <p>
-          No experience needed. We welcome students who want to make a real
-          impact while building leadership and teamwork skills.
-        </p>
-        <a
-          href={`mailto:${clubInfo.contact.email}?subject=I'd like to get more information about joining Mini-THON`}
-          class="button">Let us know of your intrest</a
-        >
+        No experience needed. We welcome students who want to make a real
+        impact while building leadership and teamwork skills.
       </p>
+      <a
+        href={`mailto:${clubInfo.contact.email}?subject=I'd like to get more information about joining Mini-THON`}
+        class="button">Let us know of your intrest</a
+      >
+    </div>
 
-      <div id="businesses" class="audience-card">
-        <h2>Businesses</h2>
-        <p>Partner with us to support families facing pediatric cancer.</p>
-        <p>
-          Sponsorships help fund care while connecting your business with our
-          school community.
-        </p>
-        <p>
-          Learn how your business can be recognized across events, materials,
-          and digital touchpoints.
-        </p>
-        <a href="/sponsorship" class="button">View sponsorship options</a>
-      </div>
+    <div id="businesses" class="audience-card">
+      <h2>Businesses</h2>
+      <p>Partner with us to support families facing pediatric cancer.</p>
+      <p>
+        Sponsorships help fund care while connecting your business with our
+        school community.
+      </p>
+      <p>
+        Learn how your business can be recognized across events, materials,
+        and digital touchpoints.
+      </p>
+      <a href="/sponsorship" class="button">View sponsorship options</a>
+    </div>
 
-      <div id="parents" class="audience-card">
-        <h2>Community</h2>
-        <p>
-          Every dollar donated supports Four Diamonds's pediatric cancer
-          treatement and research.
-        </p>
-        <p class="compact">
-          Support our year-round events on the <a href="/events">Events page</a
-          >.
-        </p>
-        <a
-          href={fundraisingData.donorDriveLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button"
-        >
-          Donate via DonorDrive
-        </a>
-      </div>
+    <div id="parents" class="audience-card">
+      <h2>Community</h2>
+      <p>
+        Every dollar donated supports Four Diamonds's pediatric cancer
+        treatement and research.
+      </p>
+      <p class="compact">
+        Support our year-round events on the <a href="/events">Events page</a
+        >.
+      </p>
+      <a
+        href={fundraisingData.donorDriveLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="button"
+      >
+        Donate via DonorDrive
+      </a>
     </div>
     <SocialPopup />
 
