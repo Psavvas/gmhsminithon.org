@@ -265,7 +265,7 @@ Quick setup on Vercel:
    `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL` with the sheet's CSV export
    URL.
 5. Add `MEMBER_SESSION_SECRET` with a long random value for stable production
-  member sessions.
+   member sessions.
 6. Redeploy the site so the server picks up the new values.
 7. Visit `/members/login` and sign in once to confirm the setup. If a user is
    not approved yet, the page will show that user's Shoo user ID so it can be

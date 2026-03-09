@@ -1,8 +1,5 @@
 import type { APIRoute } from "astro";
-import {
-  MEMBER_LOGIN_PATH,
-  clearMemberAuthCookie,
-} from "../../../utils/auth";
+import { MEMBER_LOGIN_PATH, clearMemberAuthCookie } from "../../../utils/auth";
 
 export const GET: APIRoute = async ({ request }) => {
   const returnTo = getSafeReturnToPath(request);
@@ -56,7 +53,10 @@ async function getSafeReturnToPathFromPost(request: Request): Promise<string> {
   }
 }
 
-function sanitizeReturnTo(returnTo: FormDataEntryValue | string | null, fallbackPath: string): string {
+function sanitizeReturnTo(
+  returnTo: FormDataEntryValue | string | null,
+  fallbackPath: string,
+): string {
   if (typeof returnTo !== "string" || !returnTo.startsWith("/")) {
     return fallbackPath;
   }

@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import { useShooAuth } from "@shoojs/react";
 import MemberAuthError from "./MemberAuthError";
-import {
-  parseSessionError,
-  persistSessionError,
-  type ParsedSessionError,
-} from "./sessionErrors";
+import { persistSessionError, type ParsedSessionError } from "./sessionErrors";
 
 type MemberAuthCallbackProps = {
   shooBaseUrl: string;
   callbackPath: string;
-  membersPath: string;
   loginPath: string;
-  sessionEndpoint: string;
 };
 
 export default function MemberAuthCallback({
@@ -55,22 +49,22 @@ export default function MemberAuthCallback({
         const parsedError =
           error instanceof Error
             ? {
-              message: error.message,
-            }
+                message: error.message,
+              }
             : typeof error === "object" && error !== null && "message" in error
               ? {
-                message:
-                  typeof error.message === "string"
-                    ? error.message
-                    : "We could not verify your member access.",
-                userId:
-                  "userId" in error && typeof error.userId === "string"
-                    ? error.userId
-                    : undefined,
-              }
+                  message:
+                    typeof error.message === "string"
+                      ? error.message
+                      : "We could not verify your member access.",
+                  userId:
+                    "userId" in error && typeof error.userId === "string"
+                      ? error.userId
+                      : undefined,
+                }
               : {
-                message: "We could not verify your member access.",
-              };
+                  message: "We could not verify your member access.",
+                };
 
         persistSessionError(parsedError);
         clearIdentity();

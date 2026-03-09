@@ -10,7 +10,10 @@ import {
 } from "../../../utils/auth";
 
 export const POST: APIRoute = async ({ request }) => {
-  const logContext = createMemberAuthLogContext(request, "api/member-auth/session");
+  const logContext = createMemberAuthLogContext(
+    request,
+    "api/member-auth/session",
+  );
   let idToken = "";
 
   try {
@@ -139,7 +142,9 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (refreshedApprovedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
+    if (
+      refreshedApprovedMemberSubjectsState.subjects.has(payload.pairwise_sub)
+    ) {
       logMemberAuth("info", "session.approved_after_refresh", {}, logContext);
       const sessionCookie = await setMemberAuthCookie(
         {

@@ -53,7 +53,11 @@ export default function MemberLogin({
   }, [error]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || loading || completionHandledRef.current) {
+    if (
+      typeof window === "undefined" ||
+      loading ||
+      completionHandledRef.current
+    ) {
       return;
     }
 
@@ -70,7 +74,11 @@ export default function MemberLogin({
 
     const clearCompletionParam = () => {
       currentUrl.searchParams.delete(MEMBER_AUTH_COMPLETE_PARAM);
-      window.history.replaceState({}, "", currentUrl.pathname + currentUrl.search);
+      window.history.replaceState(
+        {},
+        "",
+        currentUrl.pathname + currentUrl.search,
+      );
     };
 
     if (!identity.token) {
@@ -106,25 +114,25 @@ export default function MemberLogin({
         const parsedError =
           completionError instanceof Error
             ? {
-              message: completionError.message,
-            }
-            : typeof completionError === "object" &&
-              completionError !== null &&
-              "message" in completionError
-              ? {
-                message:
-                  typeof completionError.message === "string"
-                    ? completionError.message
-                    : "We could not verify your member access.",
-                userId:
-                  "userId" in completionError &&
-                    typeof completionError.userId === "string"
-                    ? completionError.userId
-                    : undefined,
+                message: completionError.message,
               }
+            : typeof completionError === "object" &&
+                completionError !== null &&
+                "message" in completionError
+              ? {
+                  message:
+                    typeof completionError.message === "string"
+                      ? completionError.message
+                      : "We could not verify your member access.",
+                  userId:
+                    "userId" in completionError &&
+                    typeof completionError.userId === "string"
+                      ? completionError.userId
+                      : undefined,
+                }
               : {
-                message: "We could not verify your member access.",
-              };
+                  message: "We could not verify your member access.",
+                };
 
         persistSessionError(parsedError);
         clearIdentity();
@@ -191,9 +199,9 @@ export default function MemberLogin({
       </button>
 
       <p className="login-helper">
-        Access is limited to approved GMHS Mini-THON members. If your account
-        is not on the approved list yet, we will show your Shoo user ID so it
-        can be added.
+        Access is limited to approved GMHS Mini-THON members. If your account is
+        not on the approved list yet, we will show your Shoo user ID so it can
+        be added.
       </p>
     </div>
   );

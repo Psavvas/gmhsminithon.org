@@ -1,9 +1,4 @@
-import {
-  createRemoteJWKSet,
-  jwtVerify,
-  SignJWT,
-  type JWTPayload,
-} from "jose";
+import { createRemoteJWKSet, jwtVerify, SignJWT, type JWTPayload } from "jose";
 
 const DEFAULT_SHOO_BASE_URL = "https://shoo.dev";
 const MEMBER_SESSION_COOKIE = "member_session";
@@ -186,7 +181,9 @@ function parseApprovedMemberSubjects(
 export async function getApprovedMemberSubjectsState(
   options: ApprovedMemberSubjectsOptions = {},
 ): Promise<ApprovedMemberSubjectsState> {
-  const envSubjects = parseApprovedMemberSubjects(getMemberApprovedShooSubsEnv());
+  const envSubjects = parseApprovedMemberSubjects(
+    getMemberApprovedShooSubsEnv(),
+  );
   const googleSheetCsvUrl = getMemberApprovedGoogleSheetCsvUrl();
   const subjects = new Set(envSubjects);
   let loadError: string | undefined;
@@ -285,12 +282,12 @@ async function getApprovedMemberSubjectsFromGoogleSheet(
     options.forceRefresh &&
     (!cachedEntry ||
       now - approvedMemberSheetLastForcedRefreshAt >=
-      APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
+        APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
   const shouldRefreshStaleCache =
     !hasFreshCache &&
     Boolean(cachedEntry) &&
     now - approvedMemberSheetLastBackgroundRefreshAt >=
-    APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
+      APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
 
   if (hasFreshCache && cachedEntry && !shouldForceRefresh) {
     logMemberAuth(
@@ -337,13 +334,9 @@ async function getApprovedMemberSubjectsFromGoogleSheet(
   }
 
   if (!cachedEntry) {
-    logMemberAuth(
-      "info",
-      "approval.cache_miss",
-      {},
-      options.logContext,
-    );
-    const cacheEntry = await getApprovedMemberSheetCacheEntry(googleSheetCsvUrl);
+    logMemberAuth("info", "approval.cache_miss", {}, options.logContext);
+    const cacheEntry =
+      await getApprovedMemberSheetCacheEntry(googleSheetCsvUrl);
     approvedMemberSheetCache = cacheEntry;
     return {
       subjects: cacheEntry.subjects,
@@ -516,7 +509,8 @@ async function loadApprovedMemberSubjectsFromGoogleSheet(
   cachedEntry?: ApprovedMemberSheetCacheEntry,
 ): Promise<ApprovedMemberSheetCacheEntry> {
   const now = Date.now();
-  const validatedUrl = validateApprovedMemberGoogleSheetCsvUrl(googleSheetCsvUrl);
+  const validatedUrl =
+    validateApprovedMemberGoogleSheetCsvUrl(googleSheetCsvUrl);
   const headers = new Headers({
     Accept: "text/csv,text/plain;q=0.9,*/*;q=0.1",
   });
@@ -706,7 +700,6 @@ function parseFirstCsvValue(line: string): string {
 export function getShooAudienceOriginsForRequest(request: Request): string[] {
   const origins = new Set<string>();
   const requestUrl = new URL(request.url);
-  const requestOrigin = requestUrl.origin;
   const addOrigin = (value?: string | null) => {
     if (!value) {
       return;
@@ -719,8 +712,7 @@ export function getShooAudienceOriginsForRequest(request: Request): string[] {
     }
   };
 
-  addOrigin(request.headers.get("origin"));
-  addOrigin(requestOrigin);
+  addOrigin(requestUrl.origin);
   addOrigin(getVercelDeploymentOrigin());
 
   return Array.from(origins);
@@ -890,7 +882,9 @@ export function logMemberAuth(
   });
 }
 
-function shouldLogMemberAuth(level: "debug" | "info" | "warn" | "error"): boolean {
+function shouldLogMemberAuth(
+  level: "debug" | "info" | "warn" | "error",
+): boolean {
   if (level === "warn" || level === "error") {
     return true;
   }
