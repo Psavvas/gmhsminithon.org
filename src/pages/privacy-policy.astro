@@ -1,0 +1,196 @@
+---
+import PublicLayout from "../layouts/PublicLayout.astro";
+import clubInfo from "../data/clubInfo.json";
+
+const lastUpdated = "March 9, 2026";
+---
+
+<PublicLayout
+  title="Privacy Policy - Mini-THON"
+  description="Learn how GMHS Mini-THON uses newsletter, analytics, and member-login data on gmhsminithon.org."
+>
+  <section class="policy-shell">
+    <div class="policy-card">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1>How we use your information</h1>
+      <p class="lede">
+        This policy explains what information GMHS Mini-THON may process through
+        gmhsminithon.org, how we use it, and the third-party services involved
+        in running the site.
+      </p>
+      <p class="meta">Last updated: {lastUpdated}</p>
+
+      <section>
+        <h2>Information we may receive</h2>
+        <ul>
+          <li>
+            <strong>Newsletter signup details:</strong> if newsletter signup is enabled,
+            we may receive the email address you submit.
+          </li>
+          <li>
+            <strong>Member portal authentication data:</strong> when you sign in with
+            Shoo, we verify your Shoo identity token and use your Shoo user ID (`pairwise_sub`)
+            to decide whether you can access the members portal.
+          </li>
+          <li>
+            <strong>Basic technical data:</strong> our hosting and application infrastructure
+            may process information such as request metadata and performance information
+            needed to serve the site securely and reliably.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>How we use that information</h2>
+        <ul>
+          <li>To operate the public website and member portal.</li>
+          <li>
+            To verify whether a Shoo-authenticated user is approved for
+            member-only access.
+          </li>
+          <li>
+            To send newsletter updates if you choose to subscribe when that
+            feature is active.
+          </li>
+          <li>
+            To monitor site performance, diagnose problems, and protect the site
+            from misuse.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Member portal details</h2>
+        <p>
+          The members portal uses Shoo for sign-in. After Shoo authenticates
+          you, this site verifies your Shoo token on the server and checks your
+          Shoo user ID against a private approval list maintained by GMHS
+          Mini-THON administrators.
+        </p>
+        <p>
+          That approval list may be stored in server environment variables
+          and/or a private Google Sheet CSV source configured by administrators.
+          If your account is not yet approved, the login flow may show your Shoo
+          user ID so you can share it with an admin for approval.
+        </p>
+        <p>
+          If access is granted, the site stores a short-lived session cookie so
+          you can use the members portal without signing in on every page load.
+        </p>
+      </section>
+
+      <section>
+        <h2>Third-party services</h2>
+        <ul>
+          <li>
+            <strong>Shoo</strong> is used to authenticate member portal users.
+          </li>
+          <li>
+            <strong>EmailOctopus</strong> is used for newsletter subscriptions when
+            that feature is enabled.
+          </li>
+          <li>
+            <strong>Vercel</strong> hosts the site and provides analytics and performance
+            tooling used to understand site reliability and usage.
+          </li>
+          <li>
+            <strong>Google Sheets</strong> may be used by administrators as a private
+            source for approved Shoo user IDs.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Sharing and retention</h2>
+        <p>
+          We do not sell personal information. We only share data with the
+          service providers needed to operate the site and its features.
+        </p>
+        <p>
+          Information is kept only as long as needed for the relevant purpose,
+          such as maintaining the member approval list, keeping a newsletter
+          subscription active, or preserving short-lived session and diagnostic
+          data needed to operate the site.
+        </p>
+      </section>
+
+      <section>
+        <h2>Your choices</h2>
+        <p>
+          You can choose not to use the members portal or newsletter signup. If
+          you want to ask about, update, or remove information associated with
+          this site, contact us at
+          <a href={`mailto:${clubInfo.contact.email}`}
+            >{clubInfo.contact.email}</a
+          >.
+        </p>
+      </section>
+    </div>
+  </section>
+</PublicLayout>
+
+<style>
+  .policy-shell {
+    width: min(100%, 900px);
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .policy-card {
+    background: var(--surface-raised);
+    border: 1px solid var(--border-soft);
+    border-radius: 24px;
+    box-shadow: var(--shadow-card);
+    padding: clamp(2rem, 4vw, 3rem);
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--brand-sky);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--ink-900);
+  }
+
+  .lede,
+  .meta,
+  p,
+  li {
+    color: var(--ink-700);
+    line-height: 1.75;
+  }
+
+  .meta {
+    font-size: 0.95rem;
+  }
+
+  section {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--ink-900);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  a {
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
+</style>
