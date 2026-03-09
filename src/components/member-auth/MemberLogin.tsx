@@ -7,6 +7,7 @@ type MemberLoginProps = {
   callbackPath: string;
   membersPath: string;
   sessionEndpoint: string;
+  showConfigurationNotice?: boolean;
 };
 
 export default function MemberLogin({
@@ -14,6 +15,7 @@ export default function MemberLogin({
   callbackPath,
   membersPath,
   sessionEndpoint,
+  showConfigurationNotice = false,
 }: MemberLoginProps) {
   const { clearIdentity, error, identity, loading, signIn } = useShooAuth({
     shooBaseUrl,
@@ -84,6 +86,14 @@ export default function MemberLogin({
   return (
     <div className="member-login-panel">
       {errorMessage && <div className="error-message">{errorMessage}</div>}
+
+      {showConfigurationNotice && (
+        <div className="configuration-message">
+          This deployment does not have an approved member list configured yet,
+          so access cannot be granted yet. You can still sign in below to see
+          your Shoo user ID and authorization status.
+        </div>
+      )}
 
       <button
         type="button"

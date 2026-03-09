@@ -247,6 +247,21 @@ Environment Variables settings for each environment that needs member login
 (Production / Preview / Development as applicable), then redeploy so the server
 functions pick it up.
 
+Quick setup on Vercel:
+
+1. In Shoo, make sure your app's callback/return URL points to
+   `/members/auth/callback` on the deployed site.
+2. In Vercel, open the project's **Settings → Environment Variables**.
+3. Add `MEMBER_APPROVED_SHOO_SUBS` with any starter Shoo user IDs you want to
+   allow immediately.
+4. If you want to manage approvals in Google Sheets, add
+   `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL` with the sheet's CSV export
+   URL.
+5. Redeploy the site so the server picks up the new values.
+6. Visit `/members/login` and sign in once to confirm the setup. If a user is
+   not approved yet, the page will show that user's Shoo user ID so it can be
+   added to the env var list or Google Sheet.
+
 Example:
 
 ```sh
@@ -265,6 +280,8 @@ Notes for the Google Sheet allowlist:
 - Put one Shoo `pairwise_sub` value per row in the first column.
 - An optional header such as `pairwise_sub` or `user id` is allowed in the
   first row.
+- If you also keep some IDs in `MEMBER_APPROVED_SHOO_SUBS`, the server merges
+  both sources automatically.
 - The server only accepts HTTPS `docs.google.com` CSV export URLs, caches the
   result briefly, and fails closed if the sheet cannot be loaded.
 

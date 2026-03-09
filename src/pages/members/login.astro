@@ -30,22 +30,13 @@ const authConfigured = hasMemberApprovalSourceConfigured();
       status message after sign-in.
     </p>
 
-    {
-      !authConfigured && (
-        <div class="error-message">
-          This deployment does not have an approved member list configured yet,
-          so access cannot be granted yet. You can still sign in below to see
-          your Shoo user ID and authorization status.
-        </div>
-      )
-    }
-
     <MemberLogin
       client:load
       shooBaseUrl={getShooBaseUrl()}
       callbackPath={MEMBER_AUTH_CALLBACK_PATH}
       membersPath={MEMBER_HOME_PATH}
       sessionEndpoint="/api/member-auth/session"
+      showConfigurationNotice={!authConfigured}
     />
   </div>
 </PublicLayout>
@@ -89,6 +80,15 @@ const authConfigured = hasMemberApprovalSourceConfigured();
   :global(.member-login-panel) {
     display: grid;
     gap: 1rem;
+  }
+
+  :global(.configuration-message) {
+    background: rgba(44, 70, 114, 0.08);
+    border: 1px solid rgba(44, 70, 114, 0.16);
+    color: var(--ink-700);
+    padding: 1rem;
+    border-radius: 12px;
+    line-height: 1.6;
   }
 
   :global(.error-message) {
