@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useShooAuth } from "@shoojs/react";
-import { formatSessionError } from "./sessionErrors";
+import MemberAuthError from "./MemberAuthError";
+import {
+  parseSessionError,
+  persistSessionError,
+  type ParsedSessionError,
+} from "./sessionErrors";
 
 type MemberAuthCallbackProps = {
   shooBaseUrl: string;
@@ -26,7 +31,7 @@ export default function MemberAuthCallback({
   const [statusMessage, setStatusMessage] = useState(
     "Completing Shoo sign-in...",
   );
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<ParsedSessionError | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,20 +63,38 @@ export default function MemberAuthCallback({
         const payload = await response.json().catch(() => null);
 
         if (!response.ok) {
-          throw new Error(formatSessionError(payload));
+          throw parseSessionError(payload);
         }
 
         window.location.assign(membersPath);
       } catch (error) {
+        const parsedError =
+          error instanceof Error
+            ? {
+              message: error.message,
+            }
+            : typeof error === "object" && error !== null && "message" in error
+              ? {
+                message:
+                  typeof error.message === "string"
+                    ? error.message
+                    : "We could not verify your member access.",
+                userId:
+                  "userId" in error && typeof error.userId === "string"
+                    ? error.userId
+                    : undefined,
+              }
+              : {
+                message: "We could not verify your member access.",
+              };
+
+        persistSessionError(parsedError);
         clearIdentity();
 
         if (!cancelled) {
           setStatusMessage("Sign-in could not be completed.");
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "We could not verify your member access.",
-          );
+          setErrorState(parsedError);
+          window.location.assign(loginPath);
         }
       }
     })();
@@ -79,15 +102,18 @@ export default function MemberAuthCallback({
     return () => {
       cancelled = true;
     };
-  }, [clearIdentity, handleCallback, membersPath, sessionEndpoint]);
+  }, [clearIdentity, handleCallback, loginPath, membersPath, sessionEndpoint]);
 
   return (
     <div className="callback-status">
       <p>{statusMessage}</p>
 
-      {errorMessage && (
+      {errorState && (
         <>
-          <div className="error-message">{errorMessage}</div>
+          <MemberAuthError
+            message={errorState.message}
+            userId={errorState.userId}
+          />
           <a href={loginPath} className="callback-link">
             Return to member login
           </a>

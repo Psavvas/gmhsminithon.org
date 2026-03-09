@@ -15,14 +15,18 @@ const SHOO_ISSUER = SHOO_BASE_URL;
 const shooJwks = createRemoteJWKSet(
   new URL("/.well-known/jwks.json", SHOO_BASE_URL),
 );
-let approvedMemberSheetCache:
-  | {
-      url: string;
-      expiresAt: number;
-      subjects: ReadonlySet<string>;
-    }
+type ApprovedMemberSheetCacheEntry = {
+  url: string;
+  expiresAt: number;
+  subjects: ReadonlySet<string>;
+  eTag?: string;
+  lastModified?: string;
+};
+
+let approvedMemberSheetCache: ApprovedMemberSheetCacheEntry | undefined;
+let approvedMemberSheetFetchPromise:
+  | Promise<ApprovedMemberSheetCacheEntry>
   | undefined;
-let approvedMemberSheetFetchPromise: Promise<ReadonlySet<string>> | undefined;
 
 type ShooVerifiedToken = JWTPayload & {
   pairwise_sub: string;
@@ -108,7 +112,8 @@ function parseApprovedMemberSubjects(
   );
 }
 
-export async function getApprovedMemberSubjectsState(): Promise<ApprovedMemberSubjectsState> {
+export async function getApprovedMemberSubjectsState(
+): Promise<ApprovedMemberSubjectsState> {
   const envSubjects = parseApprovedMemberSubjects(getMemberApprovedShooSubsEnv());
   const googleSheetCsvUrl = getMemberApprovedGoogleSheetCsvUrl();
   const subjects = new Set(envSubjects);
@@ -162,42 +167,76 @@ async function getApprovedMemberSubjectsFromGoogleSheet(
   googleSheetCsvUrl: string,
 ): Promise<ReadonlySet<string>> {
   const now = Date.now();
+  const cachedEntry =
+    approvedMemberSheetCache?.url === googleSheetCsvUrl
+      ? approvedMemberSheetCache
+      : undefined;
 
-  if (
-    approvedMemberSheetCache?.url === googleSheetCsvUrl &&
-    approvedMemberSheetCache.expiresAt > now
-  ) {
-    return approvedMemberSheetCache.subjects;
+  if (cachedEntry && cachedEntry.expiresAt > now) {
+    return cachedEntry.subjects;
   }
 
   if (!approvedMemberSheetFetchPromise) {
     approvedMemberSheetFetchPromise = loadApprovedMemberSubjectsFromGoogleSheet(
       googleSheetCsvUrl,
+      cachedEntry,
     ).finally(() => {
       approvedMemberSheetFetchPromise = undefined;
     });
   }
 
-  const subjects = await approvedMemberSheetFetchPromise;
-  approvedMemberSheetCache = {
-    url: googleSheetCsvUrl,
-    expiresAt: now + APPROVED_MEMBER_SHEET_CACHE_MAX_AGE_MS,
-    subjects,
-  };
-  return subjects;
+  let cacheEntry: ApprovedMemberSheetCacheEntry;
+
+  try {
+    cacheEntry = await approvedMemberSheetFetchPromise;
+  } catch (error) {
+    if (cachedEntry) {
+      approvedMemberSheetCache = {
+        ...cachedEntry,
+        expiresAt: now + APPROVED_MEMBER_SHEET_CACHE_MAX_AGE_MS,
+      };
+      return cachedEntry.subjects;
+    }
+
+    throw error;
+  }
+
+  approvedMemberSheetCache = cacheEntry;
+  return cacheEntry.subjects;
 }
 
 async function loadApprovedMemberSubjectsFromGoogleSheet(
   googleSheetCsvUrl: string,
-): Promise<ReadonlySet<string>> {
+  cachedEntry?: ApprovedMemberSheetCacheEntry,
+): Promise<ApprovedMemberSheetCacheEntry> {
+  const now = Date.now();
   const validatedUrl = validateApprovedMemberGoogleSheetCsvUrl(googleSheetCsvUrl);
+  const headers = new Headers({
+    Accept: "text/csv,text/plain;q=0.9,*/*;q=0.1",
+  });
+
+  if (cachedEntry?.eTag) {
+    headers.set("If-None-Match", cachedEntry.eTag);
+  }
+
+  if (cachedEntry?.lastModified) {
+    headers.set("If-Modified-Since", cachedEntry.lastModified);
+  }
+
   const response = await fetch(validatedUrl, {
-    headers: {
-      Accept: "text/csv,text/plain;q=0.9,*/*;q=0.1",
-    },
-    redirect: "error",
+    headers,
+    redirect: "follow",
     signal: AbortSignal.timeout(APPROVED_MEMBER_SHEET_FETCH_TIMEOUT_MS),
   });
+
+  if (response.status === 304 && cachedEntry) {
+    return {
+      ...cachedEntry,
+      expiresAt: now + APPROVED_MEMBER_SHEET_CACHE_MAX_AGE_MS,
+    };
+  }
+
+  validateApprovedMemberGoogleSheetResponseUrl(response.url);
 
   if (!response.ok) {
     throw new Error(
@@ -211,7 +250,13 @@ async function loadApprovedMemberSubjectsFromGoogleSheet(
     throw new Error("The approved member Google Sheet response is too large.");
   }
 
-  return parseApprovedMemberSubjectsCsv(csvText);
+  return {
+    url: googleSheetCsvUrl,
+    expiresAt: now + APPROVED_MEMBER_SHEET_CACHE_MAX_AGE_MS,
+    subjects: parseApprovedMemberSubjectsCsv(csvText),
+    eTag: response.headers.get("etag") || undefined,
+    lastModified: response.headers.get("last-modified") || undefined,
+  };
 }
 
 function validateApprovedMemberGoogleSheetCsvUrl(url: string): URL {
@@ -244,6 +289,19 @@ function validateApprovedMemberGoogleSheetCsvUrl(url: string): URL {
   }
 
   return validatedUrl;
+}
+
+function validateApprovedMemberGoogleSheetResponseUrl(url: string): void {
+  const responseUrl = new URL(url);
+  const isAllowedHost =
+    responseUrl.hostname === "docs.google.com" ||
+    responseUrl.hostname.endsWith(".googleusercontent.com");
+
+  if (responseUrl.protocol !== "https:" || !isAllowedHost) {
+    throw new Error(
+      "The approved member Google Sheet redirected to an unexpected host.",
+    );
+  }
 }
 
 function parseApprovedMemberSubjectsCsv(csvText: string): ReadonlySet<string> {

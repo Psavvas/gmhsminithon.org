@@ -4,9 +4,9 @@
   const canIgnoreStorageError = (error: unknown) =>
     error instanceof DOMException &&
     ["QuotaExceededError", "SecurityError"].includes(error.name);
-  const navbar = document.querySelector(".navbar");
-  const toggle = document.querySelector(".nav-toggle");
-  const navLinks = document.querySelector(".nav-links");
+  const navbar = document.querySelector<HTMLElement>(".navbar");
+  const toggle = document.querySelector<HTMLButtonElement>(".nav-toggle");
+  const navLinks = document.querySelector<HTMLUListElement>(".nav-links");
 
   if (navbar) {
     const hasAnimatedInMemory = animationState.__gmhsNavbarAnimated === true;
@@ -138,6 +138,7 @@
   @media (max-width: 1120px) {
     :global(.nav-toggle) {
       display: flex;
+      flex: 0 0 auto;
     }
 
     :global(.nav-links) {
@@ -171,14 +172,28 @@
         transform 0.3s ease,
         visibility 0.3s ease;
       overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    :global(.nav-links li) {
+      width: min(100%, 28rem);
     }
 
     :global(.nav-links a) {
-      font-size: 1.2rem;
-      width: auto;
+      display: flex;
+      justify-content: center;
+      font-size: 1.1rem;
+      width: 100%;
       text-align: center;
       padding: 0.75rem 1.5rem;
-      white-space: nowrap;
+      white-space: normal;
+      line-height: 1.35;
+    }
+
+    :global(.member-logout) {
+      width: 100%;
+      justify-content: center;
+      min-height: 3rem;
     }
 
     :global(.navbar.nav-open .nav-links) {
@@ -198,6 +213,18 @@
 
     :global(.navbar.nav-open .nav-toggle-bar:nth-child(3)) {
       transform: translateY(-6px) rotate(-45deg);
+    }
+  }
+
+  @media (max-width: 480px) {
+    :global(.nav-links) {
+      padding: 5rem 1rem 2rem;
+      gap: 1rem;
+    }
+
+    :global(.nav-links a) {
+      font-size: 1rem;
+      padding: 0.7rem 1rem;
     }
   }
 </style>

@@ -252,7 +252,7 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 
   .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
     gap: 1.5rem;
   }
 
@@ -396,6 +396,30 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 
     .action-card {
       padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    section {
+      padding: 1.2rem;
+      border-radius: 16px;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
+
+    .action-card {
+      padding: 1.2rem;
+    }
+
+    .announcement-card,
+    .event-preview {
+      padding: 1.2rem;
     }
   }
 </style>

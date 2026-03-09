@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useShooAuth } from "@shoojs/react";
-import { formatSessionError } from "./sessionErrors";
+import MemberAuthError from "./MemberAuthError";
+import {
+  consumePersistedSessionError,
+  parseSessionError,
+  persistSessionError,
+  type ParsedSessionError,
+} from "./sessionErrors";
 
 type MemberLoginProps = {
   shooBaseUrl: string;
@@ -23,8 +29,16 @@ export default function MemberLogin({
     autoSessionMonitor: true,
   });
   const syncedTokenRef = useRef<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<ParsedSessionError | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  useEffect(() => {
+    const persistedError = consumePersistedSessionError();
+
+    if (persistedError) {
+      setErrorState(persistedError);
+    }
+  }, []);
 
   useEffect(() => {
     if (loading || !identity.token) {
@@ -36,7 +50,7 @@ export default function MemberLogin({
     }
 
     syncedTokenRef.current = identity.token;
-    setErrorMessage(null);
+    setErrorState(null);
     setIsSyncing(true);
 
     void (async () => {
@@ -53,18 +67,35 @@ export default function MemberLogin({
         const payload = await response.json().catch(() => null);
 
         if (!response.ok) {
-          throw new Error(formatSessionError(payload));
+          throw parseSessionError(payload);
         }
 
         window.location.assign(membersPath);
       } catch (error) {
+        const parsedError =
+          error instanceof Error
+            ? {
+              message: error.message,
+            }
+            : typeof error === "object" && error !== null && "message" in error
+              ? {
+                message:
+                  typeof error.message === "string"
+                    ? error.message
+                    : "We could not verify your member access.",
+                userId:
+                  "userId" in error && typeof error.userId === "string"
+                    ? error.userId
+                    : undefined,
+              }
+              : {
+                message: "We could not verify your member access.",
+              };
+
+        persistSessionError(parsedError);
         clearIdentity();
         syncedTokenRef.current = null;
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "We could not verify your member access.",
-        );
+        setErrorState(parsedError);
       } finally {
         setIsSyncing(false);
       }
@@ -73,7 +104,7 @@ export default function MemberLogin({
 
   useEffect(() => {
     if (error) {
-      setErrorMessage(error);
+      setErrorState({ message: error });
     }
   }, [error]);
 
@@ -85,13 +116,17 @@ export default function MemberLogin({
 
   return (
     <div className="member-login-panel">
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
+      {errorState && (
+        <MemberAuthError
+          message={errorState.message}
+          userId={errorState.userId}
+        />
+      )}
 
       {showConfigurationNotice && (
         <div className="configuration-message">
-          This deployment does not have an approved member list configured yet,
-          so access cannot be granted yet. You can still sign in below to see
-          your Shoo user ID and authorization status.
+          Member access is not fully configured yet. You can still sign in to
+          confirm your Shoo user ID and share it with an admin for setup.
         </div>
       )}
 
@@ -109,9 +144,9 @@ export default function MemberLogin({
       </button>
 
       <p className="login-helper">
-        Shoo handles sign-in and session management. This site only grants
-        member access after your Shoo user ID matches a private server-side
-        allowlist.
+        Access is limited to approved GMHS Mini-THON members. If your account
+        is not on the approved list yet, we will show your Shoo user ID so it
+        can be added.
       </p>
     </div>
   );
