@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
 	try {
-		const res = await fetch(
+		let res = await fetch(
 			`https://api.emailoctopus.com/lists/${encodeURIComponent(listId)}/contacts`,
 			{
 				method: "POST",
@@ -50,10 +50,36 @@ export const POST: APIRoute = async ({ request }) => {
 				},
 				body: JSON.stringify({
 					email_address: email,
-					status: "subscribed",
 				}),
 			},
 		);
+
+		// Fallback for accounts still using legacy API/list behavior.
+		if (res.status === 400 || res.status === 404) {
+			const legacyRes = await fetch(
+				`https://emailoctopus.com/api/1.6/lists/${encodeURIComponent(listId)}/contacts`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						api_key: apiKey,
+						email_address: email,
+						status: "SUBSCRIBED",
+					}),
+				},
+			);
+
+			if (legacyRes.ok) {
+				return new Response(JSON.stringify({ success: true }), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}
+
+			res = legacyRes;
+		}
 
 		if (res.ok) {
 			return new Response(JSON.stringify({ success: true }), {
@@ -73,14 +99,14 @@ export const POST: APIRoute = async ({ request }) => {
 				title?: string;
 				detail?: string;
 				type?: string;
-				errors?: Array<{ message?: string; detail?: string }>;
+				errors?: Array<{ message?: string; detail?: string; pointer?: string }>;
 			};
 			serviceMessage =
-				parsed.detail?.trim() ??
+				parsed.errors?.[0]?.detail?.trim() ??
 				parsed.error?.message?.trim() ??
 				parsed.message?.trim() ??
-				parsed.errors?.[0]?.detail?.trim() ??
 				parsed.errors?.[0]?.message?.trim() ??
+				parsed.detail?.trim() ??
 				parsed.title?.trim() ??
 				"";
 			errorType =
