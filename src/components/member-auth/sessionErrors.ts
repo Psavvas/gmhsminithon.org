@@ -1,6 +1,6 @@
 export type SessionErrorPayload = {
   error?: string;
-  approvalId?: string;
+  userId?: string;
 };
 
 export function formatSessionError(
@@ -9,9 +9,9 @@ export function formatSessionError(
   const baseMessage =
     payload?.error || "We could not verify your member access.";
 
-  if (!payload?.approvalId) {
+  if (!payload?.userId) {
     return baseMessage;
   }
 
-  return `${baseMessage} Approval ID: ${payload.approvalId}`;
+  return `${baseMessage} User ID: ${payload.userId}`;
 }

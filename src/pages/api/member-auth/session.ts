@@ -2,8 +2,7 @@ import type { APIRoute } from "astro";
 import {
   clearMemberAuthCookie,
   getShooAudienceOriginsForRequest,
-  hasApprovedMemberSubjects,
-  isApprovedMemberSubject,
+  getApprovedMemberSubjectsState,
   setMemberAuthCookie,
   verifyShooToken,
 } from "../../../utils/auth";
@@ -39,42 +38,55 @@ export const POST: APIRoute = async ({ request }) => {
       idToken,
       getShooAudienceOriginsForRequest(request),
     );
+    const approvedMemberSubjectsState = await getApprovedMemberSubjectsState();
 
-    if (!hasApprovedMemberSubjects()) {
+    if (!approvedMemberSubjectsState.isConfigured) {
       return jsonResponse(
         {
           error:
             "Member access is not configured yet. Ask an admin to add approved Shoo IDs on the server.",
-          approvalId: payload.pairwise_sub,
+          userId: payload.pairwise_sub,
         },
         503,
         request,
       );
     }
 
-    if (!isApprovedMemberSubject(payload.pairwise_sub)) {
+    if (approvedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
+      return new Response(
+        JSON.stringify({
+          userId: payload.pairwise_sub,
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Set-Cookie": setMemberAuthCookie(idToken, request),
+          },
+        },
+      );
+    }
+
+    if (approvedMemberSubjectsState.loadError) {
       return jsonResponse(
         {
           error:
-            "Your Shoo account is authenticated, but it has not been approved for the members portal yet.",
-          approvalId: payload.pairwise_sub,
+            "We verified your Shoo sign-in, but the approved member list could not be loaded right now. Please try again later or ask an admin to check the Google Sheet configuration.",
+          userId: payload.pairwise_sub,
         },
-        403,
+        503,
         request,
       );
     }
 
-    return new Response(
-      JSON.stringify({
-        userId: payload.pairwise_sub,
-      }),
+    return jsonResponse(
       {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Set-Cookie": setMemberAuthCookie(idToken, request),
-        },
+        error:
+          "Your Shoo account is authenticated, but it has not been approved for the members portal yet.",
+        userId: payload.pairwise_sub,
       },
+      403,
+      request,
     );
   } catch (error) {
     return jsonResponse(
@@ -91,7 +103,7 @@ export const POST: APIRoute = async ({ request }) => {
 };
 
 function jsonResponse(
-  payload: Record<string, string>,
+  payload: Record<string, string | undefined>,
   status: number,
   request: Request,
 ) {

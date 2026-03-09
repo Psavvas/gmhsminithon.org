@@ -100,7 +100,7 @@ export default function MemberLogin({
 
       <p className="login-helper">
         Shoo handles sign-in and session management. This site only grants
-        member access after your Shoo approval ID matches a private server-side
+        member access after your Shoo user ID matches a private server-side
         allowlist.
       </p>
     </div>

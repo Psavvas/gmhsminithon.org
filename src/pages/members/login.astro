@@ -6,7 +6,7 @@ import {
   MEMBER_HOME_PATH,
   checkMemberAuth,
   getShooBaseUrl,
-  hasApprovedMemberSubjects,
+  hasMemberApprovalSourceConfigured,
 } from "../../utils/auth";
 
 // Check if already logged in
@@ -14,7 +14,7 @@ if (await checkMemberAuth(Astro.request)) {
   return Astro.redirect("/members");
 }
 
-const authConfigured = hasApprovedMemberSubjects();
+const authConfigured = hasMemberApprovalSourceConfigured();
 ---
 
 <PublicLayout title="Member Login - Mini-THON">
@@ -22,18 +22,18 @@ const authConfigured = hasApprovedMemberSubjects();
     <h1>Member Portal Login</h1>
     <p class="subtitle">For GMHS Mini-THON members only</p>
     <p class="info-note">
-      Sign in with Shoo, then we will confirm that your Shoo approval ID is on
+      Sign in with Shoo, then we will confirm that your Shoo user ID is on
       the private approved-user list before granting access. If this deployment
-      is not configured yet, you will see that after sign-in.
+      is not configured yet, you will see a configuration status message after
+      sign-in.
     </p>
 
     {
       !authConfigured && (
         <div class="error-message">
-          This deployment is missing the
-          <code>MEMBER_APPROVED_SHOO_SUBS</code> environment variable, so
-          access cannot be granted yet. You can still sign in below to confirm
-          your Shoo approval ID and authorization status.
+          This deployment does not have an approved member list configured yet,
+          so access cannot be granted yet. You can still sign in below to see
+          your Shoo user ID and authorization status.
         </div>
       )
     }
