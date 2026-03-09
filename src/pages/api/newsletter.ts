@@ -1,8 +1,21 @@
 import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ request }) => {
-  const data = await request.formData();
-  const email = (data.get("email") ?? "").toString().trim();
+	let email = "";
+
+	const contentType = request.headers.get("content-type") ?? "";
+
+	if (contentType.includes("application/json")) {
+		try {
+			const body = (await request.json()) as { email?: string };
+			email = (body.email ?? "").toString().trim();
+		} catch {
+			email = "";
+		}
+	} else {
+		const data = await request.formData();
+		email = (data.get("email") ?? "").toString().trim();
+	}
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return new Response(

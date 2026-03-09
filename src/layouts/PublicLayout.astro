@@ -333,10 +333,16 @@ const currentPath = Astro.url.pathname;
           statusEl.className = "newsletter-status";
 
           try {
-            const formData = new FormData(form);
+            const emailInput = form.querySelector(
+              'input[name="email"]',
+            ) as HTMLInputElement | null;
+            const email = emailInput?.value?.trim() ?? "";
             const res = await fetch("/api/newsletter", {
               method: "POST",
-              body: formData,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email }),
             });
             const raw = await res.text();
             let json: {
