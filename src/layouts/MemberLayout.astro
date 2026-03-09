@@ -2,6 +2,12 @@
 import Analytics from "@vercel/analytics/astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import NavBehavior from "../components/NavBehavior.astro";
+import MemberLogoutButton from "../components/member-auth/MemberLogoutButton";
+import {
+  getMemberLoginPath,
+  getShooBaseUrl,
+  getShooCallbackPath,
+} from "../utils/auth";
 
 export interface Props {
   title: string;
@@ -34,10 +40,7 @@ const currentPath = Astro.url.pathname;
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="icon"
-      href={diamondFaviconHref}
-    />
+    <link rel="icon" href={diamondFaviconHref} />
     <link rel="shortcut icon" href={diamondFaviconHref} />
     <link rel="apple-touch-icon" href={diamondFaviconHref} />
     <meta name="generator" content={Astro.generator} />
@@ -94,6 +97,15 @@ const currentPath = Astro.url.pathname;
               class={currentPath === "/members/resources" ? "active" : ""}
               >Member Resources</a
             >
+          </li>
+          <li>
+            <MemberLogoutButton
+              client:load
+              shooBaseUrl={getShooBaseUrl()}
+              callbackPath={getShooCallbackPath()}
+              logoutEndpoint="/api/member-auth/logout"
+              loginPath={getMemberLoginPath()}
+            />
           </li>
           <li><a href="/" class="return-main">Return to Main Site</a></li>
         </ul>
@@ -284,6 +296,27 @@ const currentPath = Astro.url.pathname;
     color: var(--brand-ink) !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
+  }
+
+  :global(.member-logout) {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 999px;
+    color: var(--white);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  :global(.member-logout:hover) {
+    background-color: var(--white);
+    color: var(--brand-ink);
+    transform: translateY(-2px);
   }
 
   main {

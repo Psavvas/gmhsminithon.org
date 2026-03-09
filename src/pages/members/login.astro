@@ -1,37 +1,16 @@
 ---
 import PublicLayout from "../../layouts/PublicLayout.astro";
+import MemberLogin from "../../components/member-auth/MemberLogin";
 import {
-  verifyPassword,
-  setMemberAuthCookie,
   checkMemberAuth,
+  getMemberHomePath,
+  getShooBaseUrl,
+  getShooCallbackPath,
 } from "../../utils/auth";
 
 // Check if already logged in
-if (checkMemberAuth(Astro.request)) {
+if (await checkMemberAuth(Astro.request)) {
   return Astro.redirect("/members");
-}
-
-let errorMessage = "";
-
-if (Astro.request.method === "POST") {
-  try {
-    const data = await Astro.request.formData();
-    const password = data.get("password")?.toString() || "";
-
-    if (verifyPassword(password)) {
-      return new Response(null, {
-        status: 302,
-        headers: {
-          Location: "/members",
-          "Set-Cookie": setMemberAuthCookie(),
-        },
-      });
-    } else {
-      errorMessage = "Incorrect password. Please try again.";
-    }
-  } catch (error) {
-    errorMessage = "An error occurred. Please try again.";
-  }
 }
 ---
 
@@ -40,26 +19,17 @@ if (Astro.request.method === "POST") {
     <h1>Member Portal Login</h1>
     <p class="subtitle">For GMHS Mini-THON members only</p>
     <p class="info-note">
-      Enter the member password to access the private portal
+      Sign in with Shoo, then we will confirm that your verified account is on
+      the approved member list before granting access.
     </p>
 
-    <form method="POST" class="login-form">
-      {errorMessage && <div class="error-message">{errorMessage}</div>}
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-          autocomplete="current-password"
-          placeholder="Enter member password"
-        />
-      </div>
-
-      <button type="submit" class="submit-button">Login</button>
-    </form>
+    <MemberLogin
+      client:load
+      shooBaseUrl={getShooBaseUrl()}
+      callbackPath={getShooCallbackPath()}
+      membersPath={getMemberHomePath()}
+      sessionEndpoint="/api/member-auth/session"
+    />
   </div>
 </PublicLayout>
 
@@ -96,47 +66,19 @@ if (Astro.request.method === "POST") {
     font-size: 0.95rem;
   }
 
-  .login-form {
-    margin-bottom: 2rem;
+  :global(.member-login-panel) {
+    display: grid;
+    gap: 1rem;
   }
 
-  .error-message {
+  :global(.error-message) {
     background: #ffebee;
     color: #c62828;
     padding: 1rem;
     border-radius: 12px;
-    margin-bottom: 1.5rem;
   }
 
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--ink-900);
-    font-weight: 600;
-  }
-
-  input[type="password"] {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    padding: 0.75rem;
-    border: 2px solid var(--border-soft);
-    border-radius: 12px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-    box-sizing: border-box;
-  }
-
-  input[type="password"]:focus {
-    outline: none;
-    border-color: var(--brand-sky);
-  }
-
-  .submit-button {
+  :global(.submit-button) {
     width: 100%;
     background: linear-gradient(
       135deg,
@@ -153,31 +95,22 @@ if (Astro.request.method === "POST") {
     transition: all 0.3s ease;
   }
 
-  .submit-button:hover {
+  :global(.submit-button:hover) {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(28, 42, 58, 0.2);
   }
 
-  .help-text {
-    background: linear-gradient(
-      135deg,
-      rgba(106, 170, 228, 0.1),
-      rgba(106, 170, 228, 0.03)
-    );
-    padding: 1.5rem;
-    border-radius: 16px;
-    border-left: 4px solid #fdb927;
-    border: 1px solid var(--border-soft);
+  :global(.submit-button:disabled) {
+    cursor: wait;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
   }
 
-  .help-text p {
-    margin: 0.5rem 0;
+  :global(.login-helper) {
     color: var(--ink-700);
     font-size: 0.95rem;
-  }
-
-  .help-text strong {
-    color: var(--ink-900);
+    line-height: 1.6;
   }
 
   @media (max-width: 600px) {

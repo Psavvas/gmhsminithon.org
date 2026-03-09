@@ -3,7 +3,7 @@ import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
 import memberResources from "../../data/memberResources.json";
 
-if (!checkMemberAuth(Astro.request)) {
+if (!(await checkMemberAuth(Astro.request))) {
   return Astro.redirect("/members/login");
 }
 

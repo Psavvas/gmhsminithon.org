@@ -239,7 +239,8 @@ The site is automatically deployed to [Vercel](https://vercel.com/) when changes
 
 - All site content is managed via JSON files and MDX pages — no database is required.
 - Static assets (images, logos) can be placed in the `src/assets/` directory or uploaded externally.
-- The member portal (`/members/`) is protected by authentication (see `src/utils/auth.ts`).
+- The member portal (`/members/`) uses Shoo authentication plus a manually
+  maintained approved-user list in `src/data/memberApprovedUsers.ts`.
 - For questions or help, contact the current club officers (see `src/data/clubInfo.json`).
 
 ---

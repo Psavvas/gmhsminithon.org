@@ -1,0 +1,68 @@
+---
+import PublicLayout from "../../../layouts/PublicLayout.astro";
+import MemberAuthCallback from "../../../components/member-auth/MemberAuthCallback";
+import {
+  getMemberHomePath,
+  getMemberLoginPath,
+  getShooBaseUrl,
+  getShooCallbackPath,
+} from "../../../utils/auth";
+---
+
+<PublicLayout title="Completing Member Sign-In - Mini-THON">
+  <div class="callback-container">
+    <h1>Completing sign-in</h1>
+    <MemberAuthCallback
+      client:load
+      shooBaseUrl={getShooBaseUrl()}
+      callbackPath={getShooCallbackPath()}
+      membersPath={getMemberHomePath()}
+      loginPath={getMemberLoginPath()}
+      sessionEndpoint="/api/member-auth/session"
+    />
+  </div>
+</PublicLayout>
+
+<style>
+  .callback-container {
+    max-width: 520px;
+    margin: 0 auto;
+    background: var(--surface-raised);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    display: grid;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    color: var(--ink-900);
+    text-align: center;
+  }
+
+  :global(.callback-status) {
+    display: grid;
+    gap: 1rem;
+    color: var(--ink-700);
+    line-height: 1.6;
+  }
+
+  :global(.error-message) {
+    background: #ffebee;
+    color: #c62828;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  :global(.callback-link) {
+    color: var(--brand-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  :global(.callback-link:hover) {
+    text-decoration: underline;
+  }
+</style>

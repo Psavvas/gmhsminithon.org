@@ -10,7 +10,7 @@ import {
 } from "../../../utils/events";
 
 // Check authentication
-if (!checkMemberAuth(Astro.request)) {
+if (!(await checkMemberAuth(Astro.request))) {
   return Astro.redirect("/members/login");
 }
 
