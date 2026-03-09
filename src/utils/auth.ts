@@ -7,6 +7,7 @@ export const MEMBER_HOME_PATH = "/members";
 export const MEMBER_AUTH_CALLBACK_PATH = "/members/auth/callback";
 const MEMBER_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24;
 const APPROVED_MEMBER_SHEET_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
+const APPROVED_MEMBER_SHEET_FETCH_TIMEOUT_MS = 10_000;
 const APPROVED_MEMBER_SHEET_MAX_RESPONSE_CHARS = 100_000;
 const SHOO_BASE_URL =
   import.meta.env.PUBLIC_SHOO_BASE_URL || DEFAULT_SHOO_BASE_URL;
@@ -195,7 +196,7 @@ async function loadApprovedMemberSubjectsFromGoogleSheet(
       Accept: "text/csv,text/plain;q=0.9,*/*;q=0.1",
     },
     redirect: "error",
-    signal: AbortSignal.timeout(10000),
+    signal: AbortSignal.timeout(APPROVED_MEMBER_SHEET_FETCH_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -275,9 +276,9 @@ function parseFirstCsvValue(line: string): string {
   let charIndex = 0;
 
   while (charIndex < line.length) {
-    const character = line[charIndex];
+    const char = line[charIndex];
 
-    if (character === '"') {
+    if (char === '"') {
       if (inQuotes && line[charIndex + 1] === '"') {
         value += '"';
         charIndex += 2;
@@ -285,10 +286,10 @@ function parseFirstCsvValue(line: string): string {
       }
 
       inQuotes = !inQuotes;
-    } else if (!inQuotes && character === ",") {
+    } else if (!inQuotes && char === ",") {
       return value;
     } else {
-      value += character;
+      value += char;
     }
 
     charIndex += 1;
