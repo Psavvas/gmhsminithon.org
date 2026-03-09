@@ -8,7 +8,10 @@ export const MEMBER_AUTH_CALLBACK_PATH = "/members/auth/callback";
 const MEMBER_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24;
 const APPROVED_MEMBER_SHEET_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
 const APPROVED_MEMBER_SHEET_FETCH_TIMEOUT_MS = 10_000;
+const APPROVED_MEMBER_SHEET_FETCH_RETRY_DELAY_MS = 750;
+const APPROVED_MEMBER_SHEET_FETCH_RETRY_COUNT = 1;
 const APPROVED_MEMBER_SHEET_MAX_RESPONSE_CHARS = 100_000;
+const APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS = 60 * 1000;
 const SHOO_BASE_URL =
   import.meta.env.PUBLIC_SHOO_BASE_URL || DEFAULT_SHOO_BASE_URL;
 const SHOO_ISSUER = SHOO_BASE_URL;
@@ -27,6 +30,7 @@ let approvedMemberSheetCache: ApprovedMemberSheetCacheEntry | undefined;
 let approvedMemberSheetFetchPromise:
   | Promise<ApprovedMemberSheetCacheEntry>
   | undefined;
+let approvedMemberSheetLastForcedRefreshAt = 0;
 
 type ShooVerifiedToken = JWTPayload & {
   pairwise_sub: string;
@@ -40,6 +44,10 @@ type ApprovedMemberSubjectsState = {
   isConfigured: boolean;
   loadError?: string;
   subjects: ReadonlySet<string>;
+};
+
+type ApprovedMemberSubjectsOptions = {
+  forceRefresh?: boolean;
 };
 
 export function getShooBaseUrl(): string {
@@ -113,6 +121,7 @@ function parseApprovedMemberSubjects(
 }
 
 export async function getApprovedMemberSubjectsState(
+  options: ApprovedMemberSubjectsOptions = {},
 ): Promise<ApprovedMemberSubjectsState> {
   const envSubjects = parseApprovedMemberSubjects(getMemberApprovedShooSubsEnv());
   const googleSheetCsvUrl = getMemberApprovedGoogleSheetCsvUrl();
@@ -123,6 +132,7 @@ export async function getApprovedMemberSubjectsState(
     try {
       for (const subject of await getApprovedMemberSubjectsFromGoogleSheet(
         googleSheetCsvUrl,
+        options,
       )) {
         subjects.add(subject);
       }
@@ -165,19 +175,33 @@ function getMemberApprovedGoogleSheetCsvUrl(): string | undefined {
 
 async function getApprovedMemberSubjectsFromGoogleSheet(
   googleSheetCsvUrl: string,
+  options: ApprovedMemberSubjectsOptions = {},
 ): Promise<ReadonlySet<string>> {
   const now = Date.now();
   const cachedEntry =
     approvedMemberSheetCache?.url === googleSheetCsvUrl
       ? approvedMemberSheetCache
       : undefined;
+  const shouldForceRefresh =
+    options.forceRefresh &&
+    (!cachedEntry ||
+      now - approvedMemberSheetLastForcedRefreshAt >=
+      APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
 
-  if (cachedEntry && cachedEntry.expiresAt > now) {
+  if (!shouldForceRefresh && cachedEntry && cachedEntry.expiresAt > now) {
     return cachedEntry.subjects;
   }
 
+  if (options.forceRefresh && !shouldForceRefresh && cachedEntry) {
+    return cachedEntry.subjects;
+  }
+
+  if (shouldForceRefresh) {
+    approvedMemberSheetLastForcedRefreshAt = now;
+  }
+
   if (!approvedMemberSheetFetchPromise) {
-    approvedMemberSheetFetchPromise = loadApprovedMemberSubjectsFromGoogleSheet(
+    approvedMemberSheetFetchPromise = loadApprovedMemberSubjectsFromGoogleSheetWithRetry(
       googleSheetCsvUrl,
       cachedEntry,
     ).finally(() => {
@@ -257,6 +281,42 @@ async function loadApprovedMemberSubjectsFromGoogleSheet(
     eTag: response.headers.get("etag") || undefined,
     lastModified: response.headers.get("last-modified") || undefined,
   };
+}
+
+async function loadApprovedMemberSubjectsFromGoogleSheetWithRetry(
+  googleSheetCsvUrl: string,
+  cachedEntry?: ApprovedMemberSheetCacheEntry,
+): Promise<ApprovedMemberSheetCacheEntry> {
+  let lastError: unknown;
+
+  for (
+    let attempt = 0;
+    attempt <= APPROVED_MEMBER_SHEET_FETCH_RETRY_COUNT;
+    attempt += 1
+  ) {
+    try {
+      return await loadApprovedMemberSubjectsFromGoogleSheet(
+        googleSheetCsvUrl,
+        cachedEntry,
+      );
+    } catch (error) {
+      lastError = error;
+
+      if (attempt === APPROVED_MEMBER_SHEET_FETCH_RETRY_COUNT) {
+        break;
+      }
+
+      await delay(APPROVED_MEMBER_SHEET_FETCH_RETRY_DELAY_MS);
+    }
+  }
+
+  throw lastError;
+}
+
+function delay(durationMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, durationMs);
+  });
 }
 
 function validateApprovedMemberGoogleSheetCsvUrl(url: string): URL {

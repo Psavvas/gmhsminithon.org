@@ -67,7 +67,30 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (approvedMemberSubjectsState.loadError) {
+    const refreshedApprovedMemberSubjectsState =
+      await getApprovedMemberSubjectsState({
+        forceRefresh: true,
+      });
+
+    if (refreshedApprovedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
+      return new Response(
+        JSON.stringify({
+          userId: payload.pairwise_sub,
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Set-Cookie": setMemberAuthCookie(idToken, request),
+          },
+        },
+      );
+    }
+
+    if (
+      approvedMemberSubjectsState.loadError ||
+      refreshedApprovedMemberSubjectsState.loadError
+    ) {
       return jsonResponse(
         {
           error:
