@@ -4,9 +4,19 @@ import {
   clearMemberAuthCookie,
 } from "../../../utils/auth";
 
-export const POST: APIRoute = async ({ request }) => {
-  const returnTo = await getSafeReturnToPath(request);
+export const GET: APIRoute = async ({ request }) => {
+  const returnTo = getSafeReturnToPath(request);
 
+  return createLogoutResponse(request, returnTo);
+};
+
+export const POST: APIRoute = async ({ request }) => {
+  const returnTo = await getSafeReturnToPathFromPost(request);
+
+  return createLogoutResponse(request, returnTo);
+};
+
+function createLogoutResponse(request: Request, returnTo: string): Response {
   return new Response(null, {
     status: 303,
     headers: {
@@ -14,26 +24,42 @@ export const POST: APIRoute = async ({ request }) => {
       "Set-Cookie": clearMemberAuthCookie(request),
     },
   });
-};
+}
 
-async function getSafeReturnToPath(request: Request): Promise<string> {
+function getSafeReturnToPath(request: Request): string {
+  const fallbackPath = MEMBER_LOGIN_PATH;
+
+  try {
+    const returnTo = new URL(request.url).searchParams.get("returnTo");
+
+    return sanitizeReturnTo(returnTo, fallbackPath);
+  } catch {
+    return fallbackPath;
+  }
+}
+
+async function getSafeReturnToPathFromPost(request: Request): Promise<string> {
   const fallbackPath = MEMBER_LOGIN_PATH;
   const contentType = request.headers.get("content-type") || "";
 
   if (!contentType.includes("application/x-www-form-urlencoded")) {
-    return fallbackPath;
+    return getSafeReturnToPath(request);
   }
 
   try {
     const formData = await request.formData();
     const returnTo = formData.get("returnTo");
 
-    if (typeof returnTo !== "string" || !returnTo.startsWith("/")) {
-      return fallbackPath;
-    }
-
-    return returnTo.startsWith("//") ? fallbackPath : returnTo;
+    return sanitizeReturnTo(returnTo, fallbackPath);
   } catch {
     return fallbackPath;
   }
+}
+
+function sanitizeReturnTo(returnTo: FormDataEntryValue | string | null, fallbackPath: string): string {
+  if (typeof returnTo !== "string" || !returnTo.startsWith("/")) {
+    return fallbackPath;
+  }
+
+  return returnTo.startsWith("//") ? fallbackPath : returnTo;
 }

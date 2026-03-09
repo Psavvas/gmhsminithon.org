@@ -31,9 +31,10 @@ export default function MemberLogoutButton({
     auth.clearIdentity();
   };
 
+  const logoutUrl = `${logoutEndpoint}?returnTo=${encodeURIComponent(loginPath)}`;
+
   return (
-    <form action={logoutEndpoint} method="POST" onSubmit={() => void handleLogout()}>
-      <input type="hidden" name="returnTo" value={loginPath} />
+    <form action={logoutUrl} method="GET" onSubmit={() => void handleLogout()}>
       <button type="submit" className="member-logout" disabled={isLoggingOut}>
         {isLoggingOut ? "Signing out..." : "Sign Out"}
       </button>
