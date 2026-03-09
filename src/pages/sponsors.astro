@@ -13,6 +13,14 @@ const tierOrder = [
   { name: "Supporter", diamonds: 1 },
 ];
 const tiersWithoutLogos = new Set(["supporter", "bronze"]);
+const getInitials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
+
 const tierSections = tierOrder
   .map((tier) => ({
     ...tier,
@@ -34,7 +42,7 @@ const tierSections = tierOrder
       mission.
     </p>
     <p>
-      <a href="/sponsorship" class="sponsor-cta"
+      <a href="/sponsorship" class="partner-cta"
         >Interested in becoming a sponsor?</a
       >
     </p>
@@ -42,7 +50,7 @@ const tierSections = tierOrder
 
   {
     tierSections.map((tier) => (
-      <section class="sponsor-tier">
+      <section class="partner-tier">
         <h2 class={`tier-${tier.name.toLowerCase()} tier-heading`}>
           <span>{tier.name} Sponsors</span>
           <span class="tier-diamonds" aria-hidden="true">
@@ -58,25 +66,29 @@ const tierSections = tierOrder
             ))}
           </span>
         </h2>
-        <div class="sponsors-grid">
+        <div class="partners-grid">
           {tier.sponsors.map((sponsor) => (
-            <div class="sponsor-card">
+            <div class="partner-card">
               {sponsor.website ? (
                 <a
                   href={sponsor.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="sponsor-link"
+                  class="partner-link"
                 >
                   {!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
-                    <div class="sponsor-logo">
+                    <div class="partner-logo">
+                      <span class="partner-logo-fallback" aria-hidden="true">
+                        {getInitials(sponsor.name)}
+                      </span>
                       <img
                         src={sponsor.logo}
                         alt={sponsor.name}
                         width="320"
                         height="160"
-                        class="sponsor-logo-image"
+                        class="partner-logo-image"
                         loading="lazy"
+                        onload="if (this.previousElementSibling) this.previousElementSibling.style.display='none'"
                         onerror="this.style.display='none'"
                       />
                     </div>
@@ -84,16 +96,20 @@ const tierSections = tierOrder
                   <h3>{sponsor.name}</h3>
                 </a>
               ) : (
-                <div class="sponsor-no-link">
+                <div class="partner-no-link">
                   {!tiersWithoutLogos.has(tier.name.toLowerCase()) && (
-                    <div class="sponsor-logo">
+                    <div class="partner-logo">
+                      <span class="partner-logo-fallback" aria-hidden="true">
+                        {getInitials(sponsor.name)}
+                      </span>
                       <img
                         src={sponsor.logo}
                         alt={sponsor.name}
                         width="320"
                         height="160"
-                        class="sponsor-logo-image"
+                        class="partner-logo-image"
                         loading="lazy"
+                        onload="if (this.previousElementSibling) this.previousElementSibling.style.display='none'"
                         onerror="this.style.display='none'"
                       />
                     </div>
@@ -165,7 +181,7 @@ const tierSections = tierOrder
     margin-bottom: 1rem;
   }
 
-  .sponsor-cta {
+  .partner-cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -180,14 +196,14 @@ const tierSections = tierOrder
     box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
   }
 
-  .sponsor-cta:hover {
+  .partner-cta:hover {
     background: var(--brand-ink);
     color: var(--white);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(106, 170, 228, 0.4);
   }
 
-  .sponsor-tier {
+  .partner-tier {
     background: var(--surface-raised);
     padding: 2rem;
     border-radius: 20px;
@@ -252,13 +268,13 @@ const tierSections = tierOrder
     border-bottom-color: #cd7f32;
   }
 
-  .sponsors-grid {
+  .partners-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
   }
 
-  .sponsor-card {
+  .partner-card {
     background: linear-gradient(
       135deg,
       rgba(106, 170, 228, 0.05),
@@ -270,20 +286,20 @@ const tierSections = tierOrder
     transition: all 0.3s ease;
   }
 
-  .sponsor-card:hover {
+  .partner-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-card);
     border-color: var(--brand-sky);
   }
 
-  .sponsor-link,
-  .sponsor-no-link {
+  .partner-link,
+  .partner-no-link {
     text-decoration: none;
     color: inherit;
     display: block;
   }
 
-  .sponsor-logo {
+  .partner-logo {
     height: 120px;
     display: flex;
     align-items: center;
@@ -293,15 +309,34 @@ const tierSections = tierOrder
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
   }
 
-  .sponsor-logo-image {
+  .partner-logo-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #d9e9fb, #b7d2f1);
+    color: var(--brand-ink);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    font-size: 1.25rem;
+  }
+
+  .partner-logo-image {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+    position: absolute;
+    inset: 1rem;
+    margin: auto;
   }
 
-  .sponsor-card h3 {
+  .partner-card h3 {
     text-align: center;
     color: var(--brand-ink);
     font-size: 1.15rem;
