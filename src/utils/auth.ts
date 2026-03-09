@@ -92,7 +92,18 @@ function parseApprovedMemberSubjects(
 }
 
 function getApprovedMemberSubjects(): ReadonlySet<string> {
-  return parseApprovedMemberSubjects(import.meta.env.MEMBER_APPROVED_SHOO_SUBS);
+  return parseApprovedMemberSubjects(getMemberApprovedShooSubsEnv());
+}
+
+function getMemberApprovedShooSubsEnv(): string | undefined {
+  if (
+    typeof process !== "undefined" &&
+    process.env?.MEMBER_APPROVED_SHOO_SUBS
+  ) {
+    return process.env.MEMBER_APPROVED_SHOO_SUBS;
+  }
+
+  return import.meta.env.MEMBER_APPROVED_SHOO_SUBS;
 }
 
 export async function checkMemberAuth(request: Request): Promise<boolean> {

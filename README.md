@@ -238,6 +238,11 @@ bun run preview   # Preview the production build locally
 - `MEMBER_APPROVED_SHOO_SUBS` (required for member access): a comma-separated
   or newline-separated list of approved Shoo `pairwise_sub` values.
 
+For Vercel deployments, add `MEMBER_APPROVED_SHOO_SUBS` in the project's
+Environment Variables settings for each environment that needs member login
+(Production / Preview / Development as applicable), then redeploy so the server
+functions pick it up.
+
 Example:
 
 ```sh

@@ -6,12 +6,15 @@ import {
   MEMBER_HOME_PATH,
   checkMemberAuth,
   getShooBaseUrl,
+  hasApprovedMemberSubjects,
 } from "../../utils/auth";
 
 // Check if already logged in
 if (await checkMemberAuth(Astro.request)) {
   return Astro.redirect("/members");
 }
+
+const authConfigured = hasApprovedMemberSubjects();
 ---
 
 <PublicLayout title="Member Login - Mini-THON">
@@ -23,18 +26,32 @@ if (await checkMemberAuth(Astro.request)) {
       the private approved-user list before granting access.
     </p>
 
-    <MemberLogin
-      client:load
-      shooBaseUrl={getShooBaseUrl()}
-      callbackPath={MEMBER_AUTH_CALLBACK_PATH}
-      membersPath={MEMBER_HOME_PATH}
-      sessionEndpoint="/api/member-auth/session"
-    />
+    {
+      authConfigured ? (
+        <MemberLogin
+          client:load
+          shooBaseUrl={getShooBaseUrl()}
+          callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+          membersPath={MEMBER_HOME_PATH}
+          sessionEndpoint="/api/member-auth/session"
+        />
+      ) : (
+        <div class="error-message">
+          Member login is not configured for this deployment yet. In Vercel
+          project settings, add the
+          <code>MEMBER_APPROVED_SHOO_SUBS</code> environment variable for the
+          active environment, then redeploy.
+        </div>
+      )
+    }
   </div>
 </PublicLayout>
 
 <style>
   .login-container {
+    --mono-font:
+      "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
     max-width: 520px;
     margin: 0 auto;
     background: var(--surface-raised);
@@ -76,6 +93,12 @@ if (await checkMemberAuth(Astro.request)) {
     color: #c62828;
     padding: 1rem;
     border-radius: 12px;
+    line-height: 1.6;
+  }
+
+  code {
+    font-family: var(--mono-font);
+    font-size: 0.95em;
   }
 
   :global(.submit-button) {
