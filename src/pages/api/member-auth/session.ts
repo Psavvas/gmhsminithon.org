@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import {
   clearMemberAuthCookie,
+  getShooAudienceOriginsForRequest,
   hasApprovedMemberSubjects,
   isApprovedMemberSubject,
   setMemberAuthCookie,
@@ -34,7 +35,10 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const payload = await verifyShooToken(idToken, request.url);
+    const payload = await verifyShooToken(
+      idToken,
+      getShooAudienceOriginsForRequest(request),
+    );
 
     if (!hasApprovedMemberSubjects()) {
       return jsonResponse(

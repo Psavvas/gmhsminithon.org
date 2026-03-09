@@ -39,9 +39,10 @@ export function isApprovedMemberSubject(pairwiseSub?: string | null): boolean {
 
 export async function verifyShooToken(
   idToken: string,
-  appOrigin: string,
+  appOrigin: string | string[],
 ): Promise<ShooVerifiedToken> {
-  const audience = `origin:${new URL(appOrigin).origin}`;
+  const audiences = Array.isArray(appOrigin) ? appOrigin : [appOrigin];
+  const audience = audiences.map((value) => `origin:${new URL(value).origin}`);
   const { payload } = await jwtVerify(idToken, shooJwks, {
     issuer: SHOO_ISSUER,
     audience,
@@ -64,7 +65,10 @@ export async function getAuthorizedMemberSession(
   }
 
   try {
-    const payload = await verifyShooToken(token, request.url);
+    const payload = await verifyShooToken(
+      token,
+      getShooAudienceOriginsForRequest(request),
+    );
 
     if (!isApprovedMemberSubject(payload.pairwise_sub)) {
       return null;
@@ -104,6 +108,43 @@ function getMemberApprovedShooSubsEnv(): string | undefined {
   }
 
   return import.meta.env.MEMBER_APPROVED_SHOO_SUBS;
+}
+
+export function getShooAudienceOriginsForRequest(request: Request): string[] {
+  const origins = new Set<string>();
+  const requestOrigin = new URL(request.url).origin;
+  const requestProtocol = new URL(request.url).protocol;
+  const addOrigin = (value?: string | null) => {
+    if (!value) {
+      return;
+    }
+
+    try {
+      origins.add(new URL(value).origin);
+    } catch {
+      // Ignore invalid origin candidates from headers.
+    }
+  };
+  const getFirstHeaderValue = (name: string) =>
+    request.headers.get(name)?.split(",")[0]?.trim();
+
+  addOrigin(request.headers.get("origin"));
+  addOrigin(requestOrigin);
+
+  const forwardedHost = getFirstHeaderValue("x-forwarded-host");
+  const forwardedProto = getFirstHeaderValue("x-forwarded-proto") || "https";
+
+  if (forwardedHost) {
+    addOrigin(`${forwardedProto}://${forwardedHost}`);
+  }
+
+  const host = getFirstHeaderValue("host");
+
+  if (host) {
+    addOrigin(`${requestProtocol}//${host}`);
+  }
+
+  return Array.from(origins);
 }
 
 export async function checkMemberAuth(request: Request): Promise<boolean> {
