@@ -6,12 +6,15 @@ import {
   MEMBER_HOME_PATH,
   checkMemberAuth,
   getShooBaseUrl,
+  hasApprovedMemberSubjects,
 } from "../../utils/auth";
 
 // Check if already logged in
 if (await checkMemberAuth(Astro.request)) {
   return Astro.redirect("/members");
 }
+
+const authConfigured = hasApprovedMemberSubjects();
 ---
 
 <PublicLayout title="Member Login - Mini-THON">
@@ -23,6 +26,17 @@ if (await checkMemberAuth(Astro.request)) {
       the private approved-user list before granting access. If this deployment
       is not configured yet, you will see that after sign-in.
     </p>
+
+    {
+      !authConfigured && (
+        <div class="error-message">
+          This deployment is missing the
+          <code>MEMBER_APPROVED_SHOO_SUBS</code> environment variable, so
+          access cannot be granted yet. You can still sign in below to confirm
+          your Shoo approval ID and authorization status.
+        </div>
+      )
+    }
 
     <MemberLogin
       client:load

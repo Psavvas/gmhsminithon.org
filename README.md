@@ -252,6 +252,9 @@ MEMBER_APPROVED_SHOO_SUBS="sub_123,sub_456"
 If a user can authenticate with Shoo but is not approved yet, the members login
 flow will show that user's Shoo approval ID so an admin can add it privately to
 `MEMBER_APPROVED_SHOO_SUBS` without committing personal data to the repository.
+If the environment variable is missing on a deployment, users can still try to
+sign in and the login flow will explain that member access is not configured
+yet after Shoo authentication.
 
 ### Deployment
 
