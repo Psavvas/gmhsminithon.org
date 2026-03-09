@@ -11,14 +11,19 @@ import {
 type MemberLoginProps = {
   shooBaseUrl: string;
   callbackPath: string;
+  loginPath: string;
   membersPath: string;
   sessionEndpoint: string;
   showConfigurationNotice?: boolean;
 };
 
+const MEMBER_AUTH_COMPLETE_PARAM = "memberAuth";
+const MEMBER_AUTH_COMPLETE_VALUE = "complete";
+
 export default function MemberLogin({
   shooBaseUrl,
   callbackPath,
+  loginPath,
   membersPath,
   sessionEndpoint,
   showConfigurationNotice = false,
@@ -26,11 +31,11 @@ export default function MemberLogin({
   const { clearIdentity, error, identity, loading, signIn } = useShooAuth({
     shooBaseUrl,
     callbackPath,
-    autoSessionMonitor: true,
+    autoSessionMonitor: false,
   });
-  const syncedTokenRef = useRef<string | null>(null);
+  const completionHandledRef = useRef(false);
   const [errorState, setErrorState] = useState<ParsedSessionError | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [isWorking, setIsWorking] = useState(false);
 
   useEffect(() => {
     const persistedError = consumePersistedSessionError();
@@ -41,17 +46,43 @@ export default function MemberLogin({
   }, []);
 
   useEffect(() => {
-    if (loading || !identity.token) {
+    if (error) {
+      setIsWorking(false);
+      setErrorState({ message: error });
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || loading || completionHandledRef.current) {
       return;
     }
 
-    if (syncedTokenRef.current === identity.token) {
+    const currentUrl = new URL(window.location.href);
+    const isAuthCompletion =
+      currentUrl.searchParams.get(MEMBER_AUTH_COMPLETE_PARAM) ===
+      MEMBER_AUTH_COMPLETE_VALUE;
+
+    if (!isAuthCompletion) {
       return;
     }
 
-    syncedTokenRef.current = identity.token;
+    completionHandledRef.current = true;
+
+    const clearCompletionParam = () => {
+      currentUrl.searchParams.delete(MEMBER_AUTH_COMPLETE_PARAM);
+      window.history.replaceState({}, "", currentUrl.pathname + currentUrl.search);
+    };
+
+    if (!identity.token) {
+      clearCompletionParam();
+      setErrorState({
+        message: "Shoo sign-in completed, but no session token was available.",
+      });
+      return;
+    }
+
     setErrorState(null);
-    setIsSyncing(true);
+    setIsWorking(true);
 
     void (async () => {
       try {
@@ -70,22 +101,25 @@ export default function MemberLogin({
           throw parseSessionError(payload);
         }
 
-        window.location.assign(membersPath);
-      } catch (error) {
+        window.location.replace(membersPath);
+      } catch (completionError) {
         const parsedError =
-          error instanceof Error
+          completionError instanceof Error
             ? {
-              message: error.message,
+              message: completionError.message,
             }
-            : typeof error === "object" && error !== null && "message" in error
+            : typeof completionError === "object" &&
+              completionError !== null &&
+              "message" in completionError
               ? {
                 message:
-                  typeof error.message === "string"
-                    ? error.message
+                  typeof completionError.message === "string"
+                    ? completionError.message
                     : "We could not verify your member access.",
                 userId:
-                  "userId" in error && typeof error.userId === "string"
-                    ? error.userId
+                  "userId" in completionError &&
+                    typeof completionError.userId === "string"
+                    ? completionError.userId
                     : undefined,
               }
               : {
@@ -94,25 +128,42 @@ export default function MemberLogin({
 
         persistSessionError(parsedError);
         clearIdentity();
-        syncedTokenRef.current = null;
+        clearCompletionParam();
         setErrorState(parsedError);
       } finally {
-        setIsSyncing(false);
+        setIsWorking(false);
       }
     })();
   }, [clearIdentity, identity.token, loading, membersPath, sessionEndpoint]);
 
-  useEffect(() => {
-    if (error) {
-      setErrorState({ message: error });
-    }
-  }, [error]);
-
-  const buttonLabel = isSyncing
-    ? "Checking member access..."
+  const buttonLabel = isWorking
+    ? "Completing sign-in..."
     : loading
       ? "Loading Shoo..."
       : "Continue with Shoo";
+
+  const handleSignIn = async () => {
+    if (loading || isWorking) {
+      return;
+    }
+
+    setErrorState(null);
+    setIsWorking(true);
+
+    try {
+      await signIn({
+        returnTo: `${loginPath}?${MEMBER_AUTH_COMPLETE_PARAM}=${MEMBER_AUTH_COMPLETE_VALUE}`,
+      });
+    } catch (signInError) {
+      setIsWorking(false);
+      setErrorState({
+        message:
+          signInError instanceof Error
+            ? signInError.message
+            : "We could not start Shoo sign-in.",
+      });
+    }
+  };
 
   return (
     <div className="member-login-panel">
@@ -133,12 +184,8 @@ export default function MemberLogin({
       <button
         type="button"
         className="submit-button"
-        onClick={() =>
-          void signIn({
-            returnTo: membersPath,
-          })
-        }
-        disabled={loading || isSyncing}
+        onClick={() => void handleSignIn()}
+        disabled={loading || isWorking}
       >
         {buttonLabel}
       </button>

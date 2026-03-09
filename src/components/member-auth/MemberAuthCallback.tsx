@@ -18,9 +18,7 @@ type MemberAuthCallbackProps = {
 export default function MemberAuthCallback({
   shooBaseUrl,
   callbackPath,
-  membersPath,
   loginPath,
-  sessionEndpoint,
 }: MemberAuthCallbackProps) {
   const { clearIdentity, handleCallback } = useShooAuth({
     shooBaseUrl,
@@ -49,24 +47,10 @@ export default function MemberAuthCallback({
           return;
         }
 
-        setStatusMessage("Verifying member access...");
-
-        const response = await fetch(sessionEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            idToken,
-          }),
+        setStatusMessage("Redirecting back to member sign-in...");
+        await handleCallback({
+          redirectTo: `${loginPath}?memberAuth=complete`,
         });
-        const payload = await response.json().catch(() => null);
-
-        if (!response.ok) {
-          throw parseSessionError(payload);
-        }
-
-        window.location.assign(membersPath);
       } catch (error) {
         const parsedError =
           error instanceof Error
@@ -102,7 +86,7 @@ export default function MemberAuthCallback({
     return () => {
       cancelled = true;
     };
-  }, [clearIdentity, handleCallback, loginPath, membersPath, sessionEndpoint]);
+  }, [clearIdentity, handleCallback, loginPath]);
 
   return (
     <div className="callback-status">

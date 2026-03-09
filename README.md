@@ -241,6 +241,13 @@ bun run preview   # Preview the production build locally
   `docs.google.com` CSV export URL for a Google Sheet whose first column
   contains approved Shoo `pairwise_sub` values. The server combines this with
   any IDs in `MEMBER_APPROVED_SHOO_SUBS`.
+- `MEMBER_AUTH_DEBUG` (optional): set to `true` to enable detailed server-side
+  auth logging for member session verification, approval cache refreshes, and
+  member auth API decisions.
+- `MEMBER_SESSION_SECRET` (recommended for production): a long random secret
+  used to issue a server-signed member session after approval. This avoids
+  re-checking the Google Sheet on every protected page request and is the
+  recommended setup for Bun on Vercel.
 
 For Vercel deployments, add `MEMBER_APPROVED_SHOO_SUBS` in the project's
 Environment Variables settings for each environment that needs member login
@@ -257,8 +264,10 @@ Quick setup on Vercel:
 4. If you want to manage approvals in Google Sheets, add
    `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL` with the sheet's CSV export
    URL.
-5. Redeploy the site so the server picks up the new values.
-6. Visit `/members/login` and sign in once to confirm the setup. If a user is
+5. Add `MEMBER_SESSION_SECRET` with a long random value for stable production
+  member sessions.
+6. Redeploy the site so the server picks up the new values.
+7. Visit `/members/login` and sign in once to confirm the setup. If a user is
    not approved yet, the page will show that user's Shoo user ID so it can be
    added to the env var list or Google Sheet.
 

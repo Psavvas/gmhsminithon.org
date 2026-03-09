@@ -1,6 +1,7 @@
 ---
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
+import RefreshMemberCacheButton from "../../components/member-auth/RefreshMemberCacheButton";
 import memberAnnouncements from "../../data/memberAnnouncements.json";
 import {
   formatEventDate,
@@ -137,6 +138,20 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
       )
     }
     <a href="/members/upcoming-events" class="view-all">View All Events →</a>
+  </section>
+
+  <section class="portal-tools">
+    <details>
+      <summary>Portal tools</summary>
+      <p class="portal-tools-copy">
+        If someone was just added to the approval list, you can refresh the
+        shared member cache here.
+      </p>
+      <RefreshMemberCacheButton
+        client:idle
+        endpoint="/api/member-auth/refresh-cache"
+      />
+    </details>
   </section>
 </MemberLayout>
 
@@ -387,6 +402,58 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
   .view-all:hover {
     color: var(--brand-sky);
     transform: translateX(4px);
+  }
+
+  .portal-tools details {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .portal-tools summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--brand-ink);
+  }
+
+  .portal-tools-copy {
+    margin: 0;
+    color: var(--ink-700);
+    line-height: 1.6;
+  }
+
+  :global(.member-cache-tools) {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  :global(.member-cache-tools__button) {
+    justify-self: start;
+    border: 1px solid var(--border-soft);
+    background: var(--surface-raised);
+    color: var(--brand-ink);
+    border-radius: 999px;
+    padding: 0.75rem 1rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  :global(.member-cache-tools__button:disabled) {
+    opacity: 0.7;
+    cursor: wait;
+  }
+
+  :global(.member-cache-tools__message) {
+    margin: 0;
+    color: var(--ink-500);
+  }
+
+  :global(.member-cache-tools__message--success) {
+    color: #1b5e20;
+  }
+
+  :global(.member-cache-tools__message--error) {
+    color: #b71c1c;
   }
 
   @media (max-width: 768px) {

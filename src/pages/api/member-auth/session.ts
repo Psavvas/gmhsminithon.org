@@ -1,13 +1,16 @@
 import type { APIRoute } from "astro";
 import {
+  createMemberAuthLogContext,
   clearMemberAuthCookie,
   getShooAudienceOriginsForRequest,
   getApprovedMemberSubjectsState,
+  logMemberAuth,
   setMemberAuthCookie,
   verifyShooToken,
 } from "../../../utils/auth";
 
 export const POST: APIRoute = async ({ request }) => {
+  const logContext = createMemberAuthLogContext(request, "api/member-auth/session");
   let idToken = "";
 
   try {
@@ -24,6 +27,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   if (!idToken) {
+    logMemberAuth("warn", "session.request_missing_id_token", {}, logContext);
     return jsonResponse(
       {
         error: "Missing idToken.",
@@ -38,9 +42,20 @@ export const POST: APIRoute = async ({ request }) => {
       idToken,
       getShooAudienceOriginsForRequest(request),
     );
-    const approvedMemberSubjectsState = await getApprovedMemberSubjectsState();
+    logMemberAuth(
+      "info",
+      "session.token_verified",
+      {
+        userId: `${payload.pairwise_sub.slice(0, 4)}...${payload.pairwise_sub.slice(-4)}`,
+      },
+      logContext,
+    );
+    const approvedMemberSubjectsState = await getApprovedMemberSubjectsState({
+      logContext,
+    });
 
     if (!approvedMemberSubjectsState.isConfigured) {
+      logMemberAuth("warn", "session.approval_not_configured", {}, logContext);
       return jsonResponse(
         {
           error:
@@ -52,45 +67,16 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (approvedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
-      return new Response(
-        JSON.stringify({
-          userId: payload.pairwise_sub,
-        }),
+    if (approvedMemberSubjectsState.loadError) {
+      logMemberAuth(
+        "warn",
+        "session.approval_load_error",
         {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            "Set-Cookie": setMemberAuthCookie(idToken, request),
-          },
+          error: approvedMemberSubjectsState.loadError,
+          cacheStatus: approvedMemberSubjectsState.cacheStatus,
         },
+        logContext,
       );
-    }
-
-    const refreshedApprovedMemberSubjectsState =
-      await getApprovedMemberSubjectsState({
-        forceRefresh: true,
-      });
-
-    if (refreshedApprovedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
-      return new Response(
-        JSON.stringify({
-          userId: payload.pairwise_sub,
-        }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            "Set-Cookie": setMemberAuthCookie(idToken, request),
-          },
-        },
-      );
-    }
-
-    if (
-      approvedMemberSubjectsState.loadError ||
-      refreshedApprovedMemberSubjectsState.loadError
-    ) {
       return jsonResponse(
         {
           error:
@@ -99,6 +85,81 @@ export const POST: APIRoute = async ({ request }) => {
         },
         503,
         request,
+      );
+    }
+
+    if (approvedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
+      logMemberAuth("info", "session.approved_from_cache", {}, logContext);
+      const sessionCookie = await setMemberAuthCookie(
+        {
+          pairwiseSub: payload.pairwise_sub,
+          legacyIdToken: idToken,
+        },
+        request,
+      );
+
+      return new Response(
+        JSON.stringify({
+          userId: payload.pairwise_sub,
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Set-Cookie": sessionCookie,
+          },
+        },
+      );
+    }
+
+    const refreshedApprovedMemberSubjectsState =
+      await getApprovedMemberSubjectsState({
+        forceRefresh: true,
+        waitForRefresh: true,
+        logContext,
+      });
+
+    if (refreshedApprovedMemberSubjectsState.loadError) {
+      logMemberAuth(
+        "warn",
+        "session.approval_load_error_after_refresh",
+        {
+          error: refreshedApprovedMemberSubjectsState.loadError,
+        },
+        logContext,
+      );
+      return jsonResponse(
+        {
+          error:
+            "We verified your Shoo sign-in, but the approved member list could not be loaded right now. Please try again later or ask an admin to check the Google Sheet configuration.",
+          userId: payload.pairwise_sub,
+        },
+        503,
+        request,
+      );
+    }
+
+    if (refreshedApprovedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
+      logMemberAuth("info", "session.approved_after_refresh", {}, logContext);
+      const sessionCookie = await setMemberAuthCookie(
+        {
+          pairwiseSub: payload.pairwise_sub,
+          legacyIdToken: idToken,
+        },
+        request,
+      );
+
+      return new Response(
+        JSON.stringify({
+          userId: payload.pairwise_sub,
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Set-Cookie": sessionCookie,
+          },
+        },
       );
     }
 
@@ -112,6 +173,14 @@ export const POST: APIRoute = async ({ request }) => {
       request,
     );
   } catch (error) {
+    logMemberAuth(
+      "warn",
+      "session.request_failed",
+      {
+        error: error instanceof Error ? error.message : String(error),
+      },
+      logContext,
+    );
     return jsonResponse(
       {
         error:

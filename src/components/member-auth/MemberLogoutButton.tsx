@@ -30,12 +30,14 @@ export default function MemberLogoutButton({
     setIsLoggingOut(true);
 
     try {
-      auth.clearIdentity();
       await fetch(logoutEndpoint, {
         method: "POST",
+        cache: "no-store",
+        credentials: "same-origin",
       });
     } finally {
-      window.location.assign(loginPath);
+      auth.clearIdentity();
+      window.location.replace(loginPath);
     }
   };
 

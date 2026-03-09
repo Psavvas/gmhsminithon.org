@@ -1,7 +1,13 @@
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import {
+  createRemoteJWKSet,
+  jwtVerify,
+  SignJWT,
+  type JWTPayload,
+} from "jose";
 
 const DEFAULT_SHOO_BASE_URL = "https://shoo.dev";
 const MEMBER_SESSION_COOKIE = "member_session";
+const MEMBER_SESSION_ISSUER = "gmhs-minithon-member-session";
 export const MEMBER_LOGIN_PATH = "/members/login";
 export const MEMBER_HOME_PATH = "/members";
 export const MEMBER_AUTH_CALLBACK_PATH = "/members/auth/callback";
@@ -11,6 +17,7 @@ const APPROVED_MEMBER_SHEET_FETCH_TIMEOUT_MS = 10_000;
 const APPROVED_MEMBER_SHEET_FETCH_RETRY_DELAY_MS = 750;
 const APPROVED_MEMBER_SHEET_FETCH_RETRY_COUNT = 1;
 const APPROVED_MEMBER_SHEET_MAX_RESPONSE_CHARS = 100_000;
+const APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS = 60 * 1000;
 const APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS = 60 * 1000;
 const SHOO_BASE_URL =
   import.meta.env.PUBLIC_SHOO_BASE_URL || DEFAULT_SHOO_BASE_URL;
@@ -30,6 +37,7 @@ let approvedMemberSheetCache: ApprovedMemberSheetCacheEntry | undefined;
 let approvedMemberSheetFetchPromise:
   | Promise<ApprovedMemberSheetCacheEntry>
   | undefined;
+let approvedMemberSheetLastBackgroundRefreshAt = 0;
 let approvedMemberSheetLastForcedRefreshAt = 0;
 
 type ShooVerifiedToken = JWTPayload & {
@@ -40,14 +48,27 @@ type ShooVerifiedToken = JWTPayload & {
   picture?: string;
 };
 
+type AuthorizedMemberSession = {
+  pairwise_sub: string;
+};
+
+type MemberAuthLogContext = {
+  requestId?: string;
+  route?: string;
+};
+
 type ApprovedMemberSubjectsState = {
   isConfigured: boolean;
   loadError?: string;
   subjects: ReadonlySet<string>;
+  cacheStatus: "fresh" | "stale" | "missing";
+  refreshTriggered: boolean;
 };
 
 type ApprovedMemberSubjectsOptions = {
   forceRefresh?: boolean;
+  waitForRefresh?: boolean;
+  logContext?: MemberAuthLogContext;
 };
 
 export function getShooBaseUrl(): string {
@@ -81,11 +102,27 @@ export async function verifyShooToken(
 
 export async function getAuthorizedMemberSession(
   request: Request,
-): Promise<ShooVerifiedToken | null> {
+): Promise<AuthorizedMemberSession | null> {
+  const logContext = createMemberAuthLogContext(request, "member-session");
   const token = getMemberTokenFromRequest(request);
 
   if (!token) {
+    logMemberAuth("debug", "session.cookie_missing", {}, logContext);
     return null;
+  }
+
+  const verifiedMemberSession = await verifyMemberSessionCookie(token, request);
+
+  if (verifiedMemberSession) {
+    logMemberAuth(
+      "debug",
+      "session.server_cookie_verified",
+      {
+        userId: redactMemberUserId(verifiedMemberSession.pairwise_sub),
+      },
+      logContext,
+    );
+    return verifiedMemberSession;
   }
 
   try {
@@ -96,11 +133,37 @@ export async function getAuthorizedMemberSession(
     const approvedMemberSubjectsState = await getApprovedMemberSubjectsState();
 
     if (!approvedMemberSubjectsState.subjects.has(payload.pairwise_sub)) {
+      logMemberAuth(
+        "warn",
+        "session.legacy_cookie_not_approved",
+        {
+          userId: redactMemberUserId(payload.pairwise_sub),
+          cacheStatus: approvedMemberSubjectsState.cacheStatus,
+          loadError: approvedMemberSubjectsState.loadError,
+        },
+        logContext,
+      );
       return null;
     }
 
+    logMemberAuth(
+      "debug",
+      "session.legacy_cookie_verified",
+      {
+        userId: redactMemberUserId(payload.pairwise_sub),
+      },
+      logContext,
+    );
     return payload;
-  } catch {
+  } catch (error) {
+    logMemberAuth(
+      "warn",
+      "session.cookie_verification_failed",
+      {
+        error: error instanceof Error ? error.message : String(error),
+      },
+      logContext,
+    );
     return null;
   }
 }
@@ -127,20 +190,49 @@ export async function getApprovedMemberSubjectsState(
   const googleSheetCsvUrl = getMemberApprovedGoogleSheetCsvUrl();
   const subjects = new Set(envSubjects);
   let loadError: string | undefined;
+  let cacheStatus: ApprovedMemberSubjectsState["cacheStatus"] = "missing";
+  let refreshTriggered = false;
 
   if (googleSheetCsvUrl) {
     try {
-      for (const subject of await getApprovedMemberSubjectsFromGoogleSheet(
+      const googleSheetState = await getApprovedMemberSubjectsFromGoogleSheet(
         googleSheetCsvUrl,
         options,
-      )) {
+      );
+
+      cacheStatus = googleSheetState.cacheStatus;
+      refreshTriggered = googleSheetState.refreshTriggered;
+
+      for (const subject of googleSheetState.subjects) {
         subjects.add(subject);
       }
+
+      logMemberAuth(
+        "debug",
+        "approval.source_loaded",
+        {
+          cacheStatus,
+          refreshTriggered,
+          subjectCount: googleSheetState.subjects.size,
+          hasEnvSubjects: envSubjects.size > 0,
+        },
+        options.logContext,
+      );
     } catch (error) {
       loadError =
         error instanceof Error
           ? error.message
           : "The approved member Google Sheet could not be loaded.";
+
+      logMemberAuth(
+        "warn",
+        "approval.source_failed",
+        {
+          error: loadError,
+          hasEnvSubjects: envSubjects.size > 0,
+        },
+        options.logContext,
+      );
     }
   }
 
@@ -148,6 +240,8 @@ export async function getApprovedMemberSubjectsState(
     isConfigured: envSubjects.size > 0 || Boolean(googleSheetCsvUrl),
     loadError,
     subjects,
+    cacheStatus,
+    refreshTriggered,
   };
 }
 
@@ -176,57 +270,245 @@ function getMemberApprovedGoogleSheetCsvUrl(): string | undefined {
 async function getApprovedMemberSubjectsFromGoogleSheet(
   googleSheetCsvUrl: string,
   options: ApprovedMemberSubjectsOptions = {},
-): Promise<ReadonlySet<string>> {
+): Promise<{
+  subjects: ReadonlySet<string>;
+  cacheStatus: ApprovedMemberSubjectsState["cacheStatus"];
+  refreshTriggered: boolean;
+}> {
   const now = Date.now();
   const cachedEntry =
     approvedMemberSheetCache?.url === googleSheetCsvUrl
       ? approvedMemberSheetCache
       : undefined;
+  const hasFreshCache = Boolean(cachedEntry && cachedEntry.expiresAt > now);
   const shouldForceRefresh =
     options.forceRefresh &&
     (!cachedEntry ||
       now - approvedMemberSheetLastForcedRefreshAt >=
       APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
+  const shouldRefreshStaleCache =
+    !hasFreshCache &&
+    Boolean(cachedEntry) &&
+    now - approvedMemberSheetLastBackgroundRefreshAt >=
+    APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
 
-  if (!shouldForceRefresh && cachedEntry && cachedEntry.expiresAt > now) {
-    return cachedEntry.subjects;
+  if (hasFreshCache && cachedEntry && !shouldForceRefresh) {
+    logMemberAuth(
+      "debug",
+      "approval.cache_hit",
+      {
+        cacheStatus: "fresh",
+        subjectCount: cachedEntry.subjects.size,
+      },
+      options.logContext,
+    );
+    return {
+      subjects: cachedEntry.subjects,
+      cacheStatus: "fresh",
+      refreshTriggered: false,
+    };
   }
 
-  if (options.forceRefresh && !shouldForceRefresh && cachedEntry) {
-    return cachedEntry.subjects;
+  if (options.waitForRefresh) {
+    logMemberAuth(
+      "info",
+      "approval.waiting_for_refresh",
+      {
+        hasCachedEntry: Boolean(cachedEntry),
+        forceRefresh: shouldForceRefresh,
+      },
+      options.logContext,
+    );
+    const cacheEntry = await refreshApprovedMemberSheetCache(
+      googleSheetCsvUrl,
+      cachedEntry,
+      {
+        forceRefresh: shouldForceRefresh,
+        logContext: options.logContext,
+      },
+    );
+    approvedMemberSheetCache = cacheEntry;
+
+    return {
+      subjects: cacheEntry.subjects,
+      cacheStatus: "fresh",
+      refreshTriggered: false,
+    };
   }
+
+  if (!cachedEntry) {
+    logMemberAuth(
+      "info",
+      "approval.cache_miss",
+      {},
+      options.logContext,
+    );
+    const cacheEntry = await getApprovedMemberSheetCacheEntry(googleSheetCsvUrl);
+    approvedMemberSheetCache = cacheEntry;
+    return {
+      subjects: cacheEntry.subjects,
+      cacheStatus: "fresh",
+      refreshTriggered: false,
+    };
+  }
+
+  const assuredCachedEntry = cachedEntry;
+
+  let refreshTriggered = false;
 
   if (shouldForceRefresh) {
     approvedMemberSheetLastForcedRefreshAt = now;
+    refreshTriggered =
+      startApprovedMemberSheetBackgroundRefresh(
+        googleSheetCsvUrl,
+        cachedEntry,
+        options.logContext,
+      ) || refreshTriggered;
   }
 
-  if (!approvedMemberSheetFetchPromise) {
-    approvedMemberSheetFetchPromise = loadApprovedMemberSubjectsFromGoogleSheetWithRetry(
-      googleSheetCsvUrl,
-      cachedEntry,
-    ).finally(() => {
-      approvedMemberSheetFetchPromise = undefined;
+  if (shouldRefreshStaleCache) {
+    approvedMemberSheetLastBackgroundRefreshAt = now;
+    refreshTriggered =
+      startApprovedMemberSheetBackgroundRefresh(
+        googleSheetCsvUrl,
+        cachedEntry,
+        options.logContext,
+      ) || refreshTriggered;
+  }
+
+  logMemberAuth(
+    "debug",
+    "approval.stale_cache_served",
+    {
+      refreshTriggered,
+      subjectCount: assuredCachedEntry.subjects.size,
+      forceRefreshRequested: options.forceRefresh === true,
+    },
+    options.logContext,
+  );
+
+  return {
+    subjects: assuredCachedEntry.subjects,
+    cacheStatus: hasFreshCache ? "fresh" : "stale",
+    refreshTriggered,
+  };
+}
+
+function startApprovedMemberSheetBackgroundRefresh(
+  googleSheetCsvUrl: string,
+  cachedEntry?: ApprovedMemberSheetCacheEntry,
+  logContext?: MemberAuthLogContext,
+): boolean {
+  if (approvedMemberSheetFetchPromise) {
+    logMemberAuth("debug", "approval.refresh_deduped", {}, logContext);
+    return false;
+  }
+
+  logMemberAuth(
+    "info",
+    "approval.refresh_started",
+    {
+      hasCachedEntry: Boolean(cachedEntry),
+    },
+    logContext,
+  );
+
+  approvedMemberSheetFetchPromise = getApprovedMemberSheetCacheEntry(
+    googleSheetCsvUrl,
+    cachedEntry,
+  ).finally(() => {
+    approvedMemberSheetFetchPromise = undefined;
+  });
+
+  void approvedMemberSheetFetchPromise
+    .then((cacheEntry) => {
+      approvedMemberSheetCache = cacheEntry;
+      logMemberAuth(
+        "info",
+        "approval.refresh_succeeded",
+        {
+          subjectCount: cacheEntry.subjects.size,
+        },
+        logContext,
+      );
+    })
+    .catch((error) => {
+      logMemberAuth(
+        "warn",
+        "approval.refresh_failed",
+        {
+          error: error instanceof Error ? error.message : String(error),
+        },
+        logContext,
+      );
+      // Keep serving the previous cache entry and try again later.
     });
+
+  return true;
+}
+
+async function getApprovedMemberSheetCacheEntry(
+  googleSheetCsvUrl: string,
+  cachedEntry?: ApprovedMemberSheetCacheEntry,
+): Promise<ApprovedMemberSheetCacheEntry> {
+  return loadApprovedMemberSubjectsFromGoogleSheetWithRetry(
+    googleSheetCsvUrl,
+    cachedEntry,
+  );
+}
+
+async function refreshApprovedMemberSheetCache(
+  googleSheetCsvUrl: string,
+  cachedEntry?: ApprovedMemberSheetCacheEntry,
+  options: { forceRefresh?: boolean; logContext?: MemberAuthLogContext } = {},
+): Promise<ApprovedMemberSheetCacheEntry> {
+  const now = Date.now();
+
+  if (approvedMemberSheetFetchPromise) {
+    logMemberAuth("debug", "approval.refresh_joined", {}, options.logContext);
+    const cacheEntry = await approvedMemberSheetFetchPromise;
+    approvedMemberSheetCache = cacheEntry;
+    return cacheEntry;
   }
 
-  let cacheEntry: ApprovedMemberSheetCacheEntry;
+  if (options.forceRefresh) {
+    approvedMemberSheetLastForcedRefreshAt = now;
+  } else {
+    approvedMemberSheetLastBackgroundRefreshAt = now;
+  }
+
+  approvedMemberSheetFetchPromise = getApprovedMemberSheetCacheEntry(
+    googleSheetCsvUrl,
+    cachedEntry,
+  ).finally(() => {
+    approvedMemberSheetFetchPromise = undefined;
+  });
 
   try {
-    cacheEntry = await approvedMemberSheetFetchPromise;
+    const cacheEntry = await approvedMemberSheetFetchPromise;
+    approvedMemberSheetCache = cacheEntry;
+    logMemberAuth(
+      "info",
+      "approval.refresh_completed",
+      {
+        subjectCount: cacheEntry.subjects.size,
+        forceRefresh: options.forceRefresh === true,
+      },
+      options.logContext,
+    );
+    return cacheEntry;
   } catch (error) {
-    if (cachedEntry) {
-      approvedMemberSheetCache = {
-        ...cachedEntry,
-        expiresAt: now + APPROVED_MEMBER_SHEET_CACHE_MAX_AGE_MS,
-      };
-      return cachedEntry.subjects;
-    }
-
+    logMemberAuth(
+      "warn",
+      "approval.refresh_wait_failed",
+      {
+        error: error instanceof Error ? error.message : String(error),
+        forceRefresh: options.forceRefresh === true,
+      },
+      options.logContext,
+    );
     throw error;
   }
-
-  approvedMemberSheetCache = cacheEntry;
-  return cacheEntry.subjects;
 }
 
 async function loadApprovedMemberSubjectsFromGoogleSheet(
@@ -301,6 +583,11 @@ async function loadApprovedMemberSubjectsFromGoogleSheetWithRetry(
       );
     } catch (error) {
       lastError = error;
+
+      logMemberAuth("warn", "approval.fetch_attempt_failed", {
+        attempt: attempt + 1,
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       if (attempt === APPROVED_MEMBER_SHEET_FETCH_RETRY_COUNT) {
         break;
@@ -440,7 +727,7 @@ export function getShooAudienceOriginsForRequest(request: Request): string[] {
 }
 
 function getVercelDeploymentOrigin(): string | undefined {
-  const vercelUrl = process.env.VERCEL_URL?.trim();
+  const vercelUrl = process?.env?.VERCEL_URL?.trim();
 
   if (!vercelUrl) {
     return undefined;
@@ -453,9 +740,18 @@ export async function checkMemberAuth(request: Request): Promise<boolean> {
   return (await getAuthorizedMemberSession(request)) !== null;
 }
 
-export function setMemberAuthCookie(token: string, request: Request): string {
+export async function setMemberAuthCookie(
+  session: {
+    pairwiseSub: string;
+    legacyIdToken: string;
+  },
+  request: Request,
+): Promise<string> {
+  const cookieValue =
+    (await createMemberSessionCookieValue(session.pairwiseSub, request)) ||
+    session.legacyIdToken;
   const attributes = [
-    `${MEMBER_SESSION_COOKIE}=${encodeURIComponent(token)}`,
+    `${MEMBER_SESSION_COOKIE}=${encodeURIComponent(cookieValue)}`,
     "Path=/",
     `Max-Age=${MEMBER_SESSION_MAX_AGE_SECONDS}`,
     "HttpOnly",
@@ -498,6 +794,124 @@ function getMemberTokenFromRequest(request: Request): string | null {
   } catch {
     return null;
   }
+}
+
+async function createMemberSessionCookieValue(
+  pairwiseSub: string,
+  request: Request,
+): Promise<string | null> {
+  const secret = getMemberSessionSecret();
+
+  if (!secret) {
+    return null;
+  }
+
+  return new SignJWT({
+    approved: true,
+    pairwise_sub: pairwiseSub,
+  })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setIssuer(getMemberSessionIssuer(request))
+    .setSubject(pairwiseSub)
+    .setIssuedAt()
+    .setExpirationTime(`${MEMBER_SESSION_MAX_AGE_SECONDS}s`)
+    .sign(secret);
+}
+
+async function verifyMemberSessionCookie(
+  token: string,
+  request: Request,
+): Promise<AuthorizedMemberSession | null> {
+  const secret = getMemberSessionSecret();
+
+  if (!secret) {
+    return null;
+  }
+
+  try {
+    const { payload } = await jwtVerify(token, secret, {
+      issuer: getMemberSessionIssuer(request),
+    });
+
+    if (payload.approved !== true || typeof payload.pairwise_sub !== "string") {
+      return null;
+    }
+
+    return {
+      pairwise_sub: payload.pairwise_sub,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function getMemberSessionSecret(): Uint8Array | null {
+  const secret =
+    (typeof process !== "undefined" && process.env?.MEMBER_SESSION_SECRET) ||
+    import.meta.env.MEMBER_SESSION_SECRET;
+
+  if (!secret) {
+    return null;
+  }
+
+  return new TextEncoder().encode(secret);
+}
+
+export function createMemberAuthLogContext(
+  request: Request,
+  route?: string,
+): MemberAuthLogContext {
+  return {
+    requestId:
+      request.headers.get("x-vercel-id") ||
+      request.headers.get("x-request-id") ||
+      crypto.randomUUID(),
+    route,
+  };
+}
+
+export function logMemberAuth(
+  level: "debug" | "info" | "warn" | "error",
+  event: string,
+  details: Record<string, unknown> = {},
+  context?: MemberAuthLogContext,
+): void {
+  if (!shouldLogMemberAuth(level)) {
+    return;
+  }
+
+  const logger = console[level] ?? console.log;
+  logger("[member-auth]", {
+    level,
+    event,
+    ...context,
+    ...details,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+function shouldLogMemberAuth(level: "debug" | "info" | "warn" | "error"): boolean {
+  if (level === "warn" || level === "error") {
+    return true;
+  }
+
+  const debugFlag =
+    (typeof process !== "undefined" && process.env?.MEMBER_AUTH_DEBUG) ||
+    import.meta.env.MEMBER_AUTH_DEBUG;
+
+  return debugFlag === "true";
+}
+
+function redactMemberUserId(userId: string): string {
+  if (userId.length <= 8) {
+    return "***";
+  }
+
+  return `${userId.slice(0, 4)}...${userId.slice(-4)}`;
+}
+
+function getMemberSessionIssuer(request: Request): string {
+  return `${MEMBER_SESSION_ISSUER}:${new URL(request.url).origin}`;
 }
 
 function parseCookies(cookieString: string): Record<string, string> {

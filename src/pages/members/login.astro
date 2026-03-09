@@ -4,6 +4,7 @@ import MemberLogin from "../../components/member-auth/MemberLogin";
 import {
   MEMBER_AUTH_CALLBACK_PATH,
   MEMBER_HOME_PATH,
+  MEMBER_LOGIN_PATH,
   checkMemberAuth,
   getShooBaseUrl,
   hasMemberApprovalSourceConfigured,
@@ -34,6 +35,7 @@ const authConfigured = hasMemberApprovalSourceConfigured();
       client:load
       shooBaseUrl={getShooBaseUrl()}
       callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+      loginPath={MEMBER_LOGIN_PATH}
       membersPath={MEMBER_HOME_PATH}
       sessionEndpoint="/api/member-auth/session"
       showConfigurationNotice={!authConfigured}
