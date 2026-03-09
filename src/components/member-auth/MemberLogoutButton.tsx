@@ -28,26 +28,15 @@ export default function MemberLogoutButton({
     }
 
     setIsLoggingOut(true);
-
-    try {
-      await fetch(logoutEndpoint, {
-        method: "POST",
-        cache: "no-store",
-        credentials: "same-origin",
-      });
-    } finally {
-      auth.clearIdentity();
-      window.location.replace(loginPath);
-    }
+    auth.clearIdentity();
   };
 
   return (
-    <button
-      type="button"
-      className="member-logout"
-      onClick={() => void handleLogout()}
-    >
-      {isLoggingOut ? "Signing out..." : "Sign Out"}
-    </button>
+    <form action={logoutEndpoint} method="POST" onSubmit={() => void handleLogout()}>
+      <input type="hidden" name="returnTo" value={loginPath} />
+      <button type="submit" className="member-logout" disabled={isLoggingOut}>
+        {isLoggingOut ? "Signing out..." : "Sign Out"}
+      </button>
+    </form>
   );
 }
