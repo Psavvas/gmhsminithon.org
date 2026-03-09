@@ -6,15 +6,12 @@ import {
   MEMBER_HOME_PATH,
   checkMemberAuth,
   getShooBaseUrl,
-  hasApprovedMemberSubjects,
 } from "../../utils/auth";
 
 // Check if already logged in
 if (await checkMemberAuth(Astro.request)) {
   return Astro.redirect("/members");
 }
-
-const authConfigured = hasApprovedMemberSubjects();
 ---
 
 <PublicLayout title="Member Login - Mini-THON">
@@ -23,27 +20,17 @@ const authConfigured = hasApprovedMemberSubjects();
     <p class="subtitle">For GMHS Mini-THON members only</p>
     <p class="info-note">
       Sign in with Shoo, then we will confirm that your Shoo approval ID is on
-      the private approved-user list before granting access.
+      the private approved-user list before granting access. If this deployment
+      is not configured yet, you will see that after sign-in.
     </p>
 
-    {
-      authConfigured ? (
-        <MemberLogin
-          client:load
-          shooBaseUrl={getShooBaseUrl()}
-          callbackPath={MEMBER_AUTH_CALLBACK_PATH}
-          membersPath={MEMBER_HOME_PATH}
-          sessionEndpoint="/api/member-auth/session"
-        />
-      ) : (
-        <div class="error-message">
-          Member login is not configured for this deployment yet. In Vercel
-          project settings, add the
-          <code>MEMBER_APPROVED_SHOO_SUBS</code> environment variable for the
-          active environment, then redeploy.
-        </div>
-      )
-    }
+    <MemberLogin
+      client:load
+      shooBaseUrl={getShooBaseUrl()}
+      callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+      membersPath={MEMBER_HOME_PATH}
+      sessionEndpoint="/api/member-auth/session"
+    />
   </div>
 </PublicLayout>
 
