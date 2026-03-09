@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro";
 import {
   clearMemberAuthCookie,
-  isApprovedMemberEmail,
+  hasApprovedMemberSubjects,
+  isApprovedMemberSubject,
   setMemberAuthCookie,
   verifyShooToken,
 } from "../../../utils/auth";
@@ -35,21 +36,24 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const payload = await verifyShooToken(idToken, request.url);
 
-    if (payload.email_verified === false) {
+    if (!hasApprovedMemberSubjects()) {
       return jsonResponse(
         {
-          error: "Your Shoo account email must be verified before continuing.",
+          error:
+            "Member access is not configured yet. Ask an admin to add approved Shoo IDs on the server.",
+          approvalId: payload.pairwise_sub,
         },
-        403,
+        503,
         request,
       );
     }
 
-    if (!isApprovedMemberEmail(payload.email)) {
+    if (!isApprovedMemberSubject(payload.pairwise_sub)) {
       return jsonResponse(
         {
           error:
-            "Your verified account is not on the approved member list yet.",
+            "Your Shoo account is authenticated, but it has not been approved for the members portal yet.",
+          approvalId: payload.pairwise_sub,
         },
         403,
         request,
@@ -59,8 +63,6 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(
       JSON.stringify({
         userId: payload.pairwise_sub,
-        email: payload.email ?? null,
-        name: typeof payload.name === "string" ? payload.name : null,
       }),
       {
         status: 200,

@@ -231,6 +231,23 @@ bun run build     # Build for production
 bun run preview   # Preview the production build locally
 ```
 
+### Members Portal Configuration
+
+- `PUBLIC_SHOO_BASE_URL` (optional): overrides the Shoo base URL. Defaults to
+  `https://shoo.dev`.
+- `MEMBER_APPROVED_SHOO_SUBS` (required for member access): a comma-separated
+  or newline-separated list of approved Shoo `pairwise_sub` values.
+
+Example:
+
+```sh
+MEMBER_APPROVED_SHOO_SUBS="sub_123,sub_456"
+```
+
+If a user can authenticate with Shoo but is not approved yet, the members login
+flow will show that user's Shoo approval ID so an admin can add it privately to
+`MEMBER_APPROVED_SHOO_SUBS` without committing personal data to the repository.
+
 ### Deployment
 
 The site is automatically deployed to [Vercel](https://vercel.com/) when changes are pushed to the main branch. No manual deployment steps are needed.
@@ -239,8 +256,10 @@ The site is automatically deployed to [Vercel](https://vercel.com/) when changes
 
 - All site content is managed via JSON files and MDX pages — no database is required.
 - Static assets (images, logos) can be placed in the `src/assets/` directory or uploaded externally.
-- The member portal (`/members/`) uses Shoo authentication plus a manually
-  maintained approved-user list in `src/data/memberApprovedUsers.ts`.
+- The member portal (`/members/`) uses Shoo authentication plus a private
+  server-side allowlist stored in the `MEMBER_APPROVED_SHOO_SUBS` environment
+  variable. Use Shoo `pairwise_sub` values rather than committed email
+  addresses.
 - For questions or help, contact the current club officers (see `src/data/clubInfo.json`).
 
 ---

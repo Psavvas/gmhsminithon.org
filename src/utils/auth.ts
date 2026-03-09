@@ -1,5 +1,4 @@
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
-import { approvedMemberEmails } from "../data/memberApprovedUsers";
 
 const DEFAULT_SHOO_BASE_URL = "https://shoo.dev";
 const MEMBER_SESSION_COOKIE = "member_session";
@@ -22,22 +21,20 @@ type ShooVerifiedToken = JWTPayload & {
   picture?: string;
 };
 
-const approvedMemberEmailSet = new Set(
-  approvedMemberEmails
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean),
-);
-
 export function getShooBaseUrl(): string {
   return SHOO_BASE_URL;
 }
 
-export function isApprovedMemberEmail(email?: string | null): boolean {
-  if (!email) {
+export function hasApprovedMemberSubjects(): boolean {
+  return getApprovedMemberSubjects().size > 0;
+}
+
+export function isApprovedMemberSubject(pairwiseSub?: string | null): boolean {
+  if (!pairwiseSub) {
     return false;
   }
 
-  return approvedMemberEmailSet.has(email.trim().toLowerCase());
+  return getApprovedMemberSubjects().has(pairwiseSub.trim());
 }
 
 export async function verifyShooToken(
@@ -69,11 +66,7 @@ export async function getAuthorizedMemberSession(
   try {
     const payload = await verifyShooToken(token, request.url);
 
-    if (payload.email_verified === false) {
-      return null;
-    }
-
-    if (!isApprovedMemberEmail(payload.email)) {
+    if (!isApprovedMemberSubject(payload.pairwise_sub)) {
       return null;
     }
 
@@ -81,6 +74,25 @@ export async function getAuthorizedMemberSession(
   } catch {
     return null;
   }
+}
+
+function parseApprovedMemberSubjects(
+  rawSubjects?: string,
+): ReadonlySet<string> {
+  if (!rawSubjects) {
+    return new Set();
+  }
+
+  return new Set(
+    rawSubjects
+      .split(/[,\n\r]+/)
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
+}
+
+function getApprovedMemberSubjects(): ReadonlySet<string> {
+  return parseApprovedMemberSubjects(import.meta.env.MEMBER_APPROVED_SHOO_SUBS);
 }
 
 export async function checkMemberAuth(request: Request): Promise<boolean> {

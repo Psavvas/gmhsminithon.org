@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useShooAuth } from "@shoojs/react";
+import { formatSessionError } from "./sessionErrors";
 
 type MemberAuthCallbackProps = {
   shooBaseUrl: string;
@@ -19,7 +20,6 @@ export default function MemberAuthCallback({
   const { clearIdentity, handleCallback } = useShooAuth({
     shooBaseUrl,
     callbackPath,
-    requestPii: true,
     autoHandleCallback: false,
     autoSessionMonitor: false,
   });
@@ -58,9 +58,7 @@ export default function MemberAuthCallback({
         const payload = await response.json().catch(() => null);
 
         if (!response.ok) {
-          throw new Error(
-            payload?.error || "We could not verify your member access.",
-          );
+          throw new Error(formatSessionError(payload));
         }
 
         window.location.assign(membersPath);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useShooAuth } from "@shoojs/react";
+import { formatSessionError } from "./sessionErrors";
 
 type MemberLoginProps = {
   shooBaseUrl: string;
@@ -17,7 +18,6 @@ export default function MemberLogin({
   const { clearIdentity, error, identity, loading, signIn } = useShooAuth({
     shooBaseUrl,
     callbackPath,
-    requestPii: true,
     autoSessionMonitor: true,
   });
   const syncedTokenRef = useRef<string | null>(null);
@@ -51,9 +51,7 @@ export default function MemberLogin({
         const payload = await response.json().catch(() => null);
 
         if (!response.ok) {
-          throw new Error(
-            payload?.error || "We could not verify your member access.",
-          );
+          throw new Error(formatSessionError(payload));
         }
 
         window.location.assign(membersPath);
@@ -92,7 +90,6 @@ export default function MemberLogin({
         className="submit-button"
         onClick={() =>
           void signIn({
-            requestPii: true,
             returnTo: membersPath,
           })
         }
@@ -103,8 +100,8 @@ export default function MemberLogin({
 
       <p className="login-helper">
         Shoo handles sign-in and session management. This site only grants
-        member access after your verified Shoo email matches the approved-user
-        list.
+        member access after your Shoo approval ID matches a private server-side
+        allowlist.
       </p>
     </div>
   );
