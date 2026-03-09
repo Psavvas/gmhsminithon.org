@@ -170,34 +170,24 @@ import clubInfo from "../data/clubInfo.json";
 
     <div class="newsletter-section">
       <div class="newsletter-inner">
-        <div class="newsletter-content" inert>
+        <div class="newsletter-content">
           <h3>Newsletter</h3>
           <p>Subscribe to get event updates delivered to your inbox.</p>
-          <form class="popup-newsletter-form">
+          <form class="popup-newsletter-form" id="popup-newsletter-form" novalidate>
             <div class="popup-newsletter-row">
-              <input type="email" placeholder="Your email address" disabled />
-              <button type="submit" disabled>Subscribe</button>
+              <label for="popup-newsletter-email" class="sr-only">Email address</label>
+              <input
+                id="popup-newsletter-email"
+                name="email"
+                type="email"
+                placeholder="Your email address"
+                required
+                autocomplete="email"
+              />
+              <button type="submit">Subscribe</button>
             </div>
+            <p class="popup-newsletter-status" id="popup-newsletter-status" aria-live="polite"></p>
           </form>
-        </div>
-        <div class="newsletter-coming-soon" aria-hidden="true">
-          <span class="coming-soon-badge">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            Newsletter coming soon
-          </span>
         </div>
       </div>
     </div>
@@ -259,6 +249,55 @@ import clubInfo from "../data/clubInfo.json";
       closePopup();
     }
   });
+
+  const popupNewsletterForm = document.getElementById(
+    "popup-newsletter-form",
+  ) as HTMLFormElement | null;
+  const popupNewsletterStatus = document.getElementById(
+    "popup-newsletter-status",
+  );
+
+  if (popupNewsletterForm && popupNewsletterStatus) {
+    popupNewsletterForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const button = popupNewsletterForm.querySelector(
+        'button[type="submit"]',
+      ) as HTMLButtonElement | null;
+      if (button) button.disabled = true;
+      popupNewsletterStatus.textContent = "";
+      popupNewsletterStatus.className = "popup-newsletter-status";
+
+      try {
+        const formData = new FormData(popupNewsletterForm);
+        const res = await fetch("/api/newsletter", {
+          method: "POST",
+          body: formData,
+        });
+        const json = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+        };
+
+        if (json.success) {
+          popupNewsletterStatus.textContent = "Subscribed successfully.";
+          popupNewsletterStatus.classList.add(
+            "popup-newsletter-status--success",
+          );
+          popupNewsletterForm.reset();
+        } else {
+          popupNewsletterStatus.textContent =
+            json.error ?? "Something went wrong. Please try again.";
+          popupNewsletterStatus.classList.add("popup-newsletter-status--error");
+        }
+      } catch {
+        popupNewsletterStatus.textContent =
+          "Unable to subscribe right now. Please try again later.";
+        popupNewsletterStatus.classList.add("popup-newsletter-status--error");
+      } finally {
+        if (button) button.disabled = false;
+      }
+    });
+  }
 </script>
 
 <style>
@@ -522,34 +561,19 @@ import clubInfo from "../data/clubInfo.json";
     flex-shrink: 0;
   }
 
-  .newsletter-coming-soon {
-    position: absolute;
-    inset: 0;
-    background: rgba(244, 247, 251, 0.88);
-    backdrop-filter: blur(3px);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .popup-newsletter-status {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    min-height: 1.2em;
+    color: #6a7a8a;
   }
 
-  .coming-soon-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(44, 70, 114, 0.1);
-    border: 1.5px solid rgba(44, 70, 114, 0.2);
-    color: #2c4672;
-    font-weight: 600;
-    font-size: 0.88rem;
-    padding: 0.5rem 1rem;
-    border-radius: 999px;
+  .popup-newsletter-status--success {
+    color: #166534;
   }
 
-  .coming-soon-badge svg {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
+  .popup-newsletter-status--error {
+    color: #b91c1c;
   }
 
   @media (max-width: 480px) {
