@@ -14,7 +14,7 @@ export default function MemberLogin({
   membersPath,
   sessionEndpoint,
 }: MemberLoginProps) {
-  const auth = useShooAuth({
+  const { clearIdentity, error, identity, loading, signIn } = useShooAuth({
     shooBaseUrl,
     callbackPath,
     requestPii: true,
@@ -25,15 +25,15 @@ export default function MemberLogin({
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
-    if (auth.loading || !auth.identity.token) {
+    if (loading || !identity.token) {
       return;
     }
 
-    if (syncedTokenRef.current === auth.identity.token) {
+    if (syncedTokenRef.current === identity.token) {
       return;
     }
 
-    syncedTokenRef.current = auth.identity.token;
+    syncedTokenRef.current = identity.token;
     setErrorMessage(null);
     setIsSyncing(true);
 
@@ -45,7 +45,7 @@ export default function MemberLogin({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            idToken: auth.identity.token,
+            idToken: identity.token,
           }),
         });
         const payload = await response.json().catch(() => null);
@@ -58,7 +58,7 @@ export default function MemberLogin({
 
         window.location.assign(membersPath);
       } catch (error) {
-        auth.clearIdentity();
+        clearIdentity();
         syncedTokenRef.current = null;
         setErrorMessage(
           error instanceof Error
@@ -69,23 +69,17 @@ export default function MemberLogin({
         setIsSyncing(false);
       }
     })();
-  }, [
-    auth.clearIdentity,
-    auth.identity.token,
-    auth.loading,
-    membersPath,
-    sessionEndpoint,
-  ]);
+  }, [clearIdentity, identity.token, loading, membersPath, sessionEndpoint]);
 
   useEffect(() => {
-    if (auth.error) {
-      setErrorMessage(auth.error);
+    if (error) {
+      setErrorMessage(error);
     }
-  }, [auth.error]);
+  }, [error]);
 
   const buttonLabel = isSyncing
     ? "Checking member access..."
-    : auth.loading
+    : loading
       ? "Loading Shoo..."
       : "Continue with Shoo";
 
@@ -97,12 +91,12 @@ export default function MemberLogin({
         type="button"
         className="submit-button"
         onClick={() =>
-          void auth.signIn({
+          void signIn({
             requestPii: true,
             returnTo: membersPath,
           })
         }
-        disabled={auth.loading || isSyncing}
+        disabled={loading || isSyncing}
       >
         {buttonLabel}
       </button>

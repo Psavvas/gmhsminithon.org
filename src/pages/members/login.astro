@@ -2,10 +2,10 @@
 import PublicLayout from "../../layouts/PublicLayout.astro";
 import MemberLogin from "../../components/member-auth/MemberLogin";
 import {
+  MEMBER_AUTH_CALLBACK_PATH,
+  MEMBER_HOME_PATH,
   checkMemberAuth,
-  getMemberHomePath,
   getShooBaseUrl,
-  getShooCallbackPath,
 } from "../../utils/auth";
 
 // Check if already logged in
@@ -26,8 +26,8 @@ if (await checkMemberAuth(Astro.request)) {
     <MemberLogin
       client:load
       shooBaseUrl={getShooBaseUrl()}
-      callbackPath={getShooCallbackPath()}
-      membersPath={getMemberHomePath()}
+      callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+      membersPath={MEMBER_HOME_PATH}
       sessionEndpoint="/api/member-auth/session"
     />
   </div>

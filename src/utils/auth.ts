@@ -3,9 +3,9 @@ import { approvedMemberEmails } from "../data/memberApprovedUsers";
 
 const DEFAULT_SHOO_BASE_URL = "https://shoo.dev";
 const MEMBER_SESSION_COOKIE = "member_session";
-const MEMBER_LOGIN_PATH = "/members/login";
-const MEMBER_HOME_PATH = "/members";
-const MEMBER_AUTH_CALLBACK_PATH = "/members/auth/callback";
+export const MEMBER_LOGIN_PATH = "/members/login";
+export const MEMBER_HOME_PATH = "/members";
+export const MEMBER_AUTH_CALLBACK_PATH = "/members/auth/callback";
 const MEMBER_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24;
 const SHOO_BASE_URL =
   import.meta.env.PUBLIC_SHOO_BASE_URL || DEFAULT_SHOO_BASE_URL;
@@ -30,18 +30,6 @@ const approvedMemberEmailSet = new Set(
 
 export function getShooBaseUrl(): string {
   return SHOO_BASE_URL;
-}
-
-export function getMemberLoginPath(): string {
-  return MEMBER_LOGIN_PATH;
-}
-
-export function getMemberHomePath(): string {
-  return MEMBER_HOME_PATH;
-}
-
-export function getShooCallbackPath(): string {
-  return MEMBER_AUTH_CALLBACK_PATH;
 }
 
 export function isApprovedMemberEmail(email?: string | null): boolean {
@@ -155,7 +143,7 @@ function parseCookies(cookieString: string): Record<string, string> {
       (acc, cookie) => {
         const separatorIndex = cookie.indexOf("=");
 
-        if (separatorIndex <= 0) {
+        if (separatorIndex < 1) {
           return acc;
         }
 

@@ -4,9 +4,9 @@ import SpeedInsights from "@vercel/speed-insights/astro";
 import NavBehavior from "../components/NavBehavior.astro";
 import MemberLogoutButton from "../components/member-auth/MemberLogoutButton";
 import {
-  getMemberLoginPath,
+  MEMBER_AUTH_CALLBACK_PATH,
+  MEMBER_LOGIN_PATH,
   getShooBaseUrl,
-  getShooCallbackPath,
 } from "../utils/auth";
 
 export interface Props {
@@ -102,9 +102,9 @@ const currentPath = Astro.url.pathname;
             <MemberLogoutButton
               client:load
               shooBaseUrl={getShooBaseUrl()}
-              callbackPath={getShooCallbackPath()}
+              callbackPath={MEMBER_AUTH_CALLBACK_PATH}
               logoutEndpoint="/api/member-auth/logout"
-              loginPath={getMemberLoginPath()}
+              loginPath={MEMBER_LOGIN_PATH}
             />
           </li>
           <li><a href="/" class="return-main">Return to Main Site</a></li>

@@ -16,7 +16,7 @@ export default function MemberAuthCallback({
   loginPath,
   sessionEndpoint,
 }: MemberAuthCallbackProps) {
-  const auth = useShooAuth({
+  const { clearIdentity, handleCallback } = useShooAuth({
     shooBaseUrl,
     callbackPath,
     requestPii: true,
@@ -33,7 +33,7 @@ export default function MemberAuthCallback({
 
     void (async () => {
       try {
-        const tokenResponse = await auth.handleCallback();
+        const tokenResponse = await handleCallback();
         const idToken = tokenResponse?.id_token || null;
 
         if (!idToken) {
@@ -65,7 +65,7 @@ export default function MemberAuthCallback({
 
         window.location.assign(membersPath);
       } catch (error) {
-        auth.clearIdentity();
+        clearIdentity();
 
         if (!cancelled) {
           setStatusMessage("Sign-in could not be completed.");
@@ -81,7 +81,7 @@ export default function MemberAuthCallback({
     return () => {
       cancelled = true;
     };
-  }, [auth.clearIdentity, auth.handleCallback, membersPath, sessionEndpoint]);
+  }, [clearIdentity, handleCallback, membersPath, sessionEndpoint]);
 
   return (
     <div className="callback-status">

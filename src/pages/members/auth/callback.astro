@@ -2,10 +2,10 @@
 import PublicLayout from "../../../layouts/PublicLayout.astro";
 import MemberAuthCallback from "../../../components/member-auth/MemberAuthCallback";
 import {
-  getMemberHomePath,
-  getMemberLoginPath,
+  MEMBER_AUTH_CALLBACK_PATH,
+  MEMBER_HOME_PATH,
+  MEMBER_LOGIN_PATH,
   getShooBaseUrl,
-  getShooCallbackPath,
 } from "../../../utils/auth";
 ---
 
@@ -15,9 +15,9 @@ import {
     <MemberAuthCallback
       client:load
       shooBaseUrl={getShooBaseUrl()}
-      callbackPath={getShooCallbackPath()}
-      membersPath={getMemberHomePath()}
-      loginPath={getMemberLoginPath()}
+      callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+      membersPath={MEMBER_HOME_PATH}
+      loginPath={MEMBER_LOGIN_PATH}
       sessionEndpoint="/api/member-auth/session"
     />
   </div>
