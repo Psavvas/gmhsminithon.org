@@ -273,10 +273,24 @@ import clubInfo from "../data/clubInfo.json";
           method: "POST",
           body: formData,
         });
-        const json = (await res.json()) as {
+        const raw = await res.text();
+        let json: {
           success?: boolean;
           error?: string;
-        };
+        } = {};
+
+        try {
+          json = (raw ? JSON.parse(raw) : {}) as {
+            success?: boolean;
+            error?: string;
+          };
+        } catch {
+          json = {
+            error:
+              raw.trim() ||
+              `Subscription failed (${res.status}). Please try again later.`,
+          };
+        }
 
         if (json.success) {
           popupNewsletterStatus.textContent = "Subscribed successfully.";
@@ -286,7 +300,8 @@ import clubInfo from "../data/clubInfo.json";
           popupNewsletterForm.reset();
         } else {
           popupNewsletterStatus.textContent =
-            json.error ?? "Something went wrong. Please try again.";
+            json.error ??
+            `Subscription failed (${res.status}). Please try again.`;
           popupNewsletterStatus.classList.add("popup-newsletter-status--error");
         }
       } catch {

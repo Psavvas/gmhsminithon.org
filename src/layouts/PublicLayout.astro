@@ -338,10 +338,24 @@ const currentPath = Astro.url.pathname;
               method: "POST",
               body: formData,
             });
-            const json = (await res.json()) as {
+            const raw = await res.text();
+            let json: {
               success?: boolean;
               error?: string;
-            };
+            } = {};
+
+            try {
+              json = (raw ? JSON.parse(raw) : {}) as {
+                success?: boolean;
+                error?: string;
+              };
+            } catch {
+              json = {
+                error:
+                  raw.trim() ||
+                  `Subscription failed (${res.status}). Please try again later.`,
+              };
+            }
 
             if (json.success) {
               statusEl.textContent = "✓ You're subscribed! Thank you.";
@@ -349,7 +363,8 @@ const currentPath = Astro.url.pathname;
               form.reset();
             } else {
               statusEl.textContent =
-                json.error ?? "Something went wrong. Please try again.";
+                json.error ??
+                `Subscription failed (${res.status}). Please try again.`;
               statusEl.classList.add("newsletter-status--error");
             }
           } catch {
