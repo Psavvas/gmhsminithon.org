@@ -12,8 +12,8 @@
     "build": "astro build",
     "format": "prettier . --write",
     "astro": "astro",
-    "upload": "node scripts/upload-to-uploadthing.js",
-    "upload:clean": "node scripts/upload-to-uploadthing.js --delete-old --update-refs"
+    "upload": "bun scripts/upload-to-uploadthing.js",
+    "upload:clean": "bun scripts/upload-to-uploadthing.js --delete-old --update-refs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",

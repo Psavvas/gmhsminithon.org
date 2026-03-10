@@ -197,6 +197,12 @@
       line-height: 1.35;
     }
 
+    /* Pill-style nav links should only be as wide as their text */
+    :global(.nav-links a.member-login),
+    :global(.nav-links a.return-main) {
+      width: auto;
+    }
+
     :global(.member-logout) {
       width: 100%;
       justify-content: center;
