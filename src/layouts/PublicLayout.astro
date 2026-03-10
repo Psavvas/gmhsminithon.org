@@ -12,7 +12,7 @@ export interface Props {
 const defaultDescription =
   "Great Mills High School Mini-THON is a student-led effort raising funds and awareness for Four Diamonds to fight pediatric cancer through school events, community partnerships, and year-round fundraising.";
 const diamondFaviconHref =
-  "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZZoJE4qULqN4ePIY1XT27BczblO8y6VKuQtEf";
+  "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao";
 
 const { title, description = defaultDescription } = Astro.props;
 const currentPath = Astro.url.pathname;
@@ -268,50 +268,28 @@ const currentPath = Astro.url.pathname;
             <p class="footer-newsletter-desc">
               Subscribe to our newsletter and never miss an event or update.
             </p>
-            <div class="newsletter-coming-soon-wrap">
-              <form class="newsletter-form" id="newsletter-form" novalidate>
-                <div class="newsletter-input-row">
-                  <label for="newsletter-email" class="sr-only"
-                    >Email address</label
-                  >
-                  <input
-                    type="email"
-                    id="newsletter-email"
-                    name="email"
-                    placeholder="Your email address"
-                    required
-                    autocomplete="email"
-                    disabled
-                  />
-                  <button type="submit" disabled>Subscribe</button>
-                </div>
-                <p
-                  class="newsletter-status"
-                  id="newsletter-status"
-                  aria-live="polite"
+            <form class="newsletter-form" id="newsletter-form" novalidate>
+              <div class="newsletter-input-row">
+                <label for="newsletter-email" class="sr-only"
+                  >Email address</label
                 >
-                </p>
-              </form>
-              <div class="newsletter-coming-soon-overlay" aria-hidden="true">
-                <span class="newsletter-coming-soon-badge">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
-                  Newsletter coming soon
-                </span>
+                <input
+                  type="email"
+                  id="newsletter-email"
+                  name="email"
+                  placeholder="Your email address"
+                  required
+                  autocomplete="email"
+                />
+                <button type="submit">Subscribe</button>
               </div>
-            </div>
+              <p
+                class="newsletter-status"
+                id="newsletter-status"
+                aria-live="polite"
+              >
+              </p>
+            </form>
             <h3 class="footer-heading">Contact Us</h3>
             <p class="footer-newsletter-desc">
               Send us an email at: <a
@@ -356,15 +334,35 @@ const currentPath = Astro.url.pathname;
           statusEl.className = "newsletter-status";
 
           try {
-            const formData = new FormData(form);
+            const emailInput = form.querySelector(
+              'input[name="email"]',
+            ) as HTMLInputElement | null;
+            const email = emailInput?.value?.trim() ?? "";
             const res = await fetch("/api/newsletter", {
               method: "POST",
-              body: formData,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email }),
             });
-            const json = (await res.json()) as {
+            const raw = await res.text();
+            let json: {
               success?: boolean;
               error?: string;
-            };
+            } = {};
+
+            try {
+              json = (raw ? JSON.parse(raw) : {}) as {
+                success?: boolean;
+                error?: string;
+              };
+            } catch {
+              json = {
+                error:
+                  raw.trim() ||
+                  `Subscription failed (${res.status}). Please try again later.`,
+              };
+            }
 
             if (json.success) {
               statusEl.textContent = "✓ You're subscribed! Thank you.";
@@ -372,7 +370,8 @@ const currentPath = Astro.url.pathname;
               form.reset();
             } else {
               statusEl.textContent =
-                json.error ?? "Something went wrong. Please try again.";
+                json.error ??
+                `Subscription failed (${res.status}). Please try again.`;
               statusEl.classList.add("newsletter-status--error");
             }
           } catch {
@@ -860,42 +859,6 @@ const currentPath = Astro.url.pathname;
 
   .newsletter-status--error {
     color: #fca5a5;
-  }
-
-  /* Newsletter coming soon overlay */
-  .newsletter-coming-soon-wrap {
-    position: relative;
-    margin-bottom: 1.25rem;
-  }
-
-  .newsletter-coming-soon-overlay {
-    position: absolute;
-    inset: -0.5rem;
-    background: rgba(44, 70, 114, 0.55);
-    backdrop-filter: blur(3px);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .newsletter-coming-soon-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1.5px solid rgba(255, 255, 255, 0.35);
-    color: var(--white);
-    font-weight: 600;
-    font-size: 0.88rem;
-    padding: 0.5rem 1rem;
-    border-radius: 999px;
-  }
-
-  .newsletter-coming-soon-badge svg {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
   }
 
   /* Screen-reader only helper */
