@@ -3,8 +3,8 @@
 
 declare const process:
   | {
-      env?: Record<string, string | undefined>;
-    }
+    env?: Record<string, string | undefined>;
+  }
   | undefined;
 
 interface ImportMetaEnv {
@@ -14,6 +14,7 @@ interface ImportMetaEnv {
   readonly MEMBER_SESSION_SECRET?: string;
   readonly PUBLIC_VERCEL_ANALYTICS_ID: string;
   readonly PUBLIC_SHOO_BASE_URL?: string;
+  readonly PUBLIC_SITE_URL?: string;
   readonly EMAIL_OCTOPUS_API_KEY: string;
   readonly EMAIL_OCTOPUS_LIST_ID: string;
 }

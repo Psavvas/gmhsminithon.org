@@ -282,12 +282,12 @@ async function getApprovedMemberSubjectsFromGoogleSheet(
     options.forceRefresh &&
     (!cachedEntry ||
       now - approvedMemberSheetLastForcedRefreshAt >=
-        APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
+      APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
   const shouldRefreshStaleCache =
     !hasFreshCache &&
     Boolean(cachedEntry) &&
     now - approvedMemberSheetLastBackgroundRefreshAt >=
-      APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
+    APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
 
   if (hasFreshCache && cachedEntry && !shouldForceRefresh) {
     logMemberAuth(
@@ -714,8 +714,17 @@ export function getShooAudienceOriginsForRequest(request: Request): string[] {
 
   addOrigin(requestUrl.origin);
   addOrigin(getVercelDeploymentOrigin());
+  addOrigin(getPublicSiteUrl());
 
   return Array.from(origins);
+}
+
+function getPublicSiteUrl(): string | undefined {
+  const siteUrl =
+    (typeof process !== "undefined" && process.env?.PUBLIC_SITE_URL) ||
+    import.meta.env.PUBLIC_SITE_URL;
+
+  return siteUrl?.trim() || undefined;
 }
 
 function getVercelDeploymentOrigin(): string | undefined {
