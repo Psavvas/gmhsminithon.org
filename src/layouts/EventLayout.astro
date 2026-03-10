@@ -21,7 +21,7 @@ const {
 const fullDate = formatEventDate(date, time);
 const eventDateTime = getEventDateTimeValue(date, time);
 
-const isMember = checkMemberAuth(Astro.request);
+const isMember = await checkMemberAuth(Astro.request);
 const hasMemberDetails = Astro.slots.has("member-details");
 ---
 

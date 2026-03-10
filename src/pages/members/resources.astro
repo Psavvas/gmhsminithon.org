@@ -3,7 +3,7 @@ import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
 import memberResources from "../../data/memberResources.json";
 
-if (!checkMemberAuth(Astro.request)) {
+if (!(await checkMemberAuth(Astro.request))) {
   return Astro.redirect("/members/login");
 }
 
@@ -71,7 +71,7 @@ const resources = Array.isArray(memberResources.resources)
 
   .resource-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
     gap: 1.5rem;
   }
 
@@ -129,6 +129,17 @@ const resources = Array.isArray(memberResources.resources)
   @media (max-width: 768px) {
     section {
       padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    section {
+      padding: 1.2rem;
+      border-radius: 16px;
+    }
+
+    .resource-card {
+      padding: 1.2rem;
     }
   }
 </style>

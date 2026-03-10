@@ -5,124 +5,150 @@ import clubInfo from "../data/clubInfo.json";
 export const prerender = true;
 
 const tiers = [
-	{
-		name: 'Supporter',
-		tone: 'supporter',
-		amount: '$50+',
-		description: 'A great entry point for businesses looking to show community support and contribute to the fight against pediatric cancer.',
-		benefits: [
-			'Business name listed on the Mini-THON website',
-			'Recognition on posters at Mini-THON events'
-		]
-	},
-	{
-		name: 'Bronze',
-		tone: 'bronze',
-		amount: '$100+',
-		description: 'Ideal for small businesses seeking increased visibility while supporting a meaningful cause.',
-		benefits: [
-			'All Supporter benefits',
-			'Recognition on social media posts and event flyers',
-			'Business name listed on the Mini-THON website'
-		]
-	},
-	{
-		name: 'Silver',
-		tone: 'silver',
-		amount: '$250+',
-		description: 'A strong option for businesses wanting brand visibility at school events and online.',
-		benefits: [
-			'All Bronze benefits',
-			'Small logo on the back of Mini-THON shirts',
-			'Logo displayed on the Mini-THON website',
-			'Recognition on an individual advertisement banner at the event'
-		]
-	},
-	{
-		name: 'Gold',
-		tone: 'gold',
-		amount: '$500+',
-		description: 'Designed for businesses seeking prominent exposure across multiple Mini-THON platforms.',
-		benefits: [
-			'All Silver benefits',
-			'Large logo on the back of Mini-THON shirts',
-			'Recognition on the event’s Donor Drive webpage'
-		]
-	},
-	{
-		name: 'Platinum',
-		tone: 'platinum',
-		amount: '$1,000+',
-		description: 'A premium tier offering expanded branding opportunities and high-level recognition.',
-		benefits: [
-			'All Gold benefits',
-			'Enhanced placement on promotional materials',
-			'Additional recognition at major Mini-THON events'
-		]
-	},
-	{
-		name: 'Diamond',
-		tone: 'diamond',
-		amount: '$1,500+',
-		description: 'Our top tier, providing maximum visibility and community presence for committed partners.',
-		benefits: [
-			'All Platinum benefits',
-			'Recognition on the marquee outside Great Mills High School',
-			'Priority logo placement on shirts, banners, and the website'
-		]
-	}
+  {
+    name: "Supporter",
+    tone: "supporter",
+    amount: "$50+",
+    description:
+      "A great entry point for businesses looking to show community support and contribute to the fight against pediatric cancer.",
+    benefits: [
+      "Business name listed on the Mini-THON website",
+      "Recognition on posters at Mini-THON events",
+    ],
+  },
+  {
+    name: "Bronze",
+    tone: "bronze",
+    amount: "$100+",
+    description:
+      "Ideal for small businesses seeking increased visibility while supporting a meaningful cause.",
+    benefits: [
+      "All Supporter benefits",
+      "Recognition on social media posts and event flyers",
+      "Business name listed on the Mini-THON website",
+    ],
+  },
+  {
+    name: "Silver",
+    tone: "silver",
+    amount: "$250+",
+    description:
+      "A strong option for businesses wanting brand visibility at school events and online.",
+    benefits: [
+      "All Bronze benefits",
+      "Small logo on the back of Mini-THON shirts",
+      "Logo displayed on the Mini-THON website",
+      "Recognition on an individual advertisement banner at the event",
+    ],
+  },
+  {
+    name: "Gold",
+    tone: "gold",
+    amount: "$500+",
+    description:
+      "Designed for businesses seeking prominent exposure across multiple Mini-THON platforms.",
+    benefits: [
+      "All Silver benefits",
+      "Large logo on the back of Mini-THON shirts",
+      "Recognition on the event’s Donor Drive webpage",
+    ],
+  },
+  {
+    name: "Platinum",
+    tone: "platinum",
+    amount: "$1,000+",
+    description:
+      "A premium tier offering expanded branding opportunities and high-level recognition.",
+    benefits: [
+      "All Gold benefits",
+      "Enhanced placement on promotional materials",
+      "Additional recognition at major Mini-THON events",
+    ],
+  },
+  {
+    name: "Diamond",
+    tone: "diamond",
+    amount: "$1,500+",
+    description:
+      "Our top tier, providing maximum visibility and community presence for committed partners.",
+    benefits: [
+      "All Platinum benefits",
+      "Recognition on the marquee outside Great Mills High School",
+      "Priority logo placement on shirts, banners, and the website",
+    ],
+  },
 ];
 ---
 
 <PublicLayout title="Sponsorships - Mini-THON">
-	<h1>Sponsorships</h1>
+  <h1>Sponsorships</h1>
 
-	<section class="intro-grid">
-		<div class="intro-text">
-			<p>Our business partners help Mini-THON support families affected by pediatric cancer. Sponsorships fund care, research, and community support while connecting your brand with a mission-driven audience.</p>
-			<p>Review the six sponsorship tiers below and reach out when you are ready to get involved.</p>
-			<div class="intro-actions">
-				<a href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`} class="button primary">Sponsor and make a difference!</a>
-			</div>
-		</div>
-		<div class="intro-photo">
-			<img
-				src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl"
-				alt="Mini-THON volunteers"
-				width="1200"
-				height="800"
-				class="intro-photo-image"
-				loading="eager"
-			/>
-		</div>
-	</section>
+  <section class="intro-grid">
+    <div class="intro-text">
+      <p>
+        Our business partners help Mini-THON support families affected by
+        pediatric cancer. Sponsorships fund care, research, and community
+        support while connecting your brand with a mission-driven audience.
+      </p>
+      <p>
+        Review the six sponsorship tiers below and reach out when you are ready
+        to get involved.
+      </p>
+      <div class="intro-actions">
+        <a
+          href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`}
+          class="button primary">Sponsor and make a difference!</a
+        >
+      </div>
+    </div>
+    <div class="intro-photo">
+      <img
+        src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zjr89shnF6QJCN2oSEtA0vaO5LW3r1mfU9ysl"
+        alt="Mini-THON volunteers"
+        width="1200"
+        height="800"
+        class="intro-photo-image"
+        loading="eager"
+      />
+    </div>
+  </section>
 
-	<section class="tiers-section">
-		<h2>Our Sponsorship Tiers</h2>
-		<div class="tiers-grid">
-			{tiers.map((tier) => (
-				<div class={`tier-card ${tier.tone}`}>
-					<h3>{tier.name} — {tier.amount}</h3>
-					<p>{tier.description}</p>
-					<h4>Benefits:</h4>
-					<ul>
-						{tier.benefits.map((benefit) => (
-							<li>{benefit}</li>
-						))}
-					</ul>
-				</div>
-			))}
-		</div>
-	</section>
+  <section class="tiers-section">
+    <h2>Our Sponsorship Tiers</h2>
+    <div class="tiers-grid">
+      {
+        tiers.map((tier) => (
+          <div class={`tier-card ${tier.tone}`}>
+            <h3>
+              {tier.name} — {tier.amount}
+            </h3>
+            <p>{tier.description}</p>
+            <h4>Benefits:</h4>
+            <ul>
+              {tier.benefits.map((benefit) => (
+                <li>{benefit}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
 
-	<section class="contact-section">
-		<h2>Ready to Sponsor?</h2>
-		<p>We will gladly help you choose the right tier and share a sponsorship packet with full benefits and timelines.</p>
-		<div class="contact-actions">
-			<a href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`} class="button primary">Start a sponsorship</a>
-			<a href="/sponsors" class="button">Meet our current sponsors</a>
-		</div>
-	</section>
+  <section class="contact-section">
+    <h2>Ready to Sponsor?</h2>
+    <p>
+      We will gladly help you choose the right tier and share a sponsorship
+      packet with full benefits and timelines.
+    </p>
+    <div class="contact-actions">
+      <a
+        href={`mailto:${clubInfo.contact.email}?subject=Mini-THON Sponsorship Inquiry`}
+        class="button primary">Start a sponsorship</a
+      >
+      <a href="/sponsors" class="button">Meet our current sponsors</a>
+    </div>
+  </section>
 </PublicLayout>
 
 <style>

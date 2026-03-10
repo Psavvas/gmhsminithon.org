@@ -231,6 +231,76 @@ bun run build     # Build for production
 bun run preview   # Preview the production build locally
 ```
 
+### Members Portal Configuration
+
+- `PUBLIC_SHOO_BASE_URL` (optional): overrides the Shoo base URL. Defaults to
+  `https://shoo.dev`.
+- `MEMBER_APPROVED_SHOO_SUBS` (required for member access): a comma-separated
+  or newline-separated list of approved Shoo `pairwise_sub` values.
+- `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL` (optional): an HTTPS
+  `docs.google.com` CSV export URL for a Google Sheet whose first column
+  contains approved Shoo `pairwise_sub` values. The server combines this with
+  any IDs in `MEMBER_APPROVED_SHOO_SUBS`.
+- `MEMBER_AUTH_DEBUG` (optional): set to `true` to enable detailed server-side
+  auth logging for member session verification, approval cache refreshes, and
+  member auth API decisions.
+- `MEMBER_SESSION_SECRET` (recommended for production): a long random secret
+  used to issue a server-signed member session after approval. This avoids
+  re-checking the Google Sheet on every protected page request and is the
+  recommended setup for Bun on Vercel.
+
+For Vercel deployments, add `MEMBER_APPROVED_SHOO_SUBS` in the project's
+Environment Variables settings for each environment that needs member login
+(Production / Preview / Development as applicable), then redeploy so the server
+functions pick it up.
+
+Quick setup on Vercel:
+
+1. In Shoo, make sure your app's callback/return URL points to
+   `/members/auth/callback` on the deployed site.
+2. In Vercel, open the project's **Settings → Environment Variables**.
+3. Add `MEMBER_APPROVED_SHOO_SUBS` with any starter Shoo user IDs you want to
+   allow immediately.
+4. If you want to manage approvals in Google Sheets, add
+   `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL` with the sheet's CSV export
+   URL.
+5. Add `MEMBER_SESSION_SECRET` with a long random value for stable production
+   member sessions.
+6. Redeploy the site so the server picks up the new values.
+7. Visit `/members/login` and sign in once to confirm the setup. If a user is
+   not approved yet, the page will show that user's Shoo user ID so it can be
+   added to the env var list or Google Sheet.
+
+Example:
+
+```sh
+MEMBER_APPROVED_SHOO_SUBS="sub_123,sub_456"
+```
+
+Google Sheet example:
+
+```sh
+MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/.../export?format=csv"
+```
+
+Notes for the Google Sheet allowlist:
+
+- Publish or share the sheet so the server can read the CSV export URL.
+- Put one Shoo `pairwise_sub` value per row in the first column.
+- An optional header such as `pairwise_sub` or `user id` is allowed in the
+  first row.
+- If you also keep some IDs in `MEMBER_APPROVED_SHOO_SUBS`, the server merges
+  both sources automatically.
+- The server only accepts HTTPS `docs.google.com` CSV export URLs, caches the
+  result briefly, and fails closed if the sheet cannot be loaded.
+
+If a user can authenticate with Shoo but is not approved yet, the members login
+flow will show that user's Shoo user ID so an admin can add it privately to
+the approved member list without committing personal data to the repository.
+If the environment variable is missing on a deployment, users can still try to
+sign in and the login flow will explain that member access is not configured
+yet after Shoo authentication.
+
 ### Deployment
 
 The site is automatically deployed to [Vercel](https://vercel.com/) when changes are pushed to the main branch. No manual deployment steps are needed.
@@ -239,7 +309,11 @@ The site is automatically deployed to [Vercel](https://vercel.com/) when changes
 
 - All site content is managed via JSON files and MDX pages — no database is required.
 - Static assets (images, logos) can be placed in the `src/assets/` directory or uploaded externally.
-- The member portal (`/members/`) is protected by authentication (see `src/utils/auth.ts`).
+- The member portal (`/members/`) uses Shoo authentication plus a private
+  server-side allowlist stored in `MEMBER_APPROVED_SHOO_SUBS` and/or an
+  optional Google Sheet CSV configured with
+  `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL`. Use Shoo `pairwise_sub`
+  values rather than committed email addresses.
 - For questions or help, contact the current club officers (see `src/data/clubInfo.json`).
 
 ---
