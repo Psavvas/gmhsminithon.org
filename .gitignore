@@ -24,3 +24,4 @@ bun-debug.log*
 .vercel
 
 .direnv
+package-lock.json
