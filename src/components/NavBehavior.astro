@@ -197,9 +197,12 @@
       line-height: 1.35;
     }
 
-    /* Pill-style nav links should only be as wide as their text */
+    /* Pill-style nav links should only be as wide as their text.
+       display:inline-flex shrinks to content; display:flex with width:auto
+       still fills the block parent. */
     :global(.nav-links a.member-login),
     :global(.nav-links a.return-main) {
+      display: inline-flex;
       width: auto;
     }
 
