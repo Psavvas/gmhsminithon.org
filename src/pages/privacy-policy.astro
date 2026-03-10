@@ -1,6 +1,5 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
-import clubInfo from "../data/clubInfo.json";
 
 const lastUpdated = "March 9, 2026";
 ---
@@ -11,182 +10,206 @@ const lastUpdated = "March 9, 2026";
 >
   <section class="policy-shell">
     <div class="policy-card">
-      <p class="eyebrow">Privacy Policy</p>
-      <h1>How we use your information</h1>
-      <p class="lede">
-        This policy explains what information GMHS Mini-THON may process through
-        gmhsminithon.org, how we use it, and the third-party services involved
-        in running the site.
-      </p>
-      <p class="meta">Last updated: {lastUpdated}</p>
+      <h1>Privacy Policy</h1>
+      <p class="meta"><strong>Last updated:</strong> {lastUpdated}</p>
+
       <p>
-        Privacy laws vary by location, so this page is intended to explain the
-        site's current data practices in a clear and transparent way. If you
-        need a legal determination about compliance requirements for your school
-        or organization, you should also have this policy reviewed by an
-        appropriate administrator or legal advisor.
+        This policy describes how gmhsminithon.org collects, uses, and handles
+        your information. It covers the public website, newsletter signup, and
+        the members-only portal.
       </p>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Information we may receive</h2>
+        <h2>Information We Collect</h2>
+        <p>
+          <strong>Newsletter subscriptions.</strong> If you sign up for our
+          newsletter, we collect your email address.
+        </p>
+        <p>
+          <strong>Member portal authentication.</strong> When you sign into the
+          members portal via Shoo (shoo.dev), we receive and verify your Shoo
+          identity token and use your Shoo user ID (<code>pairwise_sub</code>)
+          to determine whether your account is approved for member access.
+        </p>
+        <p>
+          <strong>Technical and operational data.</strong> Our hosting
+          infrastructure automatically processes standard request metadata and
+          performance data necessary to deliver and secure the site.
+        </p>
+        <p>We do not collect more information than what is described above.</p>
+      </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <section>
+        <h2>How We Use Your Information</h2>
         <ul>
+          <li>To operate the public website and members portal.</li>
           <li>
-            <strong>Newsletter signup details:</strong> if newsletter signup is enabled,
-            we may receive the email address you submit.
+            To verify member portal access against an administrator-maintained
+            approval list.
           </li>
+          <li>To send newsletter updates to subscribers.</li>
           <li>
-            <strong>Member portal authentication data:</strong> when you sign in with
-            Shoo, we verify your Shoo identity token and use your Shoo user ID (`pairwise_sub`)
-            to decide whether you can access the members portal.
-          </li>
-          <li>
-            <strong>Basic technical data:</strong> our hosting and application infrastructure
-            may process information such as request metadata and performance information
-            needed to serve the site securely and reliably.
+            To monitor site performance, diagnose issues, and protect against
+            misuse.
           </li>
         </ul>
       </section>
 
-      <section>
-        <h2>How we use that information</h2>
-        <ul>
-          <li>To operate the public website and member portal.</li>
-          <li>
-            To verify whether a Shoo-authenticated user is approved for
-            member-only access.
-          </li>
-          <li>
-            To send newsletter updates if you choose to subscribe when that
-            feature is active.
-          </li>
-          <li>
-            To monitor site performance, diagnose problems, and protect the site
-            from misuse.
-          </li>
-        </ul>
-      </section>
+      <div class="divider" aria-hidden="true"></div>
 
       <section>
-        <h2>Member portal details</h2>
+        <h2>Members Portal</h2>
         <p>
-          The members portal uses Shoo for sign-in. After Shoo authenticates
-          you, this site verifies your Shoo token on the server and checks your
-          Shoo user ID against a private approval list maintained by GMHS
-          Mini-THON administrators.
+          The members portal uses <strong>Shoo</strong> (shoo.dev) for
+          authentication. After Shoo verifies your identity, this site checks
+          your Shoo user ID against a private approval list maintained by GMHS
+          Mini-THON administrators. That list may be stored in server
+          environment variables and/or a private Google Sheet configured by
+          administrators.
         </p>
         <p>
-          That approval list may be stored in server environment variables
-          and/or a private Google Sheet CSV source configured by administrators.
-          If your account is not yet approved, the login flow may show your Shoo
-          user ID so you can share it with an admin for approval.
+          If your account is not yet approved, the sign-in flow may display
+          your Shoo user ID so you can share it with an administrator to
+          request access.
         </p>
         <p>
-          If access is granted, the site stores a short-lived session cookie so
-          you can use the members portal without signing in on every page load.
+          Upon successful authentication, the site issues a short-lived session
+          cookie so you can navigate protected pages without re-authenticating
+          on each load.
         </p>
       </section>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Third-party services</h2>
-        <ul>
-          <li>
-            <strong>Shoo</strong> is used to authenticate member portal users.
-          </li>
-          <li>
-            <strong>EmailOctopus</strong> is used for newsletter subscriptions when
-            that feature is enabled.
-          </li>
-          <li>
-            <strong>Vercel</strong> hosts the site and provides analytics and performance
-            tooling used to understand site reliability and usage.
-          </li>
-          <li>
-            <strong>Google Sheets</strong> may be used by administrators as a private
-            source for approved Shoo user IDs.
-          </li>
-        </ul>
+        <h2>Third-Party Services</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Shoo</strong> (shoo.dev)</td>
+              <td>Member portal authentication</td>
+            </tr>
+            <tr>
+              <td><strong>EmailOctopus</strong></td>
+              <td>Newsletter subscriptions (when enabled)</td>
+            </tr>
+            <tr>
+              <td><strong>Vercel</strong></td>
+              <td>Hosting, analytics, and performance monitoring</td>
+            </tr>
+            <tr>
+              <td><strong>Google Sheets</strong></td>
+              <td>Administrator-managed member approval list</td>
+            </tr>
+          </tbody>
+        </table>
         <p>
-          When you interact with third-party services through this site, their
-          own terms and privacy policies may also apply. We encourage you to
-          review those policies directly before submitting information to those
-          services.
+          When you interact with these services through this site, their own
+          privacy policies and terms of service also apply. We encourage you to
+          review those policies directly.
         </p>
       </section>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Sharing and retention</h2>
+        <h2>Data Sharing and Retention</h2>
+        <p>We do not sell personal information.</p>
         <p>
-          We do not sell personal information. We only share data with the
-          service providers needed to operate the site and its features.
-        </p>
-        <p>
-          Information is kept only as long as needed for the relevant purpose,
-          such as maintaining the member approval list, keeping a newsletter
-          subscription active, or preserving short-lived session and diagnostic
-          data needed to operate the site.
+          We share data only with the service providers listed above, and only
+          as necessary to operate the site. Data is retained only for as long
+          as it is needed for its stated purpose - such as maintaining the
+          member approval list, keeping a newsletter subscription active, or
+          retaining short-lived session and diagnostic data.
         </p>
       </section>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Cookies and similar technologies</h2>
+        <h2>Cookies</h2>
         <p>
-          The members portal uses a short-lived session cookie after successful
-          sign-in so authenticated members can access protected pages. Vercel's
-          analytics and performance tooling may also use service-side telemetry
-          and similar technologies to measure reliability and site usage.
+          The members portal sets a short-lived session cookie after successful
+          sign-in to maintain your authenticated session. Vercel may also use
+          service-side telemetry to measure site reliability and performance.
         </p>
       </section>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Your privacy choices and rights</h2>
+        <h2>Your Privacy Rights</h2>
         <p>
-          Depending on where you live, you may have rights to request access to,
-          correction of, deletion of, or restriction of certain personal data.
-          You may also be able to unsubscribe from email updates at any time.
+          Depending on your location, you may have the right to access,
+          correct, delete, or restrict certain personal data we hold. You can
+          also unsubscribe from newsletter emails at any time using the
+          unsubscribe link in any email we send.
         </p>
         <p>
-          You can choose not to use the members portal or newsletter signup. If
-          you want to ask about, update, or remove information associated with
-          this site, contact us at
-          <a href={`mailto:${clubInfo.contact.email}`}
-            >{clubInfo.contact.email}</a
-          >.
+          You are not required to use the members portal or newsletter signup.
+          To ask about, update, or request removal of information associated
+          with this site, contact us at
+          <strong>
+            <a href="mailto:hello@gmhsminithon.org">hello@gmhsminithon.org</a>
+          </strong>
+          .
         </p>
       </section>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Children's privacy</h2>
+        <h2>Children's Privacy</h2>
         <p>
-          This site is intended for the GMHS Mini-THON school community and is
-          not designed to knowingly collect personal information from children
-          under 13 without appropriate authorization. If you believe personal
-          information from a child under 13 has been submitted in error, contact
-          us so we can review and address it.
+          This site is intended for the GMHS Mini-THON school community. We do
+          not knowingly collect personal information from children under 13
+          without appropriate parental or school authorization in compliance
+          with the Children's Online Privacy Protection Act (COPPA). If you
+          believe a child under 13 has submitted personal information in error,
+          contact us at hello@gmhsminithon.org and we will promptly review and
+          address it.
         </p>
       </section>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Changes to this policy</h2>
+        <h2>Changes to This Policy</h2>
         <p>
-          We may update this policy from time to time to reflect changes to the
-          site, its services, or our data practices. When we make a material
-          update, we will revise the "Last updated" date on this page.
+          We may update this policy to reflect changes to the site or its
+          services. Material updates will be noted by a revised "Last updated"
+          date at the top of this page.
         </p>
       </section>
 
+      <div class="divider" aria-hidden="true"></div>
+
       <section>
-        <h2>Additional legal notices</h2>
-        <p>
-          This policy is provided to explain current site practices in plain
-          language. It is not legal advice and should not be treated as a
-          substitute for professional legal review.
-        </p>
-        <p>
-          This site may contain links to third-party websites and services that
-          GMHS Mini-THON does not control. We are not responsible for the
-          content, security, or privacy practices of those external services.
-        </p>
+        <h2>Contact</h2>
+        <p>Questions about this policy or your data:</p>
+        <p><strong>hello@gmhsminithon.org</strong></p>
       </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <p>
+        <em
+          >This policy explains our current data practices in plain language. It
+          is not legal advice. This site may link to third-party services
+          outside our control - we are not responsible for their privacy
+          practices.</em
+        >
+      </p>
     </div>
   </section>
 </PublicLayout>
@@ -205,29 +228,27 @@ const lastUpdated = "March 9, 2026";
     box-shadow: var(--shadow-card);
     padding: clamp(2rem, 4vw, 3rem);
     display: grid;
-    gap: 1.5rem;
-  }
-
-  .eyebrow {
-    margin: 0;
-    color: var(--brand-sky);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.8rem;
+    gap: 1rem;
+    font-size: 1rem;
   }
 
   h1 {
     margin: 0;
     color: var(--ink-900);
+    line-height: 1.2;
   }
 
-  .lede,
   .meta,
   p,
   li {
     color: var(--ink-700);
-    line-height: 1.75;
+    line-height: 1.6;
+  }
+
+  p,
+  ul,
+  table {
+    margin: 0;
   }
 
   .meta {
@@ -236,23 +257,57 @@ const lastUpdated = "March 9, 2026";
 
   section {
     display: grid;
-    gap: 0.9rem;
+    gap: 0.65rem;
+  }
+
+  .divider {
+    border-top: 1px solid var(--border-soft);
+    height: 0;
+    margin: 0.25rem 0;
   }
 
   h2 {
     margin: 0;
     color: var(--ink-900);
+    line-height: 1.3;
   }
 
   ul {
-    margin: 0;
     padding-left: 1.25rem;
     display: grid;
-    gap: 0.75rem;
+    gap: 0.45rem;
   }
 
   a {
     color: var(--brand-ink);
     font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 0.96rem;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--ink-700);
+    vertical-align: top;
+  }
+
+  thead th {
+    color: var(--ink-900);
+    background: color-mix(in srgb, var(--surface-raised) 85%, var(--brand-sky) 15%);
+    font-weight: 700;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
   }
 </style>
