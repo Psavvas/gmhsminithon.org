@@ -35,10 +35,7 @@ const currentPath = Astro.url.pathname;
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="icon"
-      href={diamondFaviconHref}
-    />
+    <link rel="icon" href={diamondFaviconHref} />
     <link rel="shortcut icon" href={diamondFaviconHref} />
     <link rel="apple-touch-icon" href={diamondFaviconHref} />
     <meta name="generator" content={Astro.generator} />
@@ -261,6 +258,7 @@ const currentPath = Astro.url.pathname;
               <li><a href="/events">Events</a></li>
               <li><a href="/fundraising">Fundraising</a></li>
               <li><a href="/members/login">Member Page</a></li>
+              <li><a href="/privacy-policy">Privacy Policy</a></li>
             </ul>
           </div>
 
@@ -311,6 +309,9 @@ const currentPath = Astro.url.pathname;
             Mini-THON® and Four Diamonds Mini-THON® are registered trademarks.
             The Diamond Masthead and DonorDrive® are owned by their respective
             trademark holders. Used with permission.
+          </p>
+          <p class="footer-privacy-link">
+            <a href="/privacy-policy">Privacy Policy</a>
           </p>
         </div>
       </div>
@@ -895,6 +896,17 @@ const currentPath = Astro.url.pathname;
     color: rgba(255, 255, 255, 0.45);
     max-width: 760px;
     margin: 0;
+  }
+
+  .footer-privacy-link {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+
+  .footer-privacy-link a {
+    color: rgba(255, 255, 255, 0.78);
+    text-decoration: underline;
+    font-weight: 600;
   }
 
   @media (max-width: 900px) {

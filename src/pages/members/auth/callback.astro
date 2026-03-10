@@ -1,0 +1,152 @@
+---
+import PublicLayout from "../../../layouts/PublicLayout.astro";
+import MemberAuthCallback from "../../../components/member-auth/MemberAuthCallback";
+import {
+  MEMBER_AUTH_CALLBACK_PATH,
+  MEMBER_LOGIN_PATH,
+  getShooBaseUrl,
+} from "../../../utils/auth";
+---
+
+<PublicLayout title="Completing Member Sign-In - Mini-THON">
+  <div class="callback-container">
+    <h1>Completing sign-in</h1>
+    <MemberAuthCallback
+      client:load
+      shooBaseUrl={getShooBaseUrl()}
+      callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+      loginPath={MEMBER_LOGIN_PATH}
+    />
+  </div>
+</PublicLayout>
+
+<style>
+  .callback-container {
+    width: min(100%, 520px);
+    margin: 0 auto;
+    background: var(--surface-raised);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    display: grid;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    color: var(--ink-900);
+    text-align: center;
+  }
+
+  :global(.callback-status) {
+    display: grid;
+    gap: 1rem;
+    color: var(--ink-700);
+    line-height: 1.6;
+  }
+
+  :global(.error-message) {
+    background: #ffebee;
+    color: #c62828;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  :global(.member-auth-error) {
+    display: grid;
+    gap: 0.9rem;
+    line-height: 1.6;
+  }
+
+  :global(.member-auth-error__message) {
+    margin: 0;
+  }
+
+  :global(.member-auth-error__user-id-block) {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  :global(.member-auth-error__user-id-label) {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  :global(.member-auth-error__user-id-row) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  :global(.member-auth-error__user-id) {
+    display: inline-block;
+    padding: 0.65rem 0.8rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(198, 40, 40, 0.18);
+    color: #7f1d1d;
+    word-break: break-all;
+  }
+
+  :global(.member-auth-copy-button) {
+    border: 1px solid rgba(198, 40, 40, 0.22);
+    background: white;
+    color: #8b1e1e;
+    border-radius: 999px;
+    padding: 0.65rem 0.95rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  :global(.member-auth-copy-button:hover) {
+    background: rgba(255, 255, 255, 0.88);
+  }
+
+  :global(.member-auth-copy-status) {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #8b1e1e;
+  }
+
+  :global(.callback-link) {
+    color: var(--brand-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  :global(.callback-link:hover) {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .callback-container {
+      padding: 2rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    :global(.member-auth-error__user-id-row) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    :global(.member-auth-copy-button) {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .callback-container {
+      padding: 1.5rem 1rem;
+      border-radius: 16px;
+    }
+  }
+</style>
