@@ -27,7 +27,7 @@ const currentPath = Astro.url.pathname;
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta property="og:description" content={description} />
     <meta property="og:title" content={title} />
@@ -391,17 +391,38 @@ const currentPath = Astro.url.pathname;
       padding: 0 1.5rem;
     }
 
-    .nav-links {
-      gap: 0.75rem;
-    }
-
-    .nav-links a {
-      font-size: 0.82rem;
-    }
-
     .logo {
       font-size: 1.1rem;
       max-width: 16rem;
+    }
+
+    /* In the full-screen mobile overlay, center nav items vertically
+       (override the default flex-end used for desktop) */
+    .nav-links {
+      justify-content: center;
+    }
+
+    /* Remove per-link underlines; they span the full overlay width on mobile */
+    .nav-links a {
+      border-bottom: none;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      border-bottom: none;
+    }
+
+    /* Pill-shaped button should not stretch to full overlay width */
+    .return-main {
+      width: auto;
+    }
+
+    /* Ensure logout button is full-width and centered in the mobile overlay.
+       This must appear after the base :global(.member-logout) rule so it wins. */
+    :global(.member-logout) {
+      width: 100%;
+      justify-content: center;
+      min-height: 3rem;
     }
   }
 

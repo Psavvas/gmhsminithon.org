@@ -177,6 +177,15 @@
 
     :global(.nav-links li) {
       width: min(100%, 28rem);
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Ensure form wrappers (e.g. logout button) also fill the list item */
+    :global(.nav-links li form) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
     :global(.nav-links a) {
@@ -188,6 +197,15 @@
       padding: 0.75rem 1.5rem;
       white-space: normal;
       line-height: 1.35;
+    }
+
+    /* Pill-style nav links should only be as wide as their text.
+       display:inline-flex shrinks to content; display:flex with width:auto
+       still fills the block parent. */
+    :global(.nav-links a.member-login),
+    :global(.nav-links a.return-main) {
+      display: inline-flex;
+      width: auto;
     }
 
     :global(.member-logout) {

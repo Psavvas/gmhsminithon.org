@@ -22,7 +22,7 @@ const currentPath = Astro.url.pathname;
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta property="og:description" content={description} />
     <meta property="og:title" content={title} />
@@ -963,6 +963,23 @@ const currentPath = Astro.url.pathname;
 
     main {
       padding: calc(2rem + var(--nav-offset, 0px)) 1rem 3rem;
+    }
+
+    /* In the full-screen mobile overlay, remove per-link underlines so
+       they don't span the entire overlay width */
+    .nav-links a {
+      border-bottom: none;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      border-bottom: none;
+    }
+
+    /* Pill-shaped buttons should not stretch to full overlay width */
+    .member-login {
+      display: inline-flex;
+      width: auto;
     }
   }
 
