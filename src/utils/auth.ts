@@ -650,7 +650,7 @@ function parseApprovedMemberSubjectsCsv(csvText: string): ReadonlySet<string> {
     csvText
       .replace(/^\uFEFF/, "")
       .split(/\r?\n/)
-      .map((line) => parseFirstCsvValue(line).trim())
+      .map((line) => parseLastNonEmptyCsvValue(line).trim())
       .filter(Boolean)
       .filter(
         (value, index) =>
@@ -663,10 +663,54 @@ function parseApprovedMemberSubjectsCsv(csvText: string): ReadonlySet<string> {
               "pairwise sub",
               "shoo id",
               "user id",
+              "enter your shoo.dev user id:",
             ].includes(value.toLowerCase())
           ),
       ),
   );
+}
+
+function parseLastNonEmptyCsvValue(line: string): string {
+  const values: string[] = [];
+  let value = "";
+  let inQuotes = false;
+  let charIndex = 0;
+
+  while (charIndex < line.length) {
+    const char = line[charIndex];
+
+    if (char === '"') {
+      if (inQuotes && line[charIndex + 1] === '"') {
+        value += '"';
+        charIndex += 2;
+        continue;
+      }
+
+      inQuotes = !inQuotes;
+    } else if (!inQuotes && char === ",") {
+      values.push(value);
+      value = "";
+    } else {
+      value += char;
+    }
+
+    charIndex += 1;
+  }
+
+  // Add the last value
+  if (value || values.length > 0) {
+    values.push(value);
+  }
+
+  // Return the last non-empty value (typically the Shoo ID column)
+  for (let i = values.length - 1; i >= 0; i--) {
+    const trimmed = values[i].trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+
+  return "";
 }
 
 function parseFirstCsvValue(line: string): string {
