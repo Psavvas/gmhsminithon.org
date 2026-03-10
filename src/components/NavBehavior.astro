@@ -179,6 +179,13 @@
       width: min(100%, 28rem);
     }
 
+    /* Ensure form wrappers (e.g. logout button) also fill the list item */
+    :global(.nav-links li form) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
     :global(.nav-links a) {
       display: flex;
       justify-content: center;
