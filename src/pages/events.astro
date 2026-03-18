@@ -5,16 +5,13 @@ import {
   getAllEvents,
   getEventDateTimeValue,
   getEventTypeClass,
+  splitEventsByDate,
 } from "../utils/events";
 
 export const prerender = true;
 
 const events = await getAllEvents();
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
-const pastEvents = events.filter((event) => new Date(event.date) < today);
+const { upcomingEvents, pastEvents } = splitEventsByDate(events);
 ---
 
 <PublicLayout title="Events - Mini-THON">

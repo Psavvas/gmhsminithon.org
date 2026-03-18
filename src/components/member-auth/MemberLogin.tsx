@@ -197,12 +197,6 @@ export default function MemberLogin({
       >
         {buttonLabel}
       </button>
-
-      <p className="login-helper">
-        Access is limited to approved GMHS Mini-THON members. If your account is
-        not on the approved list yet, we will show your Shoo user ID so it can
-        be added.
-      </p>
     </div>
   );
 }

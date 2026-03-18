@@ -6,6 +6,7 @@ import {
   getCurrentYearEvents,
   getEventDateTimeValue,
   getEventTypeClass,
+  splitEventsByDate,
 } from "../../utils/events";
 
 // Check authentication
@@ -14,12 +15,8 @@ if (!(await checkMemberAuth(Astro.request))) {
 }
 
 const currentYear = new Date().getFullYear();
-const today = new Date();
-today.setHours(0, 0, 0, 0);
 const events = await getCurrentYearEvents();
-
-const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
-const pastEvents = events.filter((event) => new Date(event.date) < today);
+const { upcomingEvents, pastEvents } = splitEventsByDate(events);
 
 const formatDescription = (content: string | string[] | undefined) => {
   if (!content) return "";

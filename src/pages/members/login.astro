@@ -27,8 +27,7 @@ const authConfigured = hasMemberApprovalSourceConfigured();
       we verify your Shoo account before granting access to the portal.
     </p>
     <p class="info-note">
-      If your account has not been added yet, you will see the exact Shoo user
-      ID to send to an admin for approval.
+      If your Shoo ID is not approved yet, please contact an admin.
     </p>
 
     <MemberLogin
@@ -195,12 +194,6 @@ const authConfigured = hasMemberApprovalSourceConfigured();
     opacity: 0.7;
     transform: none;
     box-shadow: none;
-  }
-
-  :global(.login-helper) {
-    color: var(--ink-700);
-    font-size: 0.95rem;
-    line-height: 1.6;
   }
 
   @media (max-width: 600px) {

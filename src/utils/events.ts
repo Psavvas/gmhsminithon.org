@@ -14,6 +14,11 @@ export interface Event extends EventFrontmatter {
   Content?: any;
 }
 
+export interface SplitEvents {
+  upcomingEvents: Event[];
+  pastEvents: Event[];
+}
+
 type EventModule = {
   frontmatter: EventFrontmatter;
   default?: unknown;
@@ -48,7 +53,7 @@ export async function getAllEvents(): Promise<Event[]> {
       url: filePathToEventUrl(filePath),
       Content: module.default,
     }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => getEventDayTimestamp(a.date) - getEventDayTimestamp(b.date));
 }
 
 /**
@@ -58,9 +63,7 @@ export async function getCurrentYearEvents(): Promise<Event[]> {
   const currentYear = new Date().getFullYear();
   const events = await getAllEvents();
 
-  return events.filter(
-    (event) => new Date(event.date).getFullYear() === currentYear,
-  );
+  return events.filter((event) => getEventYear(event.date) === currentYear);
 }
 
 /**
@@ -68,11 +71,68 @@ export async function getCurrentYearEvents(): Promise<Event[]> {
  */
 export async function getUpcomingEvents(limit?: number): Promise<Event[]> {
   const events = await getAllEvents();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const upcoming = events.filter((event) => new Date(event.date) >= today);
+  const { upcomingEvents } = splitEventsByDate(events);
+  const upcoming = upcomingEvents;
 
   return typeof limit === "number" ? upcoming.slice(0, limit) : upcoming;
+}
+
+function parseEventDate(dateValue: string | Date): Date {
+  if (dateValue instanceof Date) {
+    return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
+  }
+
+  const trimmedValue = dateValue.trim();
+  const dateOnlyMatch = trimmedValue.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (dateOnlyMatch) {
+    const year = Number.parseInt(dateOnlyMatch[1], 10);
+    const monthIndex = Number.parseInt(dateOnlyMatch[2], 10) - 1;
+    const day = Number.parseInt(dateOnlyMatch[3], 10);
+    return new Date(year, monthIndex, day);
+  }
+
+  const parsedDate = new Date(trimmedValue);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return new Date(Number.NaN);
+  }
+
+  return new Date(
+    parsedDate.getFullYear(),
+    parsedDate.getMonth(),
+    parsedDate.getDate(),
+  );
+}
+
+function getEventDayTimestamp(dateValue: string | Date): number {
+  return parseEventDate(dateValue).getTime();
+}
+
+function getEventYear(dateValue: string | Date): number {
+  return parseEventDate(dateValue).getFullYear();
+}
+
+function getTodayTimestamp(referenceDate: Date = new Date()): number {
+  return new Date(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth(),
+    referenceDate.getDate(),
+  ).getTime();
+}
+
+export function splitEventsByDate(
+  events: Event[],
+  referenceDate: Date = new Date(),
+): SplitEvents {
+  const todayTimestamp = getTodayTimestamp(referenceDate);
+
+  const pastEvents = events.filter(
+    (event) => getEventDayTimestamp(event.date) < todayTimestamp,
+  );
+  const upcomingEvents = events.filter(
+    (event) => getEventDayTimestamp(event.date) >= todayTimestamp,
+  );
+
+  return { upcomingEvents, pastEvents };
 }
 
 /**
