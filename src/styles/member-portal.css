@@ -94,15 +94,10 @@ h3 {
 }
 
 .mp-topbar__mark {
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 10px;
-  background: var(--mp-sky);
-  color: #16202e;
-  font-weight: 700;
-  font-size: 0.9rem;
+  display: block;
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
   flex-shrink: 0;
 }
 

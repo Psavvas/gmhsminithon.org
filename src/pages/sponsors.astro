@@ -1,6 +1,7 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
 import { applyContentCacheHeaders, getSponsors } from "../utils/content";
+import { DIAMOND_MASTHEAD_ON_LIGHT } from "../utils/brand";
 
 applyContentCacheHeaders(Astro.response);
 
@@ -58,7 +59,7 @@ const tierSections = tierOrder
           <span class="tier-diamonds" aria-hidden="true">
             {Array.from({ length: tier.diamonds }).map(() => (
               <img
-                src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao"
+                src={DIAMOND_MASTHEAD_ON_LIGHT}
                 alt=""
                 width="18"
                 height="18"

@@ -9,6 +9,7 @@ import {
   getShooBaseUrl,
 } from "../utils/auth";
 import { isAdminRequest } from "../utils/admin/session";
+import { DIAMOND_MASTHEAD_ON_DARK, FAVICON_HREF } from "../utils/brand";
 
 export interface Props {
   title: string;
@@ -19,9 +20,6 @@ export interface Props {
 
 const defaultDescription =
   "Great Mills High School Mini-THON member portal with event details, announcements, resources, and volunteer updates supporting Four Diamonds and the fight against pediatric cancer.";
-const diamondFaviconHref =
-  "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZZoJE4qULqN4ePIY1XT27BczblO8y6VKuQtEf";
-
 const { title, description = defaultDescription, heading, intro } = Astro.props;
 const currentPath = Astro.url.pathname;
 // Only admins see the link to the content portal.
@@ -68,9 +66,9 @@ function isActive(link: (typeof navLinks)[number]): boolean {
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href={diamondFaviconHref} />
-    <link rel="shortcut icon" href={diamondFaviconHref} />
-    <link rel="apple-touch-icon" href={diamondFaviconHref} />
+    <link rel="icon" href={FAVICON_HREF} />
+    <link rel="shortcut icon" href={FAVICON_HREF} />
+    <link rel="apple-touch-icon" href={FAVICON_HREF} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <Analytics />
@@ -79,7 +77,12 @@ function isActive(link: (typeof navLinks)[number]): boolean {
     <header class="mp-topbar">
       <div class="mp-topbar__inner">
         <a class="mp-topbar__brand" href="/members">
-          <span class="mp-topbar__mark" aria-hidden="true">MT</span>
+          <img
+            class="mp-topbar__mark"
+            src={DIAMOND_MASTHEAD_ON_DARK}
+            alt=""
+            loading="eager"
+          />
           <span>
             <strong>Mini-THON Members</strong>
             <small>Member portal</small>

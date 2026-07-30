@@ -1,6 +1,7 @@
 ---
 import { ADMIN_LOGIN_PATH } from "../utils/admin/session";
 import { listCollectionSpecs } from "../utils/content/collections";
+import { DIAMOND_MASTHEAD_ON_DARK, FAVICON_HREF } from "../utils/brand";
 
 export interface Props {
   title: string;
@@ -23,9 +24,6 @@ const publicCollections = collections.filter((spec) => spec.scope === "public");
 const memberCollections = collections.filter(
   (spec) => spec.scope === "members",
 );
-const diamondFaviconHref =
-  "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZZoJE4qULqN4ePIY1XT27BczblO8y6VKuQtEf";
-
 // The portal is never a public page.
 Astro.response.headers.set("Cache-Control", "no-store");
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
@@ -43,8 +41,9 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href={diamondFaviconHref} />
-    <link rel="apple-touch-icon" href={diamondFaviconHref} />
+    <link rel="icon" href={FAVICON_HREF} />
+    <link rel="shortcut icon" href={FAVICON_HREF} />
+    <link rel="apple-touch-icon" href={FAVICON_HREF} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
@@ -54,7 +53,12 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
         <header class="admin-topbar">
           <div class="admin-topbar__inner">
             <a class="admin-topbar__brand" href="/admin">
-              <span class="admin-topbar__mark">MT</span>
+              <img
+                class="admin-topbar__mark"
+                src={DIAMOND_MASTHEAD_ON_DARK}
+                alt=""
+                loading="eager"
+              />
               <span>
                 <strong>Mini-THON Admin</strong>
                 <small>Site content</small>
@@ -245,15 +249,11 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 
   .admin-topbar__mark {
-    display: grid;
-    place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 10px;
-    background: var(--admin-sky);
-    color: #16202e;
-    font-weight: 700;
-    font-size: 0.9rem;
+    display: block;
+    height: 2rem;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
   }
 
   .admin-topbar__actions {
