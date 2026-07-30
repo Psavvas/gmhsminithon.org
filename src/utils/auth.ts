@@ -798,27 +798,40 @@ export function getShooAudienceOriginsForRequest(request: Request): string[] {
 
   addOrigin(requestUrl.origin);
   addOrigin(getVercelDeploymentOrigin());
+  // Vercel's stable aliases, so a token minted on the branch or production URL
+  // still verifies when the request arrives on a different host.
+  addOrigin(getVercelBranchOrigin());
+  addOrigin(getVercelProductionOrigin());
   addOrigin(getPublicSiteUrl());
 
   return Array.from(origins);
 }
 
-function getPublicSiteUrl(): string | undefined {
-  const siteUrl =
-    (typeof process !== "undefined" && process.env?.PUBLIC_SITE_URL) ||
-    import.meta.env.PUBLIC_SITE_URL;
-
-  return siteUrl?.trim() || undefined;
+export function getPublicSiteUrl(): string | undefined {
+  return readEnv("PUBLIC_SITE_URL");
 }
 
-function getVercelDeploymentOrigin(): string | undefined {
-  const vercelUrl = process?.env?.VERCEL_URL?.trim();
-
-  if (!vercelUrl) {
+function hostToOrigin(host?: string): string | undefined {
+  if (!host) {
     return undefined;
   }
 
-  return `https://${vercelUrl}`;
+  return /^https?:\/\//i.test(host) ? host : `https://${host}`;
+}
+
+/** The URL of this exact deployment. Changes on every deploy. */
+export function getVercelDeploymentOrigin(): string | undefined {
+  return hostToOrigin(readEnv("VERCEL_URL"));
+}
+
+/** Stable per-branch alias, always pointing at that branch's latest deploy. */
+export function getVercelBranchOrigin(): string | undefined {
+  return hostToOrigin(readEnv("VERCEL_BRANCH_URL"));
+}
+
+/** The project's production URL. */
+export function getVercelProductionOrigin(): string | undefined {
+  return hostToOrigin(readEnv("VERCEL_PROJECT_PRODUCTION_URL"));
 }
 
 export async function checkMemberAuth(request: Request): Promise<boolean> {

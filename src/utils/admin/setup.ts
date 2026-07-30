@@ -7,11 +7,36 @@
  * secret, a connection string, or a Shoo user ID — just counts and booleans.
  */
 import { readEnv } from "../env";
-import { getShooAudienceOriginsForRequest, getShooBaseUrl } from "../auth";
+import {
+  getPublicSiteUrl,
+  getShooAudienceOriginsForRequest,
+  getShooBaseUrl,
+  getVercelBranchOrigin,
+  getVercelDeploymentOrigin,
+  getVercelProductionOrigin,
+} from "../auth";
 import { isDatabaseConfigured } from "../content/db";
 import { isUploadThingConfigured } from "./uploads";
 import { parseShooSubList } from "./access";
 import { isAdminSessionConfigured } from "./session";
+
+/**
+ * Shoo identifies a site by its origin (`client_id` is `origin:<origin>`), and
+ * a user's `pairwise_sub` is per-client. A Shoo user ID is therefore tied to the
+ * exact URL it was issued on: the same person has a different ID on
+ * `example.com` than on a `*.vercel.app` deployment URL. Signing in somewhere
+ * whose URL changes on every deploy means a new ID every deploy, so this works
+ * out where the stable URL is.
+ */
+export type SignInOriginInfo = {
+  currentOrigin: string;
+  /** True when this URL is replaced on the next deploy. */
+  isPerDeploymentUrl: boolean;
+  /** The best URL to use instead, or null when the current one is stable. */
+  recommendedOrigin: string | null;
+  /** Every stable URL this deployment knows about. */
+  stableOrigins: string[];
+};
 
 export type AdminSetupStatus = {
   adminSessionSecretConfigured: boolean;
@@ -24,10 +49,63 @@ export type AdminSetupStatus = {
   requestOrigin: string;
   acceptedTokenOrigins: string[];
   publicSiteUrl: string | null;
+  signInOrigin: SignInOriginInfo;
 };
+
+function toOrigin(value?: string): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    return new URL(value).origin;
+  } catch {
+    return undefined;
+  }
+}
+
+export function getSignInOriginInfo(request: Request): SignInOriginInfo {
+  const currentOrigin = new URL(request.url).origin;
+  const deploymentOrigin = toOrigin(getVercelDeploymentOrigin());
+  const isPreview = readEnv("VERCEL_ENV") === "preview";
+
+  // On a preview the branch alias is the natural home; on production it is the
+  // site's own domain.
+  const preference = isPreview
+    ? [getVercelBranchOrigin(), getPublicSiteUrl(), getVercelProductionOrigin()]
+    : [
+        getPublicSiteUrl(),
+        getVercelProductionOrigin(),
+        getVercelBranchOrigin(),
+      ];
+
+  const stableOrigins = Array.from(
+    new Set(
+      preference
+        .map(toOrigin)
+        .filter((origin): origin is string => Boolean(origin))
+        // The per-deployment URL is never a stable choice.
+        .filter((origin) => origin !== deploymentOrigin),
+    ),
+  );
+
+  const isPerDeploymentUrl = Boolean(
+    deploymentOrigin &&
+    currentOrigin === deploymentOrigin &&
+    stableOrigins.length > 0,
+  );
+
+  return {
+    currentOrigin,
+    isPerDeploymentUrl,
+    recommendedOrigin: isPerDeploymentUrl ? stableOrigins[0] : null,
+    stableOrigins,
+  };
+}
 
 export function getAdminSetupStatus(request: Request): AdminSetupStatus {
   return {
+    signInOrigin: getSignInOriginInfo(request),
     adminSessionSecretConfigured: isAdminSessionConfigured(),
     adminIdsFromEnv: parseShooSubList(readEnv("ADMIN_APPROVED_SHOO_SUBS"))
       .length,
@@ -89,6 +167,14 @@ export function describeAdminSetup(status: AdminSetupStatus): SetupCheck[] {
           : status.adminIdsFromEnv > 0
             ? "No member-specific IDs are set, but admins can use the member portal too."
             : "No member approval source is configured yet.",
+    },
+    {
+      label: "Sign-in URL",
+      critical: true,
+      ok: !status.signInOrigin.isPerDeploymentUrl,
+      detail: status.signInOrigin.isPerDeploymentUrl
+        ? `This address is replaced on every deploy, and Shoo issues a different user ID per address. Sign in at ${status.signInOrigin.recommendedOrigin} instead.`
+        : "This address is stable, so your Shoo user ID stays the same here.",
     },
     {
       label: "Neon database",

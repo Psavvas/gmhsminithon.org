@@ -122,9 +122,14 @@ within about half a minute without a redeploy.
 
 ### First-time setup
 
-1. **Find your Shoo user ID.** Visit `/admin/login` (or `/members/login`) and sign
-   in with Shoo. Because you are not on the admin list yet, the page shows your
-   Shoo user ID and a copy button.
+0. **Decide which address you will administer the site from**, and use it for
+   every step below. A Shoo user ID is tied to the exact web address it was
+   issued on, so this choice matters — see
+   [Shoo user IDs are per web address](#shoo-user-ids-are-per-web-address).
+   The production domain is the right answer unless you are testing a branch.
+1. **Find your Shoo user ID.** Visit `/admin/login` (or `/members/login`) on that
+   address and sign in with Shoo. Because you are not on the admin list yet, the
+   page shows your Shoo user ID and a copy button.
 2. **In Vercel → Settings → Environment Variables**, add:
    - `ADMIN_APPROVED_SHOO_SUBS` — your Shoo user ID. This is the bootstrap list;
      IDs here cannot be removed from inside the portal, so you cannot lock
@@ -154,23 +159,59 @@ deployment actually has (counts and booleans only — no secrets or IDs):
 
 Common causes, in the order worth checking:
 
-1. **The deployment does not have the portal yet.** `/admin` only exists on a
+1. **The Shoo ID came from a different web address.** See below — this is the
+   most common one, and the least obvious.
+2. **The deployment does not have the portal yet.** `/admin` only exists on a
    deployment built from a branch that contains it. On production that means
    merging to `main`.
-2. **No redeploy after adding the variables.** Vercel only picks up environment
+3. **No redeploy after adding the variables.** Vercel only picks up environment
    variables on a new deployment.
-3. **The variable was added to the wrong environment.** Vercel keeps Production,
+4. **The variable was added to the wrong environment.** Vercel keeps Production,
    Preview, and Development separate. A `*.vercel.app` preview URL needs the
    values added to Preview.
-4. **Quotes came along with the value.** Pasting `"ps_abc123"` into Vercel makes
-   the quotes part of the ID. The site now strips surrounding quotes, but the
+5. **Quotes came along with the value.** Pasting `"ps_abc123"` into Vercel makes
+   the quotes part of the ID. The site strips surrounding quotes, but the
    cleanest fix is to paste the bare value.
-5. **The ID is not the one this site sees.** Shoo issues a different user ID per
-   site, so use the ID shown on this site's own sign-in screen, not one copied
-   from elsewhere. A failed sign-in displays it with a copy button.
 
 Admins can also use the member portal, so a Shoo ID in
 `ADMIN_APPROVED_SHOO_SUBS` needs no separate member approval.
+
+### Shoo user IDs are per web address
+
+Shoo identifies a site by its origin — its `client_id` is literally
+`origin:https://example.com` — and a user's `pairwise_sub` is per client. **The
+same person therefore has a different Shoo user ID on every web address**:
+
+| Address                                        | Stable?              | Shoo ID          |
+| ---------------------------------------------- | -------------------- | ---------------- |
+| `gmhsminithon.org`                             | yes                  | `ps_aaa…`        |
+| `gmhsminithon-git-<branch>-<scope>.vercel.app` | yes, per branch      | `ps_bbb…`        |
+| `gmhsminithon-<hash>-<scope>.vercel.app`       | no, new every deploy | new every deploy |
+
+So an ID copied from one address will never authorize on another, and an ID
+captured on a per-deployment URL is worthless by the next deploy. **Do admin
+sign-in on one stable address** — the production domain, or a branch alias while
+testing — and put the ID from _that_ address in `ADMIN_APPROVED_SHOO_SUBS`.
+`ADMIN_APPROVED_SHOO_SUBS` is a list, so if you administer from two addresses,
+add the ID from each.
+
+Both sign-in pages detect this: land on a per-deployment URL and they say so, and
+link to the stable address to use instead. `/api/admin/status` reports the same
+under `signInOrigin`.
+
+Two things this is _not_ fixable with:
+
+- **`PUBLIC_SITE_URL`** tells the server which token origins to accept, so tokens
+  minted on the canonical address verify anywhere. It cannot change which address
+  the browser is on, so it does not make the Shoo ID stable. Set it anyway — it is
+  what lets a stable-address sign-in work across deployments.
+- **Session cookies** are scoped to one host by the browser, so a new address
+  always means signing in again regardless of configuration.
+
+Vercel sets `VERCEL_URL` (this deployment), `VERCEL_BRANCH_URL` (stable per
+branch), and `VERCEL_PROJECT_PRODUCTION_URL` (production) automatically; all
+three are accepted as token origins, so nothing extra is needed for the stable
+aliases to work.
 
 ### Connecting Neon
 

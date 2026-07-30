@@ -1,6 +1,7 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import AdminLogin from "../../components/admin/AdminLogin";
+import SignInOriginNotice from "../../components/SignInOriginNotice.astro";
 import { getShooBaseUrl } from "../../utils/auth";
 import {
   ADMIN_AUTH_CALLBACK_PATH,
@@ -50,6 +51,8 @@ const configurationNotice = !sessionConfigured
       )
     }
 
+    <SignInOriginNotice path="/admin/login" />
+
     <AdminLogin
       client:load
       shooBaseUrl={getShooBaseUrl()}
@@ -58,6 +61,7 @@ const configurationNotice = !sessionConfigured
       adminHomePath={ADMIN_HOME_PATH}
       sessionEndpoint="/api/admin/session"
       configurationNotice={configurationNotice}
+      originHost={Astro.url.host}
     />
 
     <p class="admin-field__help">

@@ -8,6 +8,8 @@ type AdminLoginProps = {
   adminHomePath: string;
   sessionEndpoint: string;
   configurationNotice?: string;
+  /** Host this ID belongs to — Shoo IDs differ per web address. */
+  originHost?: string;
 };
 
 type LoginError = {
@@ -64,6 +66,7 @@ export default function AdminLogin({
   adminHomePath,
   sessionEndpoint,
   configurationNotice,
+  originHost,
 }: AdminLoginProps) {
   const { clearIdentity, error, identity, loading, signIn } = useShooAuth({
     shooBaseUrl,
@@ -222,19 +225,30 @@ export default function AdminLogin({
         <div className="admin-callout admin-callout--error" role="alert">
           <p>{loginError.message}</p>
           {loginError.userId && (
-            <div className="admin-login__user-id">
-              <span>Your Shoo user ID</span>
-              <code>{loginError.userId}</code>
-              <button
-                type="button"
-                className="admin-button admin-button--ghost admin-button--small"
-                onClick={() =>
-                  void handleCopyUserId(loginError.userId as string)
-                }
-              >
-                {copied ? "Copied" : "Copy"}
-              </button>
-            </div>
+            <>
+              <div className="admin-login__user-id">
+                <span>
+                  {originHost
+                    ? `Your Shoo user ID on ${originHost}`
+                    : "Your Shoo user ID"}
+                </span>
+                <code>{loginError.userId}</code>
+                <button
+                  type="button"
+                  className="admin-button admin-button--ghost admin-button--small"
+                  onClick={() =>
+                    void handleCopyUserId(loginError.userId as string)
+                  }
+                >
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              </div>
+              <p className="admin-field__help">
+                Shoo issues a different ID for every web address, so add this
+                exact value to ADMIN_APPROVED_SHOO_SUBS
+                {originHost ? ` for ${originHost}` : ""}.
+              </p>
+            </>
           )}
         </div>
       )}

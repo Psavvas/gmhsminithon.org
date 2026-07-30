@@ -1,0 +1,65 @@
+---
+/**
+ * Warns when someone is signing in on a URL that changes with every deploy.
+ *
+ * Shoo's client id is the site's origin, and a user's Shoo ID is per-client, so
+ * the same person has a different Shoo user ID on every web address. Approving
+ * an ID captured on a throwaway deployment URL is wasted effort — it is gone on
+ * the next deploy.
+ */
+import { getSignInOriginInfo } from "../utils/admin/setup";
+
+export interface Props {
+  /** Path to link to on the stable URL, e.g. "/admin/login". */
+  path: string;
+}
+
+const { path } = Astro.props;
+const originInfo = getSignInOriginInfo(Astro.request);
+const recommendedHost = originInfo.recommendedOrigin
+  ? new URL(originInfo.recommendedOrigin).host
+  : null;
+---
+
+{
+  originInfo.isPerDeploymentUrl && originInfo.recommendedOrigin && (
+    <div class="origin-notice">
+      <p>
+        <strong>You are on a per-deployment URL.</strong> Shoo gives you a
+        different user ID on every web address, and this address is replaced by
+        the next deploy — so an ID approved here stops working, and an ID
+        approved elsewhere will not match here.
+      </p>
+      <p>
+        <a href={`${originInfo.recommendedOrigin}${path}`}>
+          Sign in at {recommendedHost} instead →
+        </a>
+      </p>
+    </div>
+  )
+}
+
+<style>
+  .origin-notice {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #f0d69a;
+    background: #fff6e0;
+    color: #6b4a05;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .origin-notice p {
+    margin: 0;
+  }
+
+  .origin-notice a {
+    color: #6b4a05;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+</style>
