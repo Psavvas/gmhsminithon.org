@@ -8,7 +8,9 @@ import {
   splitEventsByDate,
 } from "../utils/events";
 
-export const prerender = true;
+import { applyContentCacheHeaders } from "../utils/content";
+
+applyContentCacheHeaders(Astro.response);
 
 const events = await getAllEvents();
 const { upcomingEvents, pastEvents } = splitEventsByDate(events);

@@ -1,0 +1,21 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import AdminAuthCallback from "../../../components/admin/AdminAuthCallback";
+import { getShooBaseUrl } from "../../../utils/auth";
+import {
+  ADMIN_AUTH_CALLBACK_PATH,
+  ADMIN_LOGIN_PATH,
+} from "../../../utils/admin/session";
+---
+
+<AdminLayout title="Completing Admin Sign-In - Mini-THON" variant="bare">
+  <div class="admin-login-card">
+    <h1>Completing sign-in</h1>
+    <AdminAuthCallback
+      client:load
+      shooBaseUrl={getShooBaseUrl()}
+      callbackPath={ADMIN_AUTH_CALLBACK_PATH}
+      loginPath={ADMIN_LOGIN_PATH}
+    />
+  </div>
+</AdminLayout>

@@ -1,0 +1,60 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AdminLogin from "../../components/admin/AdminLogin";
+import { getShooBaseUrl } from "../../utils/auth";
+import {
+  ADMIN_AUTH_CALLBACK_PATH,
+  ADMIN_HOME_PATH,
+  ADMIN_LOGIN_PATH,
+  getAdminSession,
+  isAdminSessionConfigured,
+} from "../../utils/admin/session";
+import { hasAdminBootstrapConfigured } from "../../utils/admin/access";
+import { isDatabaseConfigured } from "../../utils/content/db";
+
+if (await getAdminSession(Astro.request)) {
+  return Astro.redirect(ADMIN_HOME_PATH);
+}
+
+const sessionConfigured = isAdminSessionConfigured();
+const hasAdminSource = hasAdminBootstrapConfigured() || isDatabaseConfigured();
+const signedOut = Astro.url.searchParams.get("signedOut") === "1";
+
+const configurationNotice = !sessionConfigured
+  ? "This deployment is missing ADMIN_SESSION_SECRET (or MEMBER_SESSION_SECRET). Add one in Vercel's environment variables, redeploy, and try again."
+  : !hasAdminSource
+    ? "No admins are configured yet. Add your Shoo user ID to ADMIN_APPROVED_SHOO_SUBS in Vercel — sign in below to see what your ID is."
+    : undefined;
+---
+
+<AdminLayout title="Admin Sign-In - Mini-THON" variant="bare">
+  <div class="admin-login-card">
+    <h1>Mini-THON Admin</h1>
+    <p>
+      Sign in with Shoo to edit site content. Only Shoo accounts on the admin
+      list can get in.
+    </p>
+
+    {
+      signedOut && (
+        <p class="admin-callout admin-callout--success">You are signed out.</p>
+      )
+    }
+
+    <AdminLogin
+      client:load
+      shooBaseUrl={getShooBaseUrl()}
+      callbackPath={ADMIN_AUTH_CALLBACK_PATH}
+      loginPath={ADMIN_LOGIN_PATH}
+      adminHomePath={ADMIN_HOME_PATH}
+      sessionEndpoint="/api/admin/session"
+      configurationNotice={configurationNotice}
+    />
+
+    <p class="admin-field__help">
+      Looking for the member portal instead? <a href="/members/login"
+        >Member sign-in</a
+      >.
+    </p>
+  </div>
+</AdminLayout>

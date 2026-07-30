@@ -1,7 +1,7 @@
 ---
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
-import memberAnnouncements from "../../data/memberAnnouncements.json";
+import { getMemberAnnouncements } from "../../utils/content";
 import {
   normalizeAnnouncements,
   renderAnnouncementMdx,
@@ -13,7 +13,7 @@ if (!(await checkMemberAuth(Astro.request))) {
 }
 
 const announcements = sortAnnouncementsPinnedThenDate(
-  normalizeAnnouncements(memberAnnouncements.announcements),
+  normalizeAnnouncements(await getMemberAnnouncements()),
 );
 ---
 

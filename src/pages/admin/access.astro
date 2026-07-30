@@ -1,0 +1,77 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AccessManager from "../../components/admin/AccessManager";
+import { ADMIN_LOGIN_PATH, getAdminSession } from "../../utils/admin/session";
+import { getAccessListState } from "../../utils/admin/access";
+import { isDatabaseConfigured } from "../../utils/content/db";
+
+const session = await getAdminSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect(ADMIN_LOGIN_PATH);
+}
+
+const [admins, members] = await Promise.all([
+  getAccessListState("admins", { forceRefresh: true }),
+  getAccessListState("members", { forceRefresh: true }),
+]);
+
+const databaseConfigured = isDatabaseConfigured();
+---
+
+<AdminLayout
+  title="Shoo IDs - Mini-THON Admin"
+  heading="Shoo IDs"
+  intro="Admins can edit site content here. Members can sign in to the member portal. Both are identified by their Shoo user ID."
+  activePath="/admin/access"
+>
+  <section class="admin-panel">
+    <h2>How this works</h2>
+    <p class="admin-field__help">
+      Ask the person to open <a
+        href="/members/login"
+        target="_blank"
+        rel="noopener noreferrer">/members/login</a
+      > and sign in with Shoo. If they are not approved yet, the page shows their
+      Shoo user ID — that is the value to paste below. IDs are private to this site,
+      so nothing personal ends up in the repository.
+    </p>
+    {
+      !databaseConfigured && (
+        <p class="admin-callout admin-callout--warning">
+          Until a database is connected, these lists come from Vercel
+          environment variables (
+          <code class="admin-code">ADMIN_APPROVED_SHOO_SUBS</code> and{" "}
+          <code class="admin-code">MEMBER_APPROVED_SHOO_SUBS</code>) and cannot
+          be edited here.
+        </p>
+      )
+    }
+  </section>
+
+  <section class="admin-panel">
+    <h2>Admins</h2>
+    <AccessManager
+      client:load
+      listId="admins"
+      endpoint="/api/admin/access/admins"
+      initialEntries={admins.entries}
+      databaseConfigured={databaseConfigured}
+      currentUserSub={session.pairwiseSub}
+      initialWarning={admins.error}
+    />
+  </section>
+
+  <section class="admin-panel">
+    <h2>Approved members</h2>
+    <AccessManager
+      client:load
+      listId="members"
+      endpoint="/api/admin/access/members"
+      initialEntries={members.entries}
+      databaseConfigured={databaseConfigured}
+      currentUserSub={session.pairwiseSub}
+      initialWarning={members.error}
+    />
+  </section>
+</AdminLayout>

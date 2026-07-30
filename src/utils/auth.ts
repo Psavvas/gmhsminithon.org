@@ -1,4 +1,6 @@
 import { createRemoteJWKSet, jwtVerify, SignJWT, type JWTPayload } from "jose";
+import { getDatabaseMemberSubjectsState } from "./admin/access";
+import { isDatabaseConfigured } from "./content/db";
 
 const DEFAULT_SHOO_BASE_URL = "https://shoo.dev";
 const MEMBER_SESSION_COOKIE = "member_session";
@@ -73,7 +75,8 @@ export function getShooBaseUrl(): string {
 export function hasMemberApprovalSourceConfigured(): boolean {
   return (
     parseApprovedMemberSubjects(getMemberApprovedShooSubsEnv()).size > 0 ||
-    Boolean(getMemberApprovedGoogleSheetCsvUrl())
+    Boolean(getMemberApprovedGoogleSheetCsvUrl()) ||
+    isDatabaseConfigured()
   );
 }
 
@@ -233,8 +236,42 @@ export async function getApprovedMemberSubjectsState(
     }
   }
 
+  // Shoo IDs added through the admin portal live in the database and are merged
+  // with the environment variable and Google Sheet sources above.
+  const databaseMemberState = await getDatabaseMemberSubjectsState({
+    forceRefresh: options.forceRefresh,
+  });
+
+  if (databaseMemberState.configured) {
+    for (const subject of databaseMemberState.subjects) {
+      subjects.add(subject);
+    }
+
+    if (databaseMemberState.error) {
+      loadError = loadError ?? databaseMemberState.error;
+    }
+
+    if (!googleSheetCsvUrl) {
+      cacheStatus = databaseMemberState.cacheStatus;
+    }
+
+    logMemberAuth(
+      "debug",
+      "approval.database_source_loaded",
+      {
+        subjectCount: databaseMemberState.subjects.size,
+        cacheStatus: databaseMemberState.cacheStatus,
+        loadError: databaseMemberState.error,
+      },
+      options.logContext,
+    );
+  }
+
   return {
-    isConfigured: envSubjects.size > 0 || Boolean(googleSheetCsvUrl),
+    isConfigured:
+      envSubjects.size > 0 ||
+      Boolean(googleSheetCsvUrl) ||
+      databaseMemberState.configured,
     loadError,
     subjects,
     cacheStatus,
@@ -282,12 +319,12 @@ async function getApprovedMemberSubjectsFromGoogleSheet(
     options.forceRefresh &&
     (!cachedEntry ||
       now - approvedMemberSheetLastForcedRefreshAt >=
-      APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
+        APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
   const shouldRefreshStaleCache =
     !hasFreshCache &&
     Boolean(cachedEntry) &&
     now - approvedMemberSheetLastBackgroundRefreshAt >=
-    APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
+      APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
 
   if (hasFreshCache && cachedEntry && !shouldForceRefresh) {
     logMemberAuth(

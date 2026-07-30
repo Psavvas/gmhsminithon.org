@@ -1,10 +1,18 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
 import SocialPopup from "../components/SocialPopup.astro";
-import clubInfo from "../data/clubInfo.json";
-import fundraisingData from "../data/fundraising.json";
+import {
+  applyContentCacheHeaders,
+  getClubInfo,
+  getFundraising,
+} from "../utils/content";
 
-export const prerender = true;
+applyContentCacheHeaders(Astro.response);
+
+const [clubInfo, fundraisingData] = await Promise.all([
+  getClubInfo(),
+  getFundraising(),
+]);
 ---
 
 <PublicLayout title="Get Involved - Mini-THON">

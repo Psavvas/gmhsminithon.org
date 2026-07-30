@@ -1,0 +1,214 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { listCollectionSpecs } from "../../utils/content/collections";
+import { getCollectionStatuses } from "../../utils/content/store";
+import {
+  checkDatabaseConnection,
+  getRecentAdminActivity,
+  type AdminActivityEntry,
+} from "../../utils/content/db";
+import { isUploadThingConfigured } from "../../utils/admin/uploads";
+import {
+  ADMIN_LOGIN_PATH,
+  getAdminSession,
+  redactShooSub,
+} from "../../utils/admin/session";
+import { getAccessListState } from "../../utils/admin/access";
+import { hasMemberApprovalSourceConfigured } from "../../utils/auth";
+
+const session = await getAdminSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect(ADMIN_LOGIN_PATH);
+}
+
+const specs = listCollectionSpecs();
+const [{ statuses, error: contentWarning }, database, adminList] =
+  await Promise.all([
+    getCollectionStatuses(specs),
+    checkDatabaseConnection(),
+    getAccessListState("admins"),
+  ]);
+
+const uploadsConfigured = isUploadThingConfigured();
+const memberSourceConfigured = hasMemberApprovalSourceConfigured();
+const canEdit = database.configured && database.reachable;
+
+let activity: AdminActivityEntry[] = [];
+
+if (canEdit) {
+  try {
+    activity = await getRecentAdminActivity(8);
+  } catch {
+    activity = [];
+  }
+}
+
+const savedCount = statuses.filter(
+  (status) => status.source === "database",
+).length;
+
+function formatDateTime(value: string | null): string {
+  if (!value) {
+    return "";
+  }
+
+  const parsed = new Date(value);
+
+  return Number.isNaN(parsed.getTime())
+    ? value
+    : parsed.toLocaleString("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+}
+
+const activityLabels: Record<string, string> = {
+  "content.update": "Updated content",
+  "content.reset": "Reverted content",
+  "access.admin_added": "Added an admin",
+  "access.admin_removed": "Removed an admin",
+  "access.member_added": "Approved a member",
+  "access.member_removed": "Removed a member",
+  "upload.image": "Uploaded an image",
+};
+
+const setupChecks = [
+  {
+    label: "Neon database",
+    ok: canEdit,
+    detail: !database.configured
+      ? "Not connected. Add DATABASE_URL in Vercel to turn on editing — until then the site serves the JSON files from the repository and this portal is read-only."
+      : database.reachable
+        ? "Connected. Content edits save here and appear on the site within about 30 seconds."
+        : `Configured, but not reachable right now: ${database.error ?? "unknown error"}`,
+  },
+  {
+    label: "Image uploads (UploadThing)",
+    ok: uploadsConfigured,
+    detail: uploadsConfigured
+      ? "Uploads go straight to UploadThing."
+      : "Add UPLOADTHING_TOKEN in Vercel to upload images. You can still paste image links.",
+  },
+  {
+    label: "Member portal access list",
+    ok: memberSourceConfigured,
+    detail: memberSourceConfigured
+      ? "Member Shoo IDs can be managed under Shoo IDs."
+      : "No member approval source is configured yet.",
+  },
+];
+---
+
+<AdminLayout
+  title="Admin Overview - Mini-THON"
+  heading="Site content"
+  intro="Everything on the website that changes during the year lives here. Pick a section, make your edits, and save — no code, no deploy."
+>
+  {
+    contentWarning && (
+      <p class="admin-callout admin-callout--warning">
+        Heads up: {contentWarning} The site is showing the last content it could
+        read.
+      </p>
+    )
+  }
+
+  <section class="admin-panel">
+    <h2>Setup</h2>
+    <ul class="admin-status-list">
+      {
+        setupChecks.map((check) => (
+          <li class="admin-status">
+            <span class="admin-status__state" aria-hidden="true">
+              {check.ok ? "✅" : "⚠️"}
+            </span>
+            <span class="admin-status__label">
+              {check.label}
+              <span class="admin-visually-hidden">
+                {check.ok ? " — ready" : " — needs attention"}
+              </span>
+            </span>
+            <p class="admin-status__detail">{check.detail}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title">Sections</h2>
+    <div class="admin-cards">
+      {
+        statuses.map((status) => (
+          <a class="admin-card" href={`/admin/content/${status.id}`}>
+            <span class="admin-card__icon" aria-hidden="true">
+              {status.icon}
+            </span>
+            <span class="admin-card__title">{status.label}</span>
+            <span class="admin-card__description">{status.description}</span>
+            <span class="admin-card__meta">
+              {status.source === "database"
+                ? `Edited ${formatDateTime(status.updatedAt)}`
+                : "Using the version from the repository"}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <h2>Who has access</h2>
+    <p class="admin-field__help">
+      {adminList.entries.length}
+      {adminList.entries.length === 1 ? " admin" : " admins"} can edit this portal.
+      Signed in as <code class="admin-code"
+        >{redactShooSub(session.pairwiseSub)}</code
+      >.
+    </p>
+    <p>
+      <a class="admin-button admin-button--secondary" href="/admin/access"
+        >Manage Shoo IDs</a
+      >
+    </p>
+  </section>
+
+  {
+    activity.length > 0 && (
+      <section class="admin-panel">
+        <h2>Recent changes</h2>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th scope="col">What</th>
+                <th scope="col">Where</th>
+                <th scope="col">When</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activity.map((entry) => (
+                <tr>
+                  <td>{activityLabels[entry.action] ?? entry.action}</td>
+                  <td>{entry.target ?? "—"}</td>
+                  <td>{formatDateTime(entry.createdAt)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    canEdit && savedCount === 0 && (
+      <p class="admin-callout">
+        Nothing has been edited in the portal yet, so every section still shows
+        the copy that ships with the website. The first time you save a section,
+        the database version takes over.
+      </p>
+    )
+  }
+</AdminLayout>

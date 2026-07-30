@@ -1,3 +1,5 @@
+import { getManagedEvents, type ManagedEvent } from "./content";
+
 export interface EventFrontmatter {
   title: string;
   date: string | Date;
@@ -12,6 +14,12 @@ export interface EventFrontmatter {
 export interface Event extends EventFrontmatter {
   url: string;
   Content?: any;
+  /** Where the event is defined: an .mdx file, or the admin portal. */
+  source?: "mdx" | "managed";
+  /** Markdown body, for events managed in the admin portal. */
+  descriptionMarkdown?: string;
+  /** Members-only markdown, for events managed in the admin portal. */
+  memberDetailsMarkdown?: string;
 }
 
 export interface SplitEvents {
@@ -41,19 +49,43 @@ async function loadEventModules(): Promise<
   }));
 }
 
+function managedEventToEvent(event: ManagedEvent): Event {
+  return {
+    title: event.title,
+    date: event.date,
+    time: event.time || undefined,
+    location: event.location || undefined,
+    event_type: event.event_type,
+    summary: event.summary,
+    links: event.links,
+    url: `/events/${event.slug}`,
+    source: "managed",
+    descriptionMarkdown: event.description,
+    memberDetailsMarkdown: event.memberDetails,
+  };
+}
+
 /**
- * Get all events from MDX files in src/pages/events.
+ * Get all events: the MDX files in src/pages/events plus anything added in the
+ * admin portal. An .mdx file wins if both use the same slug, because the file
+ * owns that route.
  */
 export async function getAllEvents(): Promise<Event[]> {
   const modules = await loadEventModules();
+  const mdxEvents: Event[] = modules.map(({ filePath, module }) => ({
+    ...module.frontmatter,
+    url: filePathToEventUrl(filePath),
+    Content: module.default,
+    source: "mdx" as const,
+  }));
+  const mdxUrls = new Set(mdxEvents.map((event) => event.url));
+  const managedEvents = (await getManagedEvents())
+    .map(managedEventToEvent)
+    .filter((event) => !mdxUrls.has(event.url));
 
-  return modules
-    .map(({ filePath, module }) => ({
-      ...module.frontmatter,
-      url: filePathToEventUrl(filePath),
-      Content: module.default,
-    }))
-    .sort((a, b) => getEventDayTimestamp(a.date) - getEventDayTimestamp(b.date));
+  return [...mdxEvents, ...managedEvents].sort(
+    (a, b) => getEventDayTimestamp(a.date) - getEventDayTimestamp(b.date),
+  );
 }
 
 /**
@@ -79,7 +111,11 @@ export async function getUpcomingEvents(limit?: number): Promise<Event[]> {
 
 function parseEventDate(dateValue: string | Date): Date {
   if (dateValue instanceof Date) {
-    return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
+    return new Date(
+      dateValue.getFullYear(),
+      dateValue.getMonth(),
+      dateValue.getDate(),
+    );
   }
 
   const trimmedValue = dateValue.trim();

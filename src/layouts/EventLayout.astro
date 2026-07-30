@@ -8,7 +8,9 @@ import {
   getEventTypeClass,
 } from "../utils/events";
 
-const { frontmatter } = Astro.props;
+// `memberDetailsHtml` is used by events managed in the admin portal, which have
+// no .mdx file to fill the "member-details" slot.
+const { frontmatter, memberDetailsHtml } = Astro.props;
 const {
   title,
   date,
@@ -22,7 +24,8 @@ const fullDate = formatEventDate(date, time);
 const eventDateTime = getEventDateTimeValue(date, time);
 
 const isMember = await checkMemberAuth(Astro.request);
-const hasMemberDetails = Astro.slots.has("member-details");
+const hasMemberDetails =
+  Astro.slots.has("member-details") || Boolean(memberDetailsHtml);
 ---
 
 <PublicLayout title={`${title} - Mini-THON`}>
@@ -96,7 +99,11 @@ const hasMemberDetails = Astro.slots.has("member-details");
             </div>
             {isMember ? (
               <div class="member-details-body">
-                <slot name="member-details" />
+                {memberDetailsHtml ? (
+                  <Fragment set:html={memberDetailsHtml} />
+                ) : (
+                  <slot name="member-details" />
+                )}
               </div>
             ) : (
               <div class="member-locked">

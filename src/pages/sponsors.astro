@@ -1,8 +1,10 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
-import sponsorsData from "../data/sponsors.json";
+import { applyContentCacheHeaders, getSponsors } from "../utils/content";
 
-export const prerender = true;
+applyContentCacheHeaders(Astro.response);
+
+const sponsorsData = { sponsors: await getSponsors() };
 
 const tierOrder = [
   { name: "Diamond", diamonds: 6 },

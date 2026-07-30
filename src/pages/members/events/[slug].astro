@@ -2,6 +2,7 @@
 import MemberLayout from "../../../layouts/MemberLayout.astro";
 import EventCountdown from "../../../components/EventCountdown.astro";
 import { checkMemberAuth } from "../../../utils/auth";
+import { renderContentMarkdown } from "../../../utils/markdown";
 import {
   formatEventDate,
   getEventBySlug,
@@ -169,6 +170,19 @@ if (rawContent) {
 
   publicBodyHtml = renderMarkdown(body);
 }
+
+// Events created in the admin portal store their content as Markdown instead of
+// living in an .mdx file, and are rendered with the escaping renderer.
+if (event.source === "managed") {
+  publicBodyHtml = renderContentMarkdown(event.descriptionMarkdown);
+}
+
+const memberDetailsHtml =
+  event.source === "managed"
+    ? renderContentMarkdown(event.memberDetailsMarkdown)
+    : memberDetailsMarkdown
+      ? renderMarkdown(memberDetailsMarkdown)
+      : "";
 ---
 
 <MemberLayout title={`${title} - Mini-THON`}>
@@ -229,16 +243,13 @@ if (rawContent) {
 
     <section class="event-content">
       {
-        memberDetailsMarkdown && (
+        memberDetailsHtml && (
           <div class="description-card member-card">
             <div class="member-card-header">
               <h2>Member Details</h2>
               <span class="member-badge">Members only</span>
             </div>
-            <div
-              class="member-details-body"
-              set:html={renderMarkdown(memberDetailsMarkdown)}
-            />
+            <div class="member-details-body" set:html={memberDetailsHtml} />
           </div>
         )
       }

@@ -8,6 +8,7 @@ import {
   MEMBER_LOGIN_PATH,
   getShooBaseUrl,
 } from "../utils/auth";
+import { isAdminRequest } from "../utils/admin/session";
 
 export interface Props {
   title: string;
@@ -21,6 +22,8 @@ const diamondFaviconHref =
 
 const { title, description = defaultDescription } = Astro.props;
 const currentPath = Astro.url.pathname;
+// Only admins see the link to the content portal.
+const showAdminLink = await isAdminRequest(Astro.request);
 ---
 
 <!doctype html>
@@ -98,6 +101,13 @@ const currentPath = Astro.url.pathname;
               >Member Resources</a
             >
           </li>
+          {
+            showAdminLink && (
+              <li>
+                <a href="/admin">Admin</a>
+              </li>
+            )
+          }
           <li>
             <MemberLogoutButton
               client:load

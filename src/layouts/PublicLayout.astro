@@ -2,12 +2,14 @@
 import Analytics from "@vercel/analytics/astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import NavBehavior from "../components/NavBehavior.astro";
-import clubInfo from "../data/clubInfo.json";
+import { getClubInfo } from "../utils/content";
 
 export interface Props {
   title: string;
   description?: string;
 }
+
+const clubInfo = await getClubInfo();
 
 const defaultDescription =
   "Great Mills High School Mini-THON is a student-led effort raising funds and awareness for Four Diamonds to fight pediatric cancer through school events, community partnerships, and year-round fundraising.";

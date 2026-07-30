@@ -1,0 +1,86 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import CollectionEditor from "../../../components/admin/CollectionEditor";
+import {
+  getCollectionSpec,
+  toClientCollectionSpec,
+} from "../../../utils/content/collections";
+import { readCollection } from "../../../utils/content/store";
+import { isDatabaseConfigured } from "../../../utils/content/db";
+import { isUploadThingConfigured } from "../../../utils/admin/uploads";
+import {
+  ADMIN_LOGIN_PATH,
+  getAdminSession,
+} from "../../../utils/admin/session";
+
+const session = await getAdminSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect(ADMIN_LOGIN_PATH);
+}
+
+const spec = getCollectionSpec(Astro.params.collection ?? "");
+
+if (!spec) {
+  return Astro.redirect("/admin");
+}
+
+const record = await readCollection(spec.id, { forceRefresh: true });
+const databaseConfigured = isDatabaseConfigured();
+const uploadsConfigured = isUploadThingConfigured();
+
+const saveDisabledReason = !databaseConfigured
+  ? "No database is connected yet, so changes cannot be saved. Add DATABASE_URL in Vercel (a Neon Postgres connection string), redeploy, and this page becomes editable."
+  : undefined;
+---
+
+<AdminLayout
+  title={`${spec.label} - Mini-THON Admin`}
+  heading={spec.label}
+  intro={spec.description}
+  activePath={`/admin/content/${spec.id}`}
+>
+  {
+    (spec.notes?.length || spec.previewPath) && (
+      <div class="admin-panel">
+        {spec.notes?.map((note) => (
+          <p class="admin-field__help">{note}</p>
+        ))}
+        {spec.previewPath && (
+          <p>
+            <a
+              class="admin-button admin-button--ghost admin-button--small"
+              href={spec.previewPath}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View this on the site ↗
+            </a>
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  {
+    record.error && (
+      <p class="admin-callout admin-callout--warning">
+        The database could not be read just now ({record.error}), so this shows
+        the last content the site had.
+      </p>
+    )
+  }
+
+  <CollectionEditor
+    client:load
+    spec={toClientCollectionSpec(spec)}
+    initialData={record.data}
+    contentEndpoint={`/api/admin/content/${spec.id}`}
+    uploadEndpoint="/api/admin/upload"
+    canSave={databaseConfigured}
+    saveDisabledReason={saveDisabledReason}
+    uploadsEnabled={uploadsConfigured}
+    initialSource={record.source}
+    initialUpdatedAt={record.updatedAt}
+  />
+</AdminLayout>

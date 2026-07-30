@@ -1,12 +1,14 @@
 ---
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
-import clubInfo from "../../data/clubInfo.json";
+import { getClubInfo } from "../../utils/content";
 
 // Check authentication
 if (!(await checkMemberAuth(Astro.request))) {
   return Astro.redirect("/members/login");
 }
+
+const clubInfo = await getClubInfo();
 ---
 
 <MemberLayout title="Meeting Info - Mini-THON">

@@ -2,7 +2,7 @@
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
 import RefreshMemberCacheButton from "../../components/member-auth/RefreshMemberCacheButton";
-import memberAnnouncements from "../../data/memberAnnouncements.json";
+import { getMemberAnnouncements } from "../../utils/content";
 import {
   formatEventDate,
   getCurrentYearEvents,
@@ -30,9 +30,7 @@ const upcomingEvents = currentYearEvents
   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   .slice(0, 3);
 
-const allAnnouncements = normalizeAnnouncements(
-  memberAnnouncements.announcements,
-);
+const allAnnouncements = normalizeAnnouncements(await getMemberAnnouncements());
 const announcements = getPinnedAnnouncements(allAnnouncements);
 ---
 

@@ -1,15 +1,13 @@
 ---
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
-import memberResources from "../../data/memberResources.json";
+import { getMemberResources } from "../../utils/content";
 
 if (!(await checkMemberAuth(Astro.request))) {
   return Astro.redirect("/members/login");
 }
 
-const resources = Array.isArray(memberResources.resources)
-  ? memberResources.resources
-  : [];
+const resources = await getMemberResources();
 ---
 
 <MemberLayout title="Member Resources - Mini-THON">

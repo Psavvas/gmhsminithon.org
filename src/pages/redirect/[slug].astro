@@ -1,14 +1,16 @@
 ---
 import PublicLayout from "../../layouts/PublicLayout.astro";
-import redirects from "../../data/redirects.json";
-import fundraisingData from "../../data/fundraising.json";
+import { getFundraising, getRedirects } from "../../utils/content";
 
 const { slug } = Astro.params;
+const redirects = await getRedirects();
 const redirect = redirects.find((r) => r.slug === slug);
 
 if (redirect) {
   return Astro.redirect(redirect.url, 302);
 }
+
+const fundraisingData = await getFundraising();
 ---
 
 <PublicLayout title="Redirect Not Found – GMHS Mini-THON">
