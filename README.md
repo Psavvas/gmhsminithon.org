@@ -58,6 +58,8 @@ src/
 │   ├── api/                     # API endpoints (newsletter, member auth, admin)
 │   ├── redirect/[slug].astro    # Dynamic redirect handler
 │   └── 404.astro                # Custom 404 page
+├── styles/
+│   └── member-portal.css        # Member portal design system (mirrors the admin look)
 └── utils/            # Utility functions
     ├── admin/
     │   ├── access.ts            # Admin + member Shoo ID lists
