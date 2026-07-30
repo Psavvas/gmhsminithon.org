@@ -136,6 +136,41 @@ within about half a minute without a redeploy.
 5. **Add `UPLOADTHING_TOKEN`** to enable image uploads. Without it you can still
    paste image URLs.
 
+### If you cannot sign in
+
+Open **`/api/admin/status`** on the deployment you are trying to use, or expand
+"Setup status for this deployment" on `/admin/login`. Both report what that
+deployment actually has (counts and booleans only — no secrets or IDs):
+
+```json
+{
+  "adminSessionSecretConfigured": true,
+  "adminIdsFromEnv": 1,
+  "databaseConfigured": false,
+  "requestOrigin": "https://gmhsminithon.org"
+}
+```
+
+Common causes, in the order worth checking:
+
+1. **The deployment does not have the portal yet.** `/admin` only exists on a
+   deployment built from a branch that contains it. On production that means
+   merging to `main`.
+2. **No redeploy after adding the variables.** Vercel only picks up environment
+   variables on a new deployment.
+3. **The variable was added to the wrong environment.** Vercel keeps Production,
+   Preview, and Development separate. A `*.vercel.app` preview URL needs the
+   values added to Preview.
+4. **Quotes came along with the value.** Pasting `"ps_abc123"` into Vercel makes
+   the quotes part of the ID. The site now strips surrounding quotes, but the
+   cleanest fix is to paste the bare value.
+5. **The ID is not the one this site sees.** Shoo issues a different user ID per
+   site, so use the ID shown on this site's own sign-in screen, not one copied
+   from elsewhere. A failed sign-in displays it with a copy button.
+
+Admins can also use the member portal, so a Shoo ID in
+`ADMIN_APPROVED_SHOO_SUBS` needs no separate member approval.
+
 ### Connecting Neon
 
 1. Create a Neon project (or use Vercel's Neon integration, which sets the
@@ -165,6 +200,9 @@ JSON files) rather than erroring, and the portal shows a warning.
 
 - **Admins** — can edit content and manage both lists.
 - **Approved members** — can sign in at `/members`.
+
+Admins can use the member portal too, so an admin does not need a separate member
+approval.
 
 Ask the person to sign in once at `/members/login`; the page shows their Shoo user
 ID, which you paste into the portal with an optional note ("Sam, treasurer").
@@ -442,7 +480,8 @@ The site is automatically deployed to [Vercel](https://vercel.com/) when changes
 ### Admin Portal Configuration
 
 - `ADMIN_APPROVED_SHOO_SUBS` (required to get started): Shoo user IDs that always
-  have admin access. Cannot be removed from inside the portal.
+  have admin access. Cannot be removed from inside the portal, and also grants
+  member portal access.
 - `ADMIN_SESSION_SECRET` (required): secret for signing admin session cookies.
   Falls back to `MEMBER_SESSION_SECRET`, but a separate value is better. Admin
   sessions last 8 hours.

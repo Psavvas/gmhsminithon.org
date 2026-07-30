@@ -11,6 +11,10 @@ import {
 } from "../../utils/admin/session";
 import { hasAdminBootstrapConfigured } from "../../utils/admin/access";
 import { isDatabaseConfigured } from "../../utils/content/db";
+import {
+  describeAdminSetup,
+  getAdminSetupStatus,
+} from "../../utils/admin/setup";
 
 if (await getAdminSession(Astro.request)) {
   return Astro.redirect(ADMIN_HOME_PATH);
@@ -19,6 +23,11 @@ if (await getAdminSession(Astro.request)) {
 const sessionConfigured = isAdminSessionConfigured();
 const hasAdminSource = hasAdminBootstrapConfigured() || isDatabaseConfigured();
 const signedOut = Astro.url.searchParams.get("signedOut") === "1";
+const setupStatus = getAdminSetupStatus(Astro.request);
+const setupChecks = describeAdminSetup(setupStatus);
+const setupNeedsAttention = setupChecks.some(
+  (check) => check.critical && !check.ok,
+);
 
 const configurationNotice = !sessionConfigured
   ? "This deployment is missing ADMIN_SESSION_SECRET (or MEMBER_SESSION_SECRET). Add one in Vercel's environment variables, redeploy, and try again."
@@ -56,5 +65,28 @@ const configurationNotice = !sessionConfigured
         >Member sign-in</a
       >.
     </p>
+
+    <details class="admin-setup-details" open={setupNeedsAttention}>
+      <summary>Setup status for this deployment</summary>
+      <ul class="admin-status-list">
+        {
+          setupChecks.map((check) => (
+            <li class="admin-status">
+              <span class="admin-status__state" aria-hidden="true">
+                {check.ok ? "✅" : "⚠️"}
+              </span>
+              <span class="admin-status__label">{check.label}</span>
+              <p class="admin-status__detail">{check.detail}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="admin-field__help">
+        Signing in from <code class="admin-code"
+          >{setupStatus.requestOrigin}</code
+        >. Environment variables only take effect after a redeploy, and they are
+        per-environment in Vercel, so a Preview URL needs them added to Preview.
+      </p>
+    </details>
   </div>
 </AdminLayout>

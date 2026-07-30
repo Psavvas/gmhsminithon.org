@@ -13,8 +13,17 @@ export function readEnv(name: string): string | undefined {
     return undefined;
   }
 
-  const trimmed = value.trim();
+  const trimmed = stripSurroundingQuotes(value.trim());
   return trimmed ? trimmed : undefined;
+}
+
+/**
+ * Values pasted into a hosting dashboard often keep the quotes they had in a
+ * `.env` file. Quotes are never part of the value we want.
+ */
+export function stripSurroundingQuotes(value: string): string {
+  const match = value.match(/^(["'])([\s\S]*)\1$/);
+  return match ? match[2].trim() : value;
 }
 
 export function readFirstEnv(names: string[]): string | undefined {

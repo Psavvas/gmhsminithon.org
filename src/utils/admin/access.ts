@@ -5,7 +5,7 @@
  * Environment variables act as a bootstrap that the database cannot override —
  * that is what stops an admin from accidentally locking everyone out.
  */
-import { readEnv } from "../env";
+import { readEnv, stripSurroundingQuotes } from "../env";
 import {
   describeDatabaseError,
   getDatabase,
@@ -59,7 +59,13 @@ export function parseShooSubList(rawValue?: string): string[] {
     new Set(
       rawValue
         .split(/[\s,;]+/)
-        .map((value) => value.trim())
+        // Tolerate quotes and brackets left over from copy/paste.
+        .map((value) =>
+          stripSurroundingQuotes(value.trim()).replace(
+            /^["'[\]]+|["'[\]]+$/g,
+            "",
+          ),
+        )
         .filter(Boolean),
     ),
   );
