@@ -7,7 +7,7 @@ import {
   getRecentAdminActivity,
   type AdminActivityEntry,
 } from "../../utils/content/db";
-import { isUploadThingConfigured } from "../../utils/admin/uploads";
+import { inspectUploadThingToken } from "../../utils/admin/uploads";
 import {
   ADMIN_LOGIN_PATH,
   getAdminSession,
@@ -31,7 +31,7 @@ const [{ statuses, error: contentWarning }, database, adminList] =
     getAccessListState("admins"),
   ]);
 
-const uploadsConfigured = isUploadThingConfigured();
+const uploadStatus = inspectUploadThingToken();
 const memberSourceConfigured = hasMemberApprovalSourceConfigured();
 const canEdit = database.configured && database.reachable;
 
@@ -86,10 +86,10 @@ const setupChecks = [
   },
   {
     label: "Image uploads (UploadThing)",
-    ok: uploadsConfigured,
-    detail: uploadsConfigured
-      ? "Uploads go straight to UploadThing."
-      : "Add UPLOADTHING_TOKEN in Vercel to upload images. You can still paste image links.",
+    ok: uploadStatus.ok,
+    detail: uploadStatus.ok
+      ? "Uploads go straight to UploadThing. Images have to be under 4 MB."
+      : `${uploadStatus.reason} You can still paste image links in the meantime.`,
   },
   {
     label: "Member portal access list",

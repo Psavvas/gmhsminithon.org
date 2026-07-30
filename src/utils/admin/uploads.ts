@@ -5,9 +5,15 @@
  * own API route, which forwards it with the UploadThing SDK.
  */
 import { UTApi } from "uploadthing/server";
-import { readFirstEnv } from "../env";
+import { readEnv } from "../env";
 
-export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+/**
+ * The file is posted to our own API route first, and a serverless function on
+ * Vercel refuses request bodies over 4.5 MB before our code ever runs — so the
+ * ceiling here is deliberately under that, to fail with a message instead of a
+ * platform error page.
+ */
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
 const ALLOWED_MIME_TYPES = new Set([
   "image/png",
@@ -23,11 +29,63 @@ let cachedToken: string | undefined;
 let cachedApi: UTApi | undefined;
 
 export function getUploadThingToken(): string | undefined {
-  return readFirstEnv(["UPLOADTHING_TOKEN", "UPLOADTHING_SECRET"]);
+  return readEnv("UPLOADTHING_TOKEN");
+}
+
+export type UploadThingTokenStatus =
+  | { ok: true }
+  | { ok: false; reason: string };
+
+/**
+ * UploadThing v7 wants a token that base64-decodes to
+ * `{ apiKey, appId, regions }`. The `sk_live_…` secret key is only the `apiKey`
+ * field inside it, so pasting that alone can never work — and the SDK's own
+ * error for it is not obvious. Check the shape up front and say what to do.
+ */
+export function inspectUploadThingToken(): UploadThingTokenStatus {
+  const token = getUploadThingToken();
+
+  if (!token) {
+    return {
+      ok: false,
+      reason: readEnv("UPLOADTHING_SECRET")
+        ? "UPLOADTHING_SECRET is set, but uploads need UPLOADTHING_TOKEN — the long token from the UploadThing dashboard's API Keys tab, not the sk_live_… secret key."
+        : "UPLOADTHING_TOKEN is not set.",
+    };
+  }
+
+  if (/^sk_(live|test)_/i.test(token)) {
+    return {
+      ok: false,
+      reason:
+        "That value is an API key (sk_live_…), not the token. In the UploadThing dashboard open API Keys and copy the value labelled UPLOADTHING_TOKEN.",
+    };
+  }
+
+  try {
+    const normalized = token.replace(/-/g, "+").replace(/_/g, "/");
+    const decoded = JSON.parse(atob(normalized)) as {
+      apiKey?: string;
+      appId?: string;
+      regions?: unknown;
+    };
+
+    if (!decoded.apiKey || !decoded.appId || !Array.isArray(decoded.regions)) {
+      throw new Error("missing fields");
+    }
+
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      reason:
+        "UPLOADTHING_TOKEN could not be read. Copy it again from the UploadThing dashboard (API Keys → UPLOADTHING_TOKEN) and redeploy — it should be one long string with no quotes around it.",
+    };
+  }
 }
 
 export function isUploadThingConfigured(): boolean {
-  return Boolean(getUploadThingToken());
+  return inspectUploadThingToken().ok;
 }
 
 function getApi(): UTApi | null {
@@ -91,6 +149,12 @@ export async function uploadImage(file: File): Promise<UploadOutcome> {
     };
   }
 
+  const tokenStatus = inspectUploadThingToken();
+
+  if (!tokenStatus.ok) {
+    return { ok: false, status: 503, error: tokenStatus.reason };
+  }
+
   const api = getApi();
 
   if (!api) {
@@ -110,10 +174,21 @@ export async function uploadImage(file: File): Promise<UploadOutcome> {
   const result = await api.uploadFiles(uploadable);
 
   if (result.error || !result.data) {
+    // Log the whole error server-side; UploadThing's reason is often in `code`
+    // or `data` rather than `message`.
+    console.warn("[admin] uploadthing rejected an upload", result.error);
+
+    const { code, message } = (result.error ?? {}) as {
+      code?: string;
+      message?: string;
+    };
+
     return {
       ok: false,
       status: 502,
-      error: result.error?.message ?? "UploadThing rejected the upload.",
+      error:
+        [message, code && `(${code})`].filter(Boolean).join(" ") ||
+        "UploadThing rejected the upload.",
     };
   }
 

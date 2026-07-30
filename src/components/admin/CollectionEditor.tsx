@@ -19,6 +19,7 @@ type EditorContext = {
   onChange: (path: Path, value: unknown) => void;
   uploadEndpoint: string;
   uploadsEnabled: boolean;
+  maxUploadBytes: number;
   openRowsByDefault: (
     listPath: string,
     count: number,
@@ -34,6 +35,7 @@ type CollectionEditorProps = {
   canSave: boolean;
   saveDisabledReason?: string;
   uploadsEnabled: boolean;
+  maxUploadBytes: number;
   initialSource: "database" | "bundled";
   initialUpdatedAt: string | null;
 };
@@ -261,6 +263,7 @@ function Field({
           onChange={(next) => ctx.onChange(path, next)}
           uploadEndpoint={ctx.uploadEndpoint}
           enabled={ctx.uploadsEnabled}
+          maxBytes={ctx.maxUploadBytes}
           inputId={inputId}
           describedBy={describedBy}
         />
@@ -675,6 +678,7 @@ export default function CollectionEditor({
   canSave,
   saveDisabledReason,
   uploadsEnabled,
+  maxUploadBytes,
   initialSource,
   initialUpdatedAt,
 }: CollectionEditorProps) {
@@ -740,9 +744,17 @@ export default function CollectionEditor({
       onChange: handleChange,
       uploadEndpoint,
       uploadsEnabled,
+      maxUploadBytes,
       openRowsByDefault,
     }),
-    [handleChange, issueMap, openRowsByDefault, uploadEndpoint, uploadsEnabled],
+    [
+      handleChange,
+      issueMap,
+      maxUploadBytes,
+      openRowsByDefault,
+      uploadEndpoint,
+      uploadsEnabled,
+    ],
   );
 
   const save = useCallback(async () => {
@@ -807,54 +819,6 @@ export default function CollectionEditor({
     }
   }, [canSave, contentEndpoint, data, spec]);
 
-  const revert = useCallback(async () => {
-    if (
-      !window.confirm(
-        "Discard the saved version and go back to the copy that ships with the website?",
-      )
-    ) {
-      return;
-    }
-
-    setStatus("saving");
-    setMessage(null);
-
-    try {
-      const response = await fetch(contentEndpoint, {
-        method: "DELETE",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-      });
-      const payload = (await response.json().catch(() => null)) as {
-        data?: unknown;
-        source?: string;
-        error?: string;
-      } | null;
-
-      if (!response.ok) {
-        setStatus("error");
-        setMessage(payload?.error ?? "That could not be undone.");
-        return;
-      }
-
-      setIssues([]);
-      setStatus("saved");
-      setMessage("Reverted to the version that ships with the website.");
-      setSource("bundled");
-      setUpdatedAt(null);
-
-      if (payload?.data !== undefined) {
-        setData(payload.data);
-        setSavedData(payload.data);
-      }
-    } catch (error) {
-      setStatus("error");
-      setMessage(
-        error instanceof Error ? error.message : "That could not be undone.",
-      );
-    }
-  }, [contentEndpoint]);
-
   const saveRef = useRef(save);
   saveRef.current = save;
 
@@ -906,16 +870,6 @@ export default function CollectionEditor({
           <span>{statusLabel}</span>
         </div>
         <div className="admin-editor__bar-actions">
-          {source === "database" && (
-            <button
-              type="button"
-              className="admin-button admin-button--ghost admin-button--small"
-              onClick={() => void revert()}
-              disabled={status === "saving"}
-            >
-              Revert to file version
-            </button>
-          )}
           <button
             type="button"
             className="admin-button admin-button--primary"

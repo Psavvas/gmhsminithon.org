@@ -7,7 +7,10 @@ import {
 } from "../../../utils/content/collections";
 import { readCollection } from "../../../utils/content/store";
 import { isDatabaseConfigured } from "../../../utils/content/db";
-import { isUploadThingConfigured } from "../../../utils/admin/uploads";
+import {
+  MAX_UPLOAD_BYTES,
+  isUploadThingConfigured,
+} from "../../../utils/admin/uploads";
 import {
   ADMIN_LOGIN_PATH,
   getAdminSession,
@@ -80,6 +83,7 @@ const saveDisabledReason = !databaseConfigured
     canSave={databaseConfigured}
     saveDisabledReason={saveDisabledReason}
     uploadsEnabled={uploadsConfigured}
+    maxUploadBytes={MAX_UPLOAD_BYTES}
     initialSource={record.source}
     initialUpdatedAt={record.updatedAt}
   />

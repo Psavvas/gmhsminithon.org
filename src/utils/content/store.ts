@@ -277,37 +277,6 @@ export async function writeCollection(
   return { updatedAt, data };
 }
 
-/**
- * Delete the stored copy of a collection, reverting the site to the JSON file
- * that ships with the repository.
- */
-export async function resetCollection(
-  spec: CollectionSpec,
-  actor: string,
-): Promise<void> {
-  const sql = await getDatabase();
-
-  if (!sql) {
-    throw new Error("No database is connected yet.");
-  }
-
-  await sql`delete from site_content where collection = ${spec.id}`;
-
-  const records = new Map(cachedSnapshot?.records ?? []);
-  records.delete(spec.id);
-  cachedSnapshot = {
-    records,
-    source: "database",
-    fetchedAt: Date.now(),
-  };
-
-  await logAdminActivity({
-    actor,
-    action: "content.reset",
-    target: spec.id,
-  });
-}
-
 export type CollectionStatus = {
   id: string;
   label: string;

@@ -5,7 +5,6 @@ import {
 } from "../../../../utils/content/collections";
 import {
   readCollection,
-  resetCollection,
   writeCollection,
 } from "../../../../utils/content/store";
 import { describeDatabaseError } from "../../../../utils/content/db";
@@ -108,33 +107,5 @@ export const PUT: APIRoute = async ({ request, params }) => {
     });
 
     return jsonError(message, 503);
-  }
-};
-
-export const DELETE: APIRoute = async ({ request, params }) => {
-  const guard = await guardAdminApiRequest(request);
-
-  if (!guard.ok) {
-    return guard.response;
-  }
-
-  const spec = getCollectionSpec(params.collection ?? "");
-
-  if (!spec) {
-    return jsonError("Unknown content collection.", 404);
-  }
-
-  try {
-    await resetCollection(spec, guard.session.pairwiseSub);
-    const record = await readCollection(spec.id, { forceRefresh: true });
-
-    return jsonResponse({
-      collection: spec.id,
-      data: record.data,
-      source: record.source,
-      updatedAt: record.updatedAt,
-    });
-  } catch (error) {
-    return jsonError(describeDatabaseError(error), 503);
   }
 };

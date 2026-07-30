@@ -115,8 +115,9 @@ Each section is read in this order:
 
 So the site keeps working with no database attached — it just serves what is in
 the repository, and the portal is read-only. The moment `DATABASE_URL` is set,
-saving a section takes over that section. "Revert to file version" in the editor
-deletes the stored copy and hands the section back to the JSON file.
+saving a section takes over that section for good — saving is one-way, so the
+JSON files are the starting point rather than something the portal can fall back
+to.
 
 Content pages are server-rendered with a 30-second CDN cache
 (`s-maxage=30, stale-while-revalidate=300`), so edits appear on the live site
@@ -264,9 +265,15 @@ but marked read-only, and you cannot remove your own admin access.
 
 Image fields (such as sponsor logos) upload straight to UploadThing from the
 editor: pick a file or drag one in, and the resulting URL is stored with the
-content. PNG, JPEG, WebP, AVIF, GIF, and SVG are accepted, up to 8 MB. The
-UploadThing token never leaves the server — the browser posts the file to
-`/api/admin/upload`, which forwards it.
+content. PNG, JPEG, WebP, AVIF, GIF, and SVG are accepted, **up to 4 MB** —
+the file passes through a Vercel serverless function, which rejects request
+bodies over 4.5 MB. The UploadThing token never leaves the server: the browser
+posts the file to `/api/admin/upload`, which forwards it.
+
+`UPLOADTHING_TOKEN` must be the token from the dashboard's API Keys tab, which
+base64-decodes to `{ apiKey, appId, regions }`. The `sk_live_…` secret key is
+only the `apiKey` field inside it and will not work by itself; the portal checks
+the shape and says so rather than failing at upload time.
 
 ### Events
 
@@ -539,7 +546,10 @@ The site is automatically deployed to [Vercel](https://vercel.com/) when changes
   sessions last 8 hours.
 - `DATABASE_URL` (required to save content): Neon Postgres connection string.
   Without it the portal is read-only and the site serves `src/data/*.json`.
-- `UPLOADTHING_TOKEN` (optional): enables image uploads from the portal.
+- `UPLOADTHING_TOKEN` (optional): enables image uploads from the portal. Use
+  the token from the UploadThing dashboard's API Keys tab, not the `sk_live_…`
+  secret key — the secret key is one field inside the token and does not work on
+  its own. The portal's Setup panel says so if the wrong value is set.
 - `ADMIN_AUTH_DEBUG` (optional): set to `true` for verbose admin sign-in logging.
 
 ## Additional Notes

@@ -16,7 +16,7 @@ import {
   getVercelProductionOrigin,
 } from "../auth";
 import { isDatabaseConfigured } from "../content/db";
-import { isUploadThingConfigured } from "./uploads";
+import { inspectUploadThingToken } from "./uploads";
 import { parseShooSubList } from "./access";
 import { isAdminSessionConfigured } from "./session";
 
@@ -115,7 +115,7 @@ export function getAdminSetupStatus(request: Request): AdminSetupStatus {
       readEnv("MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL"),
     ),
     databaseConfigured: isDatabaseConfigured(),
-    uploadsConfigured: isUploadThingConfigured(),
+    uploadsConfigured: inspectUploadThingToken().ok,
     shooBaseUrl: getShooBaseUrl(),
     requestOrigin: new URL(request.url).origin,
     acceptedTokenOrigins: getShooAudienceOriginsForRequest(request),
@@ -190,7 +190,7 @@ export function describeAdminSetup(status: AdminSetupStatus): SetupCheck[] {
       ok: status.uploadsConfigured,
       detail: status.uploadsConfigured
         ? "Set, so images can be uploaded."
-        : "Not set. Image links can still be pasted by hand.",
+        : `${inspectUploadThingToken().ok ? "" : (inspectUploadThingToken() as { reason: string }).reason} Image links can still be pasted by hand.`,
     },
   ];
 }

@@ -50,7 +50,15 @@ const EVENT_TYPE_OPTIONS = [
   "community",
 ];
 
-const SPONSOR_TIER_OPTIONS = ["Platinum", "Gold", "Silver", "Bronze"];
+// Must stay in step with the tiers on /sponsors and /sponsorship, highest first.
+const SPONSOR_TIER_OPTIONS = [
+  "Diamond",
+  "Platinum",
+  "Gold",
+  "Silver",
+  "Bronze",
+  "Supporter",
+];
 
 export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
   fundraising: {
@@ -136,7 +144,10 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     scope: "public",
     previewPath: "/sponsors",
     defaults: sponsorsDefaults,
-    notes: ["Logos uploaded here are stored on UploadThing."],
+    notes: [
+      "Logos uploaded here are stored on UploadThing.",
+      "Supporter and Bronze sponsors are listed by name on the site rather than by logo.",
+    ],
     root: {
       kind: "object",
       label: "Sponsors",

@@ -9,6 +9,7 @@ type ImageFieldProps = {
   disabledReason?: string;
   inputId: string;
   describedBy?: string;
+  maxBytes: number;
 };
 
 export default function ImageField({
@@ -20,6 +21,7 @@ export default function ImageField({
   disabledReason,
   inputId,
   describedBy,
+  maxBytes,
 }: ImageFieldProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -28,6 +30,13 @@ export default function ImageField({
 
   const upload = async (file: File) => {
     if (!enabled || isUploading) {
+      return;
+    }
+
+    if (file.size > maxBytes) {
+      setUploadError(
+        `That image is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Images have to be under ${Math.round(maxBytes / (1024 * 1024))} MB — resize it and try again.`,
+      );
       return;
     }
 
