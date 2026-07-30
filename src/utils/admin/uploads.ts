@@ -155,6 +155,76 @@ export async function checkUploadThingConnection(): Promise<UploadThingCheck> {
   }
 }
 
+type HttpFailure = {
+  host: string;
+  url: string;
+  status: number;
+  body: string;
+};
+
+/**
+ * The SDK uploads by PUTting to a presigned URL on the ingest host, and turns
+ * any non-2xx into a bare `UPLOAD_FAILED` — the underlying response is attached
+ * as `cause`, which does not survive serialization. Wrapping fetch is the only
+ * way to see what that request actually returned.
+ *
+ * The user-facing message gets the host and status only; the full URL carries a
+ * presigned signature, so that goes to the server log instead.
+ */
+function createInstrumentedFetch(failures: HttpFailure[]) {
+  return async (input: unknown, init?: unknown): Promise<Response> => {
+    const url =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.href
+          : ((input as Request)?.url ?? String(input));
+
+    const record = (status: number, body: string) => {
+      let host = url;
+
+      try {
+        host = new URL(url).host;
+      } catch {
+        // Keep the raw value if it is not a parseable URL.
+      }
+
+      failures.push({ host, url, status, body });
+      console.warn("[admin] uploadthing request failed", { url, status, body });
+    };
+
+    try {
+      const response = await fetch(input as RequestInfo, init as RequestInit);
+
+      if (!response.ok) {
+        let body = "";
+
+        try {
+          body = (await response.clone().text()).slice(0, 300);
+        } catch {
+          // A body we cannot read is not worth failing over.
+        }
+
+        record(response.status, body);
+      }
+
+      return response;
+    } catch (error) {
+      record(0, error instanceof Error ? error.message : String(error));
+      throw error;
+    }
+  };
+}
+
+function describeHttpFailure(failure: HttpFailure): string {
+  const what =
+    failure.status > 0
+      ? `HTTP ${failure.status}`
+      : "the request never completed";
+
+  return `${failure.host} returned ${what}${failure.body ? `: ${failure.body}` : ""}`;
+}
+
 /** Keep the stored filename readable but harmless. */
 function safeFileName(name: string, mimeType: string): string {
   const base = (name.split(/[\\/]/).pop() ?? "upload")
@@ -223,13 +293,31 @@ export async function uploadImage(file: File): Promise<UploadOutcome> {
     type: mimeType,
   });
 
-  const result = await api.uploadFiles(uploadable);
+  // A per-upload client so its fetch wrapper can record what went wrong.
+  const failures: HttpFailure[] = [];
+  const instrumented = new UTApi({
+    token: getUploadThingToken(),
+    logLevel: "Error",
+    fetch: createInstrumentedFetch(failures) as never,
+  });
+
+  const result = await instrumented.uploadFiles(uploadable);
 
   if (result.error || !result.data) {
     console.warn("[admin] uploadthing rejected an upload", result.error);
 
-    // `UPLOADTHING_FAILED` says nothing on its own, so find out whether the
-    // token itself works and report whichever answer is actionable.
+    // `UPLOAD_FAILED` says nothing on its own. The wrapped fetch usually caught
+    // the real response; fall back to probing the credentials if it did not.
+    const lastFailure = failures[failures.length - 1];
+
+    if (lastFailure) {
+      return {
+        ok: false,
+        status: 502,
+        error: `Upload rejected — ${describeHttpFailure(lastFailure)}`,
+      };
+    }
+
     const connection = await checkUploadThingConnection();
 
     if (!connection.ok) {
@@ -243,7 +331,7 @@ export async function uploadImage(file: File): Promise<UploadOutcome> {
     return {
       ok: false,
       status: 502,
-      error: `${describeUploadThingError(result.error)}. The token works, so the file transfer itself failed — try a smaller image, or a PNG/JPEG if this was something else.`,
+      error: `${describeUploadThingError(result.error)}. The credentials work, so the file transfer itself failed — try a smaller image, or a PNG/JPEG if this was something else.`,
     };
   }
 
