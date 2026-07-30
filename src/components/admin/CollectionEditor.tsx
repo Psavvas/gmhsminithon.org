@@ -209,7 +209,7 @@ function Field({
           )}
           <input
             id={inputId}
-            className={`admin-input${invalid ? "is-invalid" : ""}`}
+            className={`admin-input${invalid ? " is-invalid" : ""}`}
             type="number"
             inputMode="decimal"
             step={spec.step ?? (spec.integer ? 1 : "any")}
@@ -226,7 +226,7 @@ function Field({
           <>
             <input
               id={inputId}
-              className={`admin-input${invalid ? "is-invalid" : ""}`}
+              className={`admin-input${invalid ? " is-invalid" : ""}`}
               list={`${inputId}-options`}
               value={asText(value)}
               aria-describedby={describedBy}
@@ -242,7 +242,7 @@ function Field({
         ) : (
           <select
             id={inputId}
-            className={`admin-input${invalid ? "is-invalid" : ""}`}
+            className={`admin-input${invalid ? " is-invalid" : ""}`}
             value={asText(value)}
             aria-describedby={describedBy}
             aria-invalid={invalid || undefined}
@@ -271,7 +271,7 @@ function Field({
         <>
           <textarea
             id={inputId}
-            className={`admin-input admin-textarea${invalid ? "is-invalid" : ""}`}
+            className={`admin-input admin-textarea${invalid ? " is-invalid" : ""}`}
             rows={spec.rows ?? 4}
             value={asText(value)}
             placeholder={spec.placeholder}
@@ -289,7 +289,7 @@ function Field({
       ) : (
         <input
           id={inputId}
-          className={`admin-input${invalid ? "is-invalid" : ""}`}
+          className={`admin-input${invalid ? " is-invalid" : ""}`}
           type={
             spec.kind === "date"
               ? "date"
@@ -396,7 +396,7 @@ function StringListField({
               {spec.itemKind === "textarea" ? (
                 <textarea
                   id={itemId}
-                  className={`admin-input admin-textarea${itemMessages.length ? "is-invalid" : ""}`}
+                  className={`admin-input admin-textarea${itemMessages.length ? " is-invalid" : ""}`}
                   rows={3}
                   value={item}
                   placeholder={spec.placeholder}
@@ -409,7 +409,7 @@ function StringListField({
               ) : (
                 <input
                   id={itemId}
-                  className={`admin-input${itemMessages.length ? "is-invalid" : ""}`}
+                  className={`admin-input${itemMessages.length ? " is-invalid" : ""}`}
                   type={spec.itemKind === "url" ? "url" : "text"}
                   value={item}
                   placeholder={spec.placeholder}
@@ -864,7 +864,7 @@ export default function CollectionEditor({
       <div className="admin-editor__bar">
         <div className="admin-editor__status">
           <span
-            className={`admin-dot${isDirty ? "admin-dot--dirty" : ""}`}
+            className={`admin-dot${isDirty ? " admin-dot--dirty" : ""}`}
             aria-hidden="true"
           />
           <span>{statusLabel}</span>

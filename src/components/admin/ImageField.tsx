@@ -12,6 +12,80 @@ type ImageFieldProps = {
   maxBytes: number;
 };
 
+function formatMegabytes(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function renameForType(name: string, mimeType: string): string {
+  const extension = mimeType === "image/webp" ? "webp" : "jpg";
+  return `${name.replace(/\.[^.]+$/, "") || "image"}.${extension}`;
+}
+
+async function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  mimeType: string,
+  quality: number,
+): Promise<Blob | null> {
+  return new Promise((resolve) =>
+    canvas.toBlob((blob) => resolve(blob), mimeType, quality),
+  );
+}
+
+/**
+ * Redraw an oversized photo at a smaller size until it fits. Files already
+ * under the limit are returned untouched, so logos keep their exact bytes and
+ * their transparency; SVG is vector and never resized.
+ */
+async function shrinkImageToFit(file: File, maxBytes: number): Promise<File> {
+  if (file.size <= maxBytes || file.type === "image/svg+xml") {
+    return file;
+  }
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    // WebP keeps transparency and compresses better; Safari has supported it
+    // since 14, and the JPEG path covers anything older.
+    const mimeType = "image/webp";
+    let scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        return file;
+      }
+
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+      const blob =
+        (await canvasToBlob(canvas, mimeType, 0.85)) ??
+        (await canvasToBlob(canvas, "image/jpeg", 0.85));
+
+      if (!blob) {
+        return file;
+      }
+
+      if (blob.size <= maxBytes) {
+        return new File([blob], renameForType(file.name, blob.type), {
+          type: blob.type,
+        });
+      }
+
+      scale *= 0.7;
+    }
+
+    return file;
+  } catch {
+    // Anything unexpected here just means the original gets uploaded and the
+    // server explains itself.
+    return file;
+  }
+}
+
 export default function ImageField({
   label,
   value,
@@ -33,32 +107,60 @@ export default function ImageField({
       return;
     }
 
-    if (file.size > maxBytes) {
-      setUploadError(
-        `That image is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Images have to be under ${Math.round(maxBytes / (1024 * 1024))} MB — resize it and try again.`,
-      );
-      return;
-    }
-
     setUploadError(null);
     setIsUploading(true);
 
     try {
+      // Photos straight off a phone routinely blow past the limit, so shrink
+      // them here rather than bouncing the person back to a photo editor.
+      const prepared = await shrinkImageToFit(file, maxBytes);
+
+      if (prepared.size > maxBytes) {
+        throw new Error(
+          `That image is ${formatMegabytes(prepared.size)} and could not be shrunk below ${formatMegabytes(maxBytes)}. Try saving it smaller, or paste a link to it instead.`,
+        );
+      }
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", prepared);
 
       const response = await fetch(uploadEndpoint, {
         method: "POST",
         body: formData,
         credentials: "same-origin",
       });
-      const payload = (await response.json().catch(() => null)) as {
-        url?: string;
-        error?: string;
-      } | null;
 
-      if (!response.ok || !payload?.url) {
-        throw new Error(payload?.error ?? "The upload failed.");
+      // A rejection from the hosting platform (a too-large body, a timeout, a
+      // crash) comes back as an HTML page, not our JSON. Say what it was rather
+      // than swallowing it.
+      const rawBody = await response.text();
+      let payload: { url?: string; error?: string } | null = null;
+
+      try {
+        payload = JSON.parse(rawBody) as { url?: string; error?: string };
+      } catch {
+        payload = null;
+      }
+
+      if (!payload) {
+        throw new Error(
+          response.status === 413
+            ? `The server refused the image because it is too large (HTTP 413), even after shrinking. Paste a link to it instead.`
+            : `The server returned HTTP ${response.status} instead of a result${
+                rawBody
+                  ? `: ${rawBody
+                      .replace(/<[^>]*>/g, " ")
+                      .trim()
+                      .slice(0, 200)}`
+                  : "."
+              }`,
+        );
+      }
+
+      if (!response.ok || !payload.url) {
+        throw new Error(
+          payload.error ?? `The upload failed (HTTP ${response.status}).`,
+        );
       }
 
       onChange(payload.url);
@@ -88,7 +190,7 @@ export default function ImageField({
       )}
 
       <div
-        className={`admin-image__drop${isDragging ? "is-dragging" : ""}`}
+        className={`admin-image__drop${isDragging ? " is-dragging" : ""}`}
         onDragOver={(event) => {
           if (!enabled) {
             return;
