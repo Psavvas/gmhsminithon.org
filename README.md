@@ -78,11 +78,12 @@ src/
 
 Key configuration files in the project root:
 
-| File              | Purpose                                                        |
-| ----------------- | -------------------------------------------------------------- |
-| `astro.config.ts` | Astro framework configuration (Vercel adapter, MDX, analytics) |
-| `package.json`    | Dependencies and npm scripts                                   |
-| `bun.lock`        | Locked dependency versions                                     |
+| File              | Purpose                                                          |
+| ----------------- | ---------------------------------------------------------------- |
+| `astro.config.ts` | Astro framework configuration (Vercel adapter, MDX, analytics)   |
+| `package.json`    | Dependencies and npm scripts                                     |
+| `bun.lock`        | Locked dependency versions                                       |
+| `db/schema.sql`   | Admin portal tables, for running by hand instead of on first use |
 
 ## Admin Portal
 
@@ -180,7 +181,9 @@ Admins can also use the member portal, so a Shoo ID in
    `DATABASE_URL_UNPOOLED`, and `POSTGRES_URL_NON_POOLING` are also accepted, in
    that order of preference).
 3. Redeploy. The tables are created automatically on first use — there is no
-   migration step:
+   migration step. To create them yourself instead (for example in the Neon SQL
+   Editor), run [`db/schema.sql`](db/schema.sql); it is safe to run more than
+   once. Either way you end up with:
 
    | Table                | Purpose                                     |
    | -------------------- | ------------------------------------------- |
