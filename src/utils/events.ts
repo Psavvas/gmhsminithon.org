@@ -1,4 +1,5 @@
 import { getManagedEvents, type ManagedEvent } from "./content";
+import { escapeHtml, renderContentMarkdown } from "./markdown";
 
 export interface EventFrontmatter {
   title: string;
@@ -20,6 +21,10 @@ export interface Event extends EventFrontmatter {
   descriptionMarkdown?: string;
   /** Members-only markdown, for events managed in the admin portal. */
   memberDetailsMarkdown?: string;
+  /** Flyer or photo, for events managed in the admin portal. */
+  image?: string;
+  /** Video embed, for events managed in the admin portal. */
+  embedUrl?: string;
 }
 
 export interface SplitEvents {
@@ -62,7 +67,80 @@ function managedEventToEvent(event: ManagedEvent): Event {
     source: "managed",
     descriptionMarkdown: event.description,
     memberDetailsMarkdown: event.memberDetails,
+    image: event.image || undefined,
+    embedUrl: event.embedUrl || undefined,
   };
+}
+
+/**
+ * Turn a share link into something an iframe can actually load. Hosts are
+ * already restricted by the schema's embed validation.
+ */
+export function toEmbedSrc(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname === "youtu.be") {
+      const id = parsed.pathname.slice(1);
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (
+      parsed.hostname.endsWith("youtube.com") ||
+      parsed.hostname.endsWith("youtube-nocookie.com")
+    ) {
+      const id = parsed.searchParams.get("v");
+
+      if (id) {
+        return `https://www.youtube.com/embed/${id}`;
+      }
+
+      return parsed.toString();
+    }
+
+    if (
+      parsed.hostname === "drive.google.com" ||
+      parsed.hostname === "docs.google.com"
+    ) {
+      // /file/d/<id>/view -> /file/d/<id>/preview
+      return parsed.toString().replace(/\/(view|edit)(\?.*)?$/, "/preview");
+    }
+
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The public body of a portal-managed event: description, then any flyer and
+ * video embed. Everything is escaped or validated before it reaches the page.
+ */
+export function renderManagedEventBody(event: Event): string {
+  const blocks: string[] = [];
+  const summaryText = Array.isArray(event.summary)
+    ? event.summary.join("\n\n")
+    : event.summary;
+
+  blocks.push(renderContentMarkdown(event.descriptionMarkdown || summaryText));
+
+  if (event.image) {
+    blocks.push(
+      `<img src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)}" loading="lazy" style="display:block;max-width:100%;height:auto;border-radius:12px;margin:1.25rem 0" />`,
+    );
+  }
+
+  const embedSrc = event.embedUrl ? toEmbedSrc(event.embedUrl) : null;
+
+  if (embedSrc) {
+    blocks.push(
+      `<div style="position:relative;padding-top:56.25%;margin:1.25rem 0;border-radius:12px;overflow:hidden;background:#000">` +
+        `<iframe src="${escapeHtml(embedSrc)}" title="${escapeHtml(event.title)} video" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>` +
+        `</div>`,
+    );
+  }
+
+  return blocks.filter(Boolean).join("\n");
 }
 
 /**

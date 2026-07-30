@@ -93,16 +93,16 @@ portal uses) and stores content in a Neon Postgres database.
 
 ### What you can edit
 
-| Section              | What it controls                                                          |
-| -------------------- | ------------------------------------------------------------------------- |
-| Fundraising totals   | Running total, goal, previous years, DonorDrive link                      |
-| Sponsors             | Names, tiers, logos (uploaded to UploadThing), websites                   |
-| Events               | Events on `/events`, each with a public description and member-only notes |
-| Club info            | Mission, about text, officers, meeting times, social links, contact email |
-| Short links          | `/redirect/<slug>` short URLs                                             |
-| Member announcements | Announcements in the member portal                                        |
-| Member resources     | Quick links for members                                                   |
-| Shoo IDs             | Who can use the admin portal, and who can use the member portal           |
+| Section              | What it controls                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| Fundraising totals   | Running total, goal, previous years, DonorDrive link                                     |
+| Sponsors             | Names, tiers, logos (uploaded to UploadThing), websites                                  |
+| Events               | Events on `/events`, with a description, optional flyer and video, and member-only notes |
+| Club info            | Mission, about text, officers, meeting times, social links, contact email                |
+| Short links          | `/redirect/<slug>` short URLs                                                            |
+| Member announcements | Announcements in the member portal                                                       |
+| Member resources     | Quick links for members                                                                  |
+| Shoo IDs             | Who can use the admin portal, and who can use the member portal                          |
 
 ### Where content comes from
 
@@ -266,12 +266,18 @@ content. PNG, JPEG, WebP, AVIF, GIF, and SVG are accepted, up to 8 MB. The
 UploadThing token never leaves the server — the browser posts the file to
 `/api/admin/upload`, which forwards it.
 
-### Events in the portal vs. `.mdx` files
+### Events
 
-Both work at the same time. Events created in the portal get a page at
-`/events/<slug>`, and events that live in `src/pages/events/*.mdx` keep their own
-routes and full MDX capabilities. They are listed together, sorted by date. If a
-portal event and an `.mdx` file use the same slug, the file wins.
+Every event is editable in the portal, past ones included — nothing is hidden by
+date, and `/events` keeps showing past events in its own section. Each event has
+an optional flyer (uploaded to UploadThing) and an optional video embed, which
+accepts YouTube, Vimeo, and Google Drive links only.
+
+Events created in the portal get a page at `/events/<slug>`. Adding an
+`.mdx` file back into `src/pages/events/` still works if an event ever needs
+markup the portal cannot express — such an event appears in the listings
+alongside portal events, and wins if it uses the same slug, but it can only be
+edited in the repository.
 
 ## How to Update the Site
 

@@ -292,7 +292,7 @@ function Field({
               ? "date"
               : spec.kind === "email"
                 ? "email"
-                : spec.kind === "url"
+                : spec.kind === "url" || spec.kind === "embed"
                   ? "url"
                   : "text"
           }

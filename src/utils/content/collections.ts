@@ -230,6 +230,16 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
               label: "Public description",
               rows: 8,
             },
+            image: {
+              kind: "image",
+              label: "Flyer or photo",
+              help: "Optional. Shown under the description on the event page.",
+            },
+            embedUrl: {
+              kind: "embed",
+              label: "Video embed",
+              help: "Optional. A YouTube, Vimeo, or Google Drive share link.",
+            },
             memberDetails: {
               kind: "markdown",
               label: "Members-only notes",

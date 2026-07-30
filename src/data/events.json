@@ -1,3 +1,64 @@
 {
-  "events": []
+  "events": [
+    {
+      "title": "Mini-THON 5k Run/Walk",
+      "slug": "5k",
+      "date": "2026-05-02",
+      "time": "",
+      "location": "Historic St. Mary's City",
+      "event_type": "race",
+      "summary": "Join Mini-THON for our 3rd annual 5k Run/Walk. Date to be announced.",
+      "description": "Join Mini-THON for our their 3rd annual 5k Run/Walk. More information is coming soon.",
+      "image": "",
+      "embedUrl": "",
+      "memberDetails": "**Event Lead:** Audrey & Marlin\n\n### Member notes\n\n- More infomration to be announced",
+      "links": [],
+      "published": true
+    },
+    {
+      "title": "Pickleball Tournament",
+      "slug": "pickleball",
+      "date": "2026-04-25",
+      "time": "",
+      "location": "Great Mills High School",
+      "event_type": "tournament",
+      "summary": "Join Mini-THON for our 2nd Pickleball Tournament. Date to be announced.",
+      "description": "Join Mini-THON for our 2nd Pickleball Tournament. Exact date is to be announced. More information is coming soon.",
+      "image": "",
+      "embedUrl": "",
+      "memberDetails": "### Member notes\n\n- More infomration to be announced",
+      "links": [],
+      "published": true
+    },
+    {
+      "title": "Leonardtown vs Great Mills Staff Basketball Game",
+      "slug": "lhs-vs-gmhs-game",
+      "date": "2026-03-12",
+      "time": "6:00 PM",
+      "location": "GMHS Gym",
+      "event_type": "sports",
+      "summary": "Join Mini-THON for an unforgetable night as the staff of two rival schools battle for the title of best Staff Basketball Team. All proceeds go to Four Diamonds Fund to help fight pediatric cancer.",
+      "description": "Join Mini-THON for an unforgetable night as the staff of two rival schools battle for the title of best Staff Basketball Team. All proceeds go to Four Diamonds Fund to help fight pediatric cancer.\n\n**Tickets are $6 and on sale now: [gofan.com](https://gofan.co/event/6168942?schoolId=MD24791&utm_source=GoFan&utm_medium=qrcode&utm_campaign=HQEventLink)**\n\n*More information will be posted as date approaches.*\n\n## Leonardtown Video Trailer:",
+      "image": "",
+      "embedUrl": "https://drive.google.com/file/d/1sVqctv7-mml6eEzJXCw0X8hPODqcBPvF/preview",
+      "memberDetails": "### Volunteers needed\n\nVolunteers are needed please sign up using the link provided below. You can sign up for any number of shifts and really help make this a sucessful event.\n\n**[Volunteer sign-up form](https://docs.google.com/forms/d/e/1FAIpQLSenzRGyINJpE_0pF3pTduodGHqXtaroTCC0x-DpuzTp7ARLDw/viewform?usp=dialog)**\n\n### Supplies\n\n- TBA",
+      "links": [],
+      "published": true
+    },
+    {
+      "title": "Clash Royale Gaming Tournament",
+      "slug": "clash-royale",
+      "date": "2026-02-27",
+      "time": "12:05 PM",
+      "location": "GMHS Room 2208 (Weisner)",
+      "event_type": "gaming",
+      "summary": "Join Mini-THON for a Clash Royale Gaming Tournament. Open to GMHS students only.",
+      "description": "Join Mini-THON for a Clash Royale Gaming Tournament. Enter for a chance to win a $25 dollar Amazon gift card. Entries are 5 dollars. Open to GMHS students only.",
+      "image": "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Z1iVVxHqykyujcLaKXDGJb4sxtT9idN57nwgf",
+      "embedUrl": "",
+      "memberDetails": "N/A",
+      "links": [],
+      "published": true
+    }
+  ]
 }

@@ -71,6 +71,8 @@ export type ManagedEvent = {
   event_type: string;
   summary: string;
   description: string;
+  image: string;
+  embedUrl: string;
   memberDetails: string;
   links: string[];
   published: boolean;

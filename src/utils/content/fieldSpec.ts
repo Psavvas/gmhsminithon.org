@@ -20,7 +20,8 @@ export type TextFieldKind =
   | "email"
   | "date"
   | "time"
-  | "image";
+  | "image"
+  | "embed";
 
 export type TextFieldSpec = FieldBase & {
   kind: TextFieldKind;
@@ -158,6 +159,29 @@ export function isAllowedLink(value: string): boolean {
   return /^\/(?!\/)/.test(value);
 }
 
+/**
+ * Hosts allowed in an embed field. Anything put in an `<iframe>` gets to render
+ * inside our page, so this stays a short list of known video hosts.
+ */
+export const EMBED_HOSTS = [
+  "drive.google.com",
+  "docs.google.com",
+  "www.youtube.com",
+  "youtube.com",
+  "www.youtube-nocookie.com",
+  "youtu.be",
+  "player.vimeo.com",
+];
+
+export function isAllowedEmbedUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && EMBED_HOSTS.includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function coerceTextField(
   spec: TextFieldSpec,
   value: unknown,
@@ -211,6 +235,13 @@ function coerceTextField(
     issues.push({
       path,
       message: `${spec.label} must be an uploaded image or an https:// URL.`,
+    });
+  }
+
+  if (spec.kind === "embed" && !isAllowedEmbedUrl(text)) {
+    issues.push({
+      path,
+      message: `${spec.label} must be a link from one of: ${EMBED_HOSTS.join(", ")}.`,
     });
   }
 

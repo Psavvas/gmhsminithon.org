@@ -8,6 +8,7 @@ import {
   getEventBySlug,
   getEventDateTimeValue,
   getEventTypeClass,
+  renderManagedEventBody,
 } from "../../../utils/events";
 
 // Check authentication
@@ -174,7 +175,7 @@ if (rawContent) {
 // Events created in the admin portal store their content as Markdown instead of
 // living in an .mdx file, and are rendered with the escaping renderer.
 if (event.source === "managed") {
-  publicBodyHtml = renderContentMarkdown(event.descriptionMarkdown);
+  publicBodyHtml = renderManagedEventBody(event);
 }
 
 const memberDetailsHtml =
