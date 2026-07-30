@@ -58,7 +58,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     label: "Fundraising totals",
     description:
       "Running total, yearly goal, past-year history, and the DonorDrive link.",
-    icon: "💛",
+    icon: "heart",
     scope: "public",
     previewPath: "/fundraising",
     defaults: fundraisingDefaults,
@@ -132,7 +132,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     id: "sponsors",
     label: "Sponsors",
     description: "Sponsor names, tiers, logos, and websites.",
-    icon: "🤝",
+    icon: "users",
     scope: "public",
     previewPath: "/sponsors",
     defaults: sponsorsDefaults,
@@ -172,7 +172,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     label: "Events",
     description:
       "Events published to the site, including members-only notes for each one.",
-    icon: "📅",
+    icon: "calendar",
     scope: "public",
     previewPath: "/events",
     defaults: eventsDefaults,
@@ -267,7 +267,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     label: "Club info",
     description:
       "Mission, about text, officers, meeting times, social links, and contact email.",
-    icon: "🏫",
+    icon: "building",
     scope: "public",
     previewPath: "/about",
     defaults: clubInfoDefaults,
@@ -340,7 +340,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     label: "Short links",
     description:
       "Short URLs such as /redirect/donate that point somewhere else.",
-    icon: "🔗",
+    icon: "link",
     scope: "public",
     defaults: redirectsDefaults,
     root: {
@@ -369,7 +369,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     id: "memberAnnouncements",
     label: "Member announcements",
     description: "Announcements shown in the member portal.",
-    icon: "📣",
+    icon: "megaphone",
     scope: "members",
     previewPath: "/members/announcements",
     defaults: memberAnnouncementsDefaults,
@@ -412,7 +412,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     id: "memberResources",
     label: "Member resources",
     description: "Quick links to files, forms, and folders for members.",
-    icon: "📚",
+    icon: "book",
     scope: "members",
     previewPath: "/members/resources",
     defaults: memberResourcesDefaults,

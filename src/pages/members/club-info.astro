@@ -2,6 +2,7 @@
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
 import { getClubInfo } from "../../utils/content";
+import PortalIcon from "../../components/PortalIcon.astro";
 
 // Check authentication
 if (!(await checkMemberAuth(Astro.request))) {
@@ -17,7 +18,7 @@ function isLink(value: string): boolean {
 const socialLinks = [
   {
     key: "instagram",
-    icon: "📸",
+    icon: "globe",
     name: "Instagram",
     blurb: "Updates, event photos, and announcements.",
     value: clubInfo.socialMedia.instagram,
@@ -25,7 +26,7 @@ const socialLinks = [
   },
   {
     key: "facebook",
-    icon: "👍",
+    icon: "globe",
     name: "Facebook",
     blurb: "Event updates for families and the community.",
     value: clubInfo.socialMedia.facebook,
@@ -33,7 +34,7 @@ const socialLinks = [
   },
   {
     key: "tiktok",
-    icon: "🎵",
+    icon: "globe",
     name: "TikTok",
     blurb: "Short updates and upcoming event teasers.",
     value: clubInfo.socialMedia.tiktok,
@@ -41,7 +42,7 @@ const socialLinks = [
   },
   {
     key: "groupme",
-    icon: "💬",
+    icon: "chat",
     name: "GroupMe",
     blurb: "Day-to-day chat for members.",
     value: clubInfo.socialMedia.groupme,
@@ -56,9 +57,7 @@ const socialLinks = [
   intro="When we meet, where we post updates, and who to contact."
 >
   <section class="mp-panel">
-    <h2 class="mp-panel__title">
-      <span aria-hidden="true">📅</span> Meetings
-    </h2>
+    <h2 class="mp-panel__title">Meetings</h2>
     <div class="mp-cards">
       <div class="mp-card">
         <h3 class="mp-card__title">General meetings</h3>
@@ -79,9 +78,7 @@ const socialLinks = [
   </section>
 
   <section class="mp-panel">
-    <h2 class="mp-panel__title">
-      <span aria-hidden="true">💬</span> Stay connected
-    </h2>
+    <h2 class="mp-panel__title">Stay connected</h2>
     <div class="mp-cards">
       {
         socialLinks.map((entry) =>
@@ -92,8 +89,8 @@ const socialLinks = [
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span class="mp-card__icon" aria-hidden="true">
-                {entry.icon}
+              <span class="mp-card__icon">
+                <PortalIcon name={entry.icon} size={22} />
               </span>
               <h3 class="mp-card__title">{entry.name}</h3>
               <p class="mp-card__description">{entry.blurb}</p>
@@ -101,8 +98,8 @@ const socialLinks = [
             </a>
           ) : (
             <div class="mp-card">
-              <span class="mp-card__icon" aria-hidden="true">
-                {entry.icon}
+              <span class="mp-card__icon">
+                <PortalIcon name={entry.icon} size={22} />
               </span>
               <h3 class="mp-card__title">{entry.name}</h3>
               <p class="mp-card__description">{entry.value}</p>
@@ -115,9 +112,7 @@ const socialLinks = [
   </section>
 
   <section class="mp-panel">
-    <h2 class="mp-panel__title">
-      <span aria-hidden="true">📞</span> Who to contact
-    </h2>
+    <h2 class="mp-panel__title">Who to contact</h2>
     <div class="mp-cards">
       {
         clubInfo.officers.map((officer) => (
@@ -142,9 +137,7 @@ const socialLinks = [
   </section>
 
   <section class="mp-panel">
-    <h2 class="mp-panel__title">
-      <span aria-hidden="true">📚</span> Files and templates
-    </h2>
+    <h2 class="mp-panel__title">Files and templates</h2>
     <p class="mp-panel__note">
       Shared drives, forms, and brand assets live in the member resources
       library.

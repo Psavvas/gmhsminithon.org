@@ -15,6 +15,7 @@ import {
 } from "../../utils/admin/session";
 import { getAccessListState } from "../../utils/admin/access";
 import { hasMemberApprovalSourceConfigured } from "../../utils/auth";
+import PortalIcon from "../../components/PortalIcon.astro";
 
 const session = await getAdminSession(Astro.request);
 
@@ -142,15 +143,17 @@ const setupChecks = [
       {
         statuses.map((status) => (
           <a class="admin-card" href={`/admin/content/${status.id}`}>
-            <span class="admin-card__icon" aria-hidden="true">
-              {status.icon}
+            <span class="admin-card__icon">
+              <PortalIcon name={status.icon} size={22} />
             </span>
             <span class="admin-card__title">{status.label}</span>
             <span class="admin-card__description">{status.description}</span>
             <span class="admin-card__meta">
               {status.source === "database"
                 ? `Edited ${formatDateTime(status.updatedAt)}`
-                : "Using the version from the repository"}
+                : canEdit
+                  ? "Not edited yet — showing the built-in copy"
+                  : "Read-only — no database connected"}
             </span>
           </a>
         ))
@@ -205,9 +208,10 @@ const setupChecks = [
   {
     canEdit && savedCount === 0 && (
       <p class="admin-callout">
-        Nothing has been edited in the portal yet, so every section still shows
-        the copy that ships with the website. The first time you save a section,
-        the database version takes over.
+        The database is connected but nothing has been saved through the portal
+        yet, so every section still shows the copy that ships with the website.
+        Open a section and press Save and that section moves to the database —
+        the label changes to "Edited" once it has.
       </p>
     )
   }

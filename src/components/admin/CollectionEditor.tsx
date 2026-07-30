@@ -891,7 +891,9 @@ export default function CollectionEditor({
         ? "Unsaved changes"
         : source === "database"
           ? `Saved${updatedAt ? ` · ${formatTimestamp(updatedAt)}` : ""}`
-          : "Using the version that ships with the website";
+          : canSave
+            ? "Not edited yet — showing the built-in copy"
+            : "Read-only — no database connected";
 
   return (
     <div className="admin-editor">

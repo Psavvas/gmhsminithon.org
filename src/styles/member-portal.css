@@ -133,42 +133,46 @@ h3 {
   position: sticky;
   top: 5.5rem;
   display: grid;
-  gap: 0.15rem;
-  background: var(--mp-raised);
-  border: 1px solid var(--mp-border);
-  border-radius: var(--mp-radius);
-  padding: 0.75rem;
-}
-
-.mp-nav__heading {
-  margin: 0.85rem 0 0.25rem;
-  padding: 0 0.5rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mp-ink-500);
+  gap: 0.1rem;
+  padding: 0;
 }
 
 .mp-nav__link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 0.6rem;
-  border-radius: 10px;
+  gap: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 9px;
   color: var(--mp-ink-700);
   text-decoration: none;
-  font-size: 0.94rem;
+  font-size: 0.92rem;
   font-weight: 500;
+  line-height: 1.3;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.mp-nav__link .portal-icon {
+  color: var(--mp-ink-500);
 }
 
 .mp-nav__link:hover {
-  background: var(--mp-accent-bg);
+  background: #e7eef8;
+  color: var(--mp-ink);
+}
+
+.mp-nav__link:hover .portal-icon {
   color: var(--mp-ink);
 }
 
 .mp-nav__link.is-active {
   background: var(--mp-ink);
+  color: #fff;
+  font-weight: 600;
+}
+
+.mp-nav__link.is-active .portal-icon {
   color: #fff;
 }
 
@@ -349,8 +353,14 @@ a.mp-card:hover {
 }
 
 .mp-card__icon {
-  font-size: 1.5rem;
-  line-height: 1;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 10px;
+  background: var(--mp-accent-bg);
+  color: var(--mp-ink);
+  margin-bottom: 0.15rem;
 }
 
 .mp-card__title {

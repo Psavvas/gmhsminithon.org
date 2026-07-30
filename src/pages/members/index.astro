@@ -3,6 +3,7 @@ import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
 import RefreshMemberCacheButton from "../../components/member-auth/RefreshMemberCacheButton";
 import { getMemberAnnouncements } from "../../utils/content";
+import PortalIcon from "../../components/PortalIcon.astro";
 import {
   formatEventDate,
   getCurrentYearEvents,
@@ -35,25 +36,25 @@ const announcements = getPinnedAnnouncements(allAnnouncements);
 const quickActions = [
   {
     href: "/members/upcoming-events",
-    icon: "📅",
+    icon: "calendar",
     title: "Upcoming Events",
     description: "See what is coming up and sign up for shifts.",
   },
   {
     href: "/members/announcements",
-    icon: "📣",
+    icon: "megaphone",
     title: "Announcements",
     description: "Read pinned updates and recent posts.",
   },
   {
     href: "/members/club-info",
-    icon: "🏫",
+    icon: "building",
     title: "Club Info",
     description: "Meeting times, officers, and where we post updates.",
   },
   {
     href: "/members/resources",
-    icon: "📚",
+    icon: "book",
     title: "Member Resources",
     description: "Quick links to files, forms, and templates.",
   },
@@ -66,9 +67,7 @@ const quickActions = [
   intro="Everything the team needs in one place: what is coming up, what changed, and where the files live."
 >
   <section class="mp-panel">
-    <h2 class="mp-panel__title">
-      <span aria-hidden="true">📌</span> Pinned announcements
-    </h2>
+    <h2 class="mp-panel__title">Pinned announcements</h2>
     {
       announcements.length > 0 ? (
         <div class="mp-stack">
@@ -115,8 +114,8 @@ const quickActions = [
       {
         quickActions.map((action) => (
           <a class="mp-card" href={action.href}>
-            <span class="mp-card__icon" aria-hidden="true">
-              {action.icon}
+            <span class="mp-card__icon">
+              <PortalIcon name={action.icon} size={22} />
             </span>
             <h3 class="mp-card__title">{action.title}</h3>
             <p class="mp-card__description">{action.description}</p>

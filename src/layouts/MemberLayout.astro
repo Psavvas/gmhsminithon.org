@@ -10,6 +10,7 @@ import {
 } from "../utils/auth";
 import { isAdminRequest } from "../utils/admin/session";
 import { DIAMOND_MASTHEAD_ON_DARK, FAVICON_HREF } from "../utils/brand";
+import PortalIcon from "../components/PortalIcon.astro";
 
 export interface Props {
   title: string;
@@ -26,16 +27,16 @@ const currentPath = Astro.url.pathname;
 const showAdminLink = await isAdminRequest(Astro.request);
 
 const navLinks = [
-  { href: "/members", label: "Dashboard", icon: "🏠", exact: true },
+  { href: "/members", label: "Dashboard", icon: "home", exact: true },
   {
     href: "/members/upcoming-events",
     label: "Events",
-    icon: "📅",
+    icon: "calendar",
     match: ["/members/upcoming-events", "/members/events/"],
   },
-  { href: "/members/announcements", label: "Announcements", icon: "📣" },
-  { href: "/members/club-info", label: "Club Info", icon: "🏫" },
-  { href: "/members/resources", label: "Resources", icon: "📚" },
+  { href: "/members/announcements", label: "Announcements", icon: "megaphone" },
+  { href: "/members/club-info", label: "Club Info", icon: "building" },
+  { href: "/members/resources", label: "Resources", icon: "book" },
 ];
 
 function isActive(link: (typeof navLinks)[number]): boolean {
@@ -121,7 +122,7 @@ function isActive(link: (typeof navLinks)[number]): boolean {
               class={`mp-nav__link${isActive(link) ? " is-active" : ""}`}
               href={link.href}
             >
-              <span aria-hidden="true">{link.icon}</span> {link.label}
+              <PortalIcon name={link.icon} /> {link.label}
             </a>
           ))
         }

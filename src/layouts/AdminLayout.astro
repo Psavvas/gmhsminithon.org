@@ -2,6 +2,7 @@
 import { ADMIN_LOGIN_PATH } from "../utils/admin/session";
 import { listCollectionSpecs } from "../utils/content/collections";
 import { DIAMOND_MASTHEAD_ON_DARK, FAVICON_HREF } from "../utils/brand";
+import PortalIcon from "../components/PortalIcon.astro";
 
 export interface Props {
   title: string;
@@ -93,7 +94,7 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
               class={`admin-nav__link${activePath === "/admin" ? " is-active" : ""}`}
               href="/admin"
             >
-              <span aria-hidden="true">🏠</span> Overview
+              <PortalIcon name="home" /> Overview
             </a>
 
             <p class="admin-nav__heading">Public site</p>
@@ -104,7 +105,7 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
                 }`}
                 href={`/admin/content/${spec.id}`}
               >
-                <span aria-hidden="true">{spec.icon}</span> {spec.label}
+                <PortalIcon name={spec.icon} /> {spec.label}
               </a>
             ))}
 
@@ -116,7 +117,7 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
                 }`}
                 href={`/admin/content/${spec.id}`}
               >
-                <span aria-hidden="true">{spec.icon}</span> {spec.label}
+                <PortalIcon name={spec.icon} /> {spec.label}
               </a>
             ))}
 
@@ -125,7 +126,7 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
               class={`admin-nav__link${activePath === "/admin/access" ? " is-active" : ""}`}
               href="/admin/access"
             >
-              <span aria-hidden="true">🔑</span> Shoo IDs
+              <PortalIcon name="key" /> Shoo IDs
             </a>
           </nav>
         )
@@ -292,42 +293,60 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
     position: sticky;
     top: 5.5rem;
     display: grid;
-    gap: 0.15rem;
-    background: var(--admin-raised);
-    border: 1px solid var(--admin-border);
-    border-radius: var(--admin-radius);
-    padding: 0.75rem;
+    gap: 0.1rem;
+    padding: 0;
   }
 
   .admin-nav__heading {
-    margin: 0.85rem 0 0.25rem;
-    padding: 0 0.5rem;
-    font-size: 0.72rem;
+    margin: 1.1rem 0 0.35rem;
+    padding: 0 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--admin-ink-500);
+  }
+
+  .admin-nav__heading:first-of-type {
+    margin-top: 0.85rem;
   }
 
   .admin-nav__link {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 0.6rem;
-    border-radius: 10px;
+    gap: 0.6rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 9px;
     color: var(--admin-ink-700);
     text-decoration: none;
-    font-size: 0.94rem;
+    font-size: 0.92rem;
     font-weight: 500;
+    line-height: 1.3;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+
+  .admin-nav__link .portal-icon {
+    color: var(--admin-ink-500);
   }
 
   .admin-nav__link:hover {
-    background: #eef3fa;
+    background: #e7eef8;
+    color: var(--admin-ink);
+  }
+
+  .admin-nav__link:hover .portal-icon {
     color: var(--admin-ink);
   }
 
   .admin-nav__link.is-active {
     background: var(--admin-ink);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .admin-nav__link.is-active .portal-icon {
     color: #fff;
   }
 
@@ -1035,7 +1054,14 @@ Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 
   .admin-card__icon {
-    font-size: 1.5rem;
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 10px;
+    background: var(--admin-accent-bg, #eef3fa);
+    color: var(--admin-ink);
+    margin-bottom: 0.15rem;
   }
 
   .admin-card__title {

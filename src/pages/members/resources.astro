@@ -2,6 +2,7 @@
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
 import { getMemberResources } from "../../utils/content";
+import PortalIcon from "../../components/PortalIcon.astro";
 
 if (!(await checkMemberAuth(Astro.request))) {
   return Astro.redirect("/members/login");
@@ -25,8 +26,8 @@ const resources = await getMemberResources();
             target="_blank"
             rel="noopener noreferrer"
           >
-            <span class="mp-card__icon" aria-hidden="true">
-              📄
+            <span class="mp-card__icon">
+              <PortalIcon name="file" size={22} />
             </span>
             <h2 class="mp-card__title">{resource.title}</h2>
             {resource.description && (
