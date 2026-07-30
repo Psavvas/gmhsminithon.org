@@ -103,6 +103,58 @@ function getApi(): UTApi | null {
   return cachedApi;
 }
 
+/**
+ * UploadThing collapses every upload failure into `UPLOAD_FAILED` with no
+ * cause attached, so a bad token and a failed transfer look identical. Reading
+ * the account's usage info is a cheap, separate call that does surface a real
+ * error, which tells the two apart.
+ */
+export type UploadThingCheck =
+  | { ok: true; filesUploaded: number }
+  | { ok: false; error: string };
+
+function describeUploadThingError(error: unknown): string {
+  if (error && typeof error === "object") {
+    const { code, message } = error as { code?: string; message?: string };
+
+    if (message || code) {
+      return [message, code && `(${code})`].filter(Boolean).join(" ");
+    }
+  }
+
+  return error instanceof Error ? error.message : String(error);
+}
+
+export async function checkUploadThingConnection(): Promise<UploadThingCheck> {
+  const tokenStatus = inspectUploadThingToken();
+
+  if (!tokenStatus.ok) {
+    return { ok: false, error: tokenStatus.reason };
+  }
+
+  const api = getApi();
+
+  if (!api) {
+    return { ok: false, error: "UploadThing is not configured." };
+  }
+
+  try {
+    const usage = await Promise.race([
+      api.getUsageInfo(),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error("UploadThing did not respond in time.")),
+          6000,
+        ),
+      ),
+    ]);
+
+    return { ok: true, filesUploaded: usage.filesUploaded };
+  } catch (error) {
+    return { ok: false, error: describeUploadThingError(error) };
+  }
+}
+
 /** Keep the stored filename readable but harmless. */
 function safeFileName(name: string, mimeType: string): string {
   const base = (name.split(/[\\/]/).pop() ?? "upload")
@@ -174,21 +226,24 @@ export async function uploadImage(file: File): Promise<UploadOutcome> {
   const result = await api.uploadFiles(uploadable);
 
   if (result.error || !result.data) {
-    // Log the whole error server-side; UploadThing's reason is often in `code`
-    // or `data` rather than `message`.
     console.warn("[admin] uploadthing rejected an upload", result.error);
 
-    const { code, message } = (result.error ?? {}) as {
-      code?: string;
-      message?: string;
-    };
+    // `UPLOADTHING_FAILED` says nothing on its own, so find out whether the
+    // token itself works and report whichever answer is actionable.
+    const connection = await checkUploadThingConnection();
+
+    if (!connection.ok) {
+      return {
+        ok: false,
+        status: 502,
+        error: `UploadThing rejected the credentials: ${connection.error}. Check UPLOADTHING_TOKEN in Vercel — it is the token from the API Keys tab, not the sk_live_… secret key — then redeploy.`,
+      };
+    }
 
     return {
       ok: false,
       status: 502,
-      error:
-        [message, code && `(${code})`].filter(Boolean).join(" ") ||
-        "UploadThing rejected the upload.",
+      error: `${describeUploadThingError(result.error)}. The token works, so the file transfer itself failed — try a smaller image, or a PNG/JPEG if this was something else.`,
     };
   }
 
