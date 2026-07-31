@@ -8,16 +8,11 @@ import {
   type AdminActivityEntry,
 } from "../../utils/content/db";
 import {
-  checkUploadThingConnection,
-  inspectUploadThingToken,
-} from "../../utils/admin/uploads";
-import {
   ADMIN_LOGIN_PATH,
   getAdminSession,
   redactShooSub,
 } from "../../utils/admin/session";
 import { getAccessListState } from "../../utils/admin/access";
-import { hasMemberApprovalSourceConfigured } from "../../utils/auth";
 import PortalIcon from "../../components/PortalIcon.astro";
 
 const session = await getAdminSession(Astro.request);
@@ -34,12 +29,6 @@ const [{ statuses, error: contentWarning }, database, adminList] =
     getAccessListState("admins"),
   ]);
 
-const uploadToken = inspectUploadThingToken();
-// Only worth calling UploadThing when the token at least has the right shape.
-const uploadConnection = uploadToken.ok
-  ? await checkUploadThingConnection()
-  : { ok: false as const, error: uploadToken.reason };
-const memberSourceConfigured = hasMemberApprovalSourceConfigured();
 const canEdit = database.configured && database.reachable;
 
 let activity: AdminActivityEntry[] = [];
@@ -80,32 +69,6 @@ const activityLabels: Record<string, string> = {
   "access.member_removed": "Removed a member",
   "upload.image": "Uploaded an image",
 };
-
-const setupChecks = [
-  {
-    label: "Neon database",
-    ok: canEdit,
-    detail: !database.configured
-      ? "Not connected. Add DATABASE_URL in Vercel to turn on editing — until then the site serves the JSON files from the repository and this portal is read-only."
-      : database.reachable
-        ? "Connected. Content edits save here and appear on the site within about 30 seconds."
-        : `Configured, but not reachable right now: ${database.error ?? "unknown error"}`,
-  },
-  {
-    label: "Image uploads (UploadThing)",
-    ok: uploadConnection.ok,
-    detail: uploadConnection.ok
-      ? `Connected — ${uploadConnection.filesUploaded} file${uploadConnection.filesUploaded === 1 ? "" : "s"} uploaded so far. Images have to be under 4 MB.`
-      : `UploadThing said: ${uploadConnection.error}. Check UPLOADTHING_TOKEN in Vercel (the token from the API Keys tab, not the sk_live_… secret key) and redeploy. You can still paste image links in the meantime.`,
-  },
-  {
-    label: "Member portal access list",
-    ok: memberSourceConfigured,
-    detail: memberSourceConfigured
-      ? "Member Shoo IDs can be managed under Shoo IDs."
-      : "No member approval source is configured yet.",
-  },
-];
 ---
 
 <AdminLayout
@@ -121,28 +84,6 @@ const setupChecks = [
       </p>
     )
   }
-
-  <section class="admin-panel">
-    <h2>Setup</h2>
-    <ul class="admin-status-list">
-      {
-        setupChecks.map((check) => (
-          <li class="admin-status">
-            <span class="admin-status__state" aria-hidden="true">
-              {check.ok ? "✅" : "⚠️"}
-            </span>
-            <span class="admin-status__label">
-              {check.label}
-              <span class="admin-visually-hidden">
-                {check.ok ? " — ready" : " — needs attention"}
-              </span>
-            </span>
-            <p class="admin-status__detail">{check.detail}</p>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
 
   <section class="admin-section">
     <h2 class="admin-section__title">Sections</h2>
