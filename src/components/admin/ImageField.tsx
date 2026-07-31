@@ -121,12 +121,17 @@ export default function ImageField({
         );
       }
 
-      const formData = new FormData();
-      formData.append("file", prepared);
-
+      // Sent as a raw body, not a form: Astro's CSRF middleware rejects
+      // form-like content types whenever it cannot resolve the real host, which
+      // is the default behind Vercel's proxy. The route does its own origin
+      // check, and this header cannot be forged cross-origin.
       const response = await fetch(uploadEndpoint, {
         method: "POST",
-        body: formData,
+        body: prepared,
+        headers: {
+          "Content-Type": prepared.type || "application/octet-stream",
+          "X-File-Name": encodeURIComponent(prepared.name),
+        },
         credentials: "same-origin",
       });
 

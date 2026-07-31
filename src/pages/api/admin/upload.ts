@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { uploadImage } from "../../../utils/admin/uploads";
+import { MAX_UPLOAD_BYTES, uploadImage } from "../../../utils/admin/uploads";
 import { logAdminActivity } from "../../../utils/content/db";
 import {
   guardAdminApiRequest,
@@ -9,6 +9,31 @@ import {
   redactShooSub,
 } from "../../../utils/admin/session";
 
+/**
+ * Header values are latin-1, so the browser sends the name URI-encoded.
+ * `uploadImage` sanitises whatever comes back, so this only has to not throw.
+ */
+function decodeFileName(header: string | null): string {
+  if (!header) {
+    return "upload";
+  }
+
+  try {
+    return decodeURIComponent(header) || "upload";
+  } catch {
+    return header;
+  }
+}
+
+/**
+ * The image arrives as a raw body rather than a multipart form, with its name
+ * in a header. Astro's built-in CSRF middleware only guards form-like content
+ * types, and it compares the browser's `Origin` against `Astro.url` — which is
+ * only trustworthy behind a proxy when `security.allowedDomains` is set. This
+ * route does not depend on that being right: `guardAdminApiRequest` runs its own
+ * origin check against the deployment's real origins, and a custom header
+ * cannot be sent cross-origin without a CORS preflight the browser will refuse.
+ */
 export const POST: APIRoute = async ({ request }) => {
   const guard = await guardAdminApiRequest(request);
 
@@ -16,18 +41,34 @@ export const POST: APIRoute = async ({ request }) => {
     return guard.response;
   }
 
-  let file: File | null = null;
+  const declaredLength = Number(request.headers.get("content-length") ?? "0");
 
-  try {
-    const formData = await request.formData();
-    const candidate = formData.get("file");
-    file = candidate instanceof File ? candidate : null;
-  } catch {
-    return jsonError("The upload could not be read.", 400);
+  // Fail before buffering a body we are only going to reject.
+  if (declaredLength > MAX_UPLOAD_BYTES) {
+    return jsonError(
+      `Images must be under ${Math.round(MAX_UPLOAD_BYTES / (1024 * 1024))} MB.`,
+      413,
+    );
   }
 
-  if (!file) {
-    return jsonError("Choose an image to upload.", 400);
+  const fileName = decodeFileName(request.headers.get("x-file-name"));
+  const contentType = (request.headers.get("content-type") ?? "")
+    .split(";")[0]
+    .trim()
+    .toLowerCase();
+
+  let file: File;
+
+  try {
+    const bytes = await request.arrayBuffer();
+
+    if (bytes.byteLength === 0) {
+      return jsonError("Choose an image to upload.", 400);
+    }
+
+    file = new File([bytes], fileName, { type: contentType });
+  } catch {
+    return jsonError("The upload could not be read.", 400);
   }
 
   try {

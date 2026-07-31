@@ -216,6 +216,19 @@ branch), and `VERCEL_PROJECT_PRODUCTION_URL` (production) automatically; all
 three are accepted as token origins, so nothing extra is needed for the stable
 aliases to work.
 
+### Adding a new domain
+
+`security.allowedDomains` in `astro.config.ts` lists the hosts this site is
+served from. Vercel terminates TLS at its edge and passes the real host in
+`x-forwarded-host`; Astro only trusts that header for hosts matching this list,
+and with no match it falls back to `localhost`. That makes `Astro.url` wrong on
+every request and makes Astro's built-in CSRF check reject form posts, because
+the browser's `Origin` can never equal `https://localhost`.
+
+`**.vercel.app` covers every preview and branch alias, so **if you point a new
+custom domain at this project, add it there** — otherwise pages that read
+`Astro.url` report the wrong host on that domain.
+
 ### Connecting Neon
 
 1. Create a Neon project (or use Vercel's Neon integration, which sets the
