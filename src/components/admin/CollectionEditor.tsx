@@ -11,6 +11,7 @@ import {
   type ValidationIssue,
 } from "../../utils/content/fieldSpec";
 import ImageField from "./ImageField";
+import MarkdownField from "./MarkdownField";
 
 type Path = Array<string | number>;
 
@@ -267,25 +268,33 @@ function Field({
           inputId={inputId}
           describedBy={describedBy}
         />
-      ) : spec.kind === "textarea" || spec.kind === "markdown" ? (
+      ) : spec.kind === "markdown" ? (
         <>
-          <textarea
-            id={inputId}
-            className={`admin-input admin-textarea${invalid ? " is-invalid" : ""}`}
-            rows={spec.rows ?? 4}
+          <MarkdownField
             value={asText(value)}
+            onChange={(next) => ctx.onChange(path, next)}
+            inputId={inputId}
+            describedBy={describedBy}
+            invalid={invalid}
+            rows={spec.rows ?? 4}
             placeholder={spec.placeholder}
-            aria-describedby={describedBy}
-            aria-invalid={invalid || undefined}
-            onChange={(event) => ctx.onChange(path, event.target.value)}
           />
-          {spec.kind === "markdown" && (
-            <p className="admin-field__help">
-              Formatting: <code>**bold**</code>, <code>*italic*</code>,{" "}
-              <code>- bullet</code>, <code>[link](https://…)</code>
-            </p>
-          )}
+          <p className="admin-field__help">
+            Formatting: <code>**bold**</code>, <code>*italic*</code>,{" "}
+            <code>- bullet</code>, <code>[link](https://…)</code>
+          </p>
         </>
+      ) : spec.kind === "textarea" ? (
+        <textarea
+          id={inputId}
+          className={`admin-input admin-textarea${invalid ? " is-invalid" : ""}`}
+          rows={spec.rows ?? 4}
+          value={asText(value)}
+          placeholder={spec.placeholder}
+          aria-describedby={describedBy}
+          aria-invalid={invalid || undefined}
+          onChange={(event) => ctx.onChange(path, event.target.value)}
+        />
       ) : (
         <input
           id={inputId}
