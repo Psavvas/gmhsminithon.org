@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 0.7 seconds
+Output:
 ---
 import { getSiteBanners, type SiteBanner } from "../utils/content";
 import { renderContentMarkdown } from "../utils/markdown";
@@ -38,7 +41,13 @@ const visibleBanners = banners.filter(
 
 {
   visibleBanners.length > 0 && (
-    <section class="site-banners" aria-label="Site notices">
+    <section
+      class:list={{
+        "site-banners": true,
+        "site-banners--full": audience === "public",
+      }}
+      aria-label="Site notices"
+    >
       {visibleBanners.map((banner) => (
         <details class="site-banner" style={`--banner-color: ${banner.color}`}>
           <summary class="site-banner__toggle">See more</summary>
@@ -80,6 +89,12 @@ const visibleBanners = banners.filter(
     margin: 0 auto 1.5rem;
     max-width: 1180px;
   }
+  .site-banners--full {
+    gap: 1px;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+  }
   .site-banner {
     background: var(--banner-color);
     border-radius: 12px;
@@ -88,6 +103,11 @@ const visibleBanners = banners.filter(
     flex-direction: column;
     overflow: hidden;
     padding: 0.9rem 1.25rem;
+  }
+  .site-banners--full .site-banner {
+    border-radius: 0;
+    padding-left: max(1.25rem, calc((100vw - 1160px) / 2 + 2rem));
+    padding-right: max(1.25rem, calc((100vw - 1160px) / 2 + 2rem));
   }
   .site-banner__content {
     line-height: 1.5;
@@ -132,5 +152,14 @@ const visibleBanners = banners.filter(
       margin-left: 1rem;
       margin-right: 1rem;
     }
+    .site-banners--full {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .site-banners--full .site-banner {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
   }
 </style>
+
