@@ -119,8 +119,8 @@ const currentPath = Astro.url.pathname;
         </ul>
       </div>
     </nav>
-    <SiteBanners audience="public" path={currentPath} />
     <main>
+      <SiteBanners audience="public" path={currentPath} />
       <slot />
     </main>
     <footer>
