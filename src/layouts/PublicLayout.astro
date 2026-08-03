@@ -7,6 +7,7 @@ import {
   GMHS_LOGO,
 } from "../utils/brand";
 import NavBehavior from "../components/NavBehavior.astro";
+import SiteBanners from "../components/SiteBanners.astro";
 import { getClubInfo } from "../utils/content";
 
 export interface Props {
@@ -118,6 +119,7 @@ const currentPath = Astro.url.pathname;
         </ul>
       </div>
     </nav>
+    <SiteBanners audience="public" path={currentPath} />
     <main>
       <slot />
     </main>

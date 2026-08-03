@@ -300,13 +300,15 @@ function Field({
           id={inputId}
           className={`admin-input${invalid ? " is-invalid" : ""}`}
           type={
-            spec.kind === "date"
-              ? "date"
-              : spec.kind === "email"
-                ? "email"
-                : spec.kind === "url" || spec.kind === "embed"
-                  ? "url"
-                  : "text"
+            spec.kind === "color"
+              ? "color"
+              : spec.kind === "date"
+                ? "date"
+                : spec.kind === "email"
+                  ? "email"
+                  : spec.kind === "url" || spec.kind === "embed"
+                    ? "url"
+                    : "text"
           }
           value={asText(value)}
           placeholder={spec.placeholder}

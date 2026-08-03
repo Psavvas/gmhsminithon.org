@@ -1,0 +1,136 @@
+---
+import { getSiteBanners, type SiteBanner } from "../utils/content";
+import { renderContentMarkdown } from "../utils/markdown";
+
+export interface Props {
+  audience: "public" | "members";
+  path: string;
+}
+
+const { audience, path } = Astro.props;
+const banners = await getSiteBanners();
+
+function matchesPage(banner: SiteBanner): boolean {
+  if (banner.visibility === "All pages") return true;
+  if (banner.visibility === "Homepage only") {
+    return audience === "public" && path === "/";
+  }
+
+  const slug = banner.eventSlug.trim();
+  return (
+    Boolean(slug) &&
+    (path === `/events/${slug}` || path === `/members/events/${slug}`)
+  );
+}
+
+function matchesAudience(banner: SiteBanner): boolean {
+  return (
+    banner.placement === "Both" ||
+    (audience === "public" && banner.placement === "Public site") ||
+    (audience === "members" && banner.placement === "Member portal")
+  );
+}
+
+const visibleBanners = banners.filter(
+  (banner) => banner.enabled && matchesAudience(banner) && matchesPage(banner),
+);
+---
+
+{
+  visibleBanners.length > 0 && (
+    <section class="site-banners" aria-label="Site notices">
+      {visibleBanners.map((banner) => (
+        <details class="site-banner" style={`--banner-color: ${banner.color}`}>
+          <summary class="site-banner__toggle">See more</summary>
+          <div
+            class="site-banner__content"
+            set:html={renderContentMarkdown(banner.message)}
+          />
+        </details>
+      ))}
+    </section>
+  )
+}
+
+<script>
+  function refreshBanners() {
+    document.querySelectorAll<HTMLElement>(".site-banner").forEach((banner) => {
+      const content = banner.querySelector<HTMLElement>(
+        ".site-banner__content",
+      );
+      if (!content) return;
+      banner.removeAttribute("data-expandable");
+      const lineHeight = Number.parseFloat(
+        getComputedStyle(content).lineHeight,
+      );
+      const twoLines = (Number.isFinite(lineHeight) ? lineHeight : 24) * 2 + 2;
+      if (content.scrollHeight > twoLines)
+        banner.setAttribute("data-expandable", "");
+    });
+  }
+
+  refreshBanners();
+  window.addEventListener("resize", refreshBanners);
+</script>
+
+<style>
+  .site-banners {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0 auto 1.5rem;
+    max-width: 1180px;
+  }
+  .site-banner {
+    background: var(--banner-color);
+    border-radius: 12px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0.9rem 1.25rem;
+  }
+  .site-banner__content {
+    line-height: 1.5;
+  }
+  .site-banner__content :global(p) {
+    margin: 0;
+  }
+  .site-banner__content :global(p + p),
+  .site-banner__content :global(ul),
+  .site-banner__content :global(ol) {
+    margin: 0.75rem 0 0;
+  }
+  .site-banner__content :global(a) {
+    color: inherit;
+    font-weight: 700;
+  }
+  .site-banner__toggle {
+    display: none;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 0.6rem;
+    order: 2;
+  }
+  .site-banner[data-expandable]:not([open]) .site-banner__content {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .site-banner[data-expandable] .site-banner__toggle {
+    display: block;
+  }
+  .site-banner[data-expandable][open] .site-banner__toggle {
+    font-size: 0;
+  }
+  .site-banner[data-expandable][open] .site-banner__toggle::after {
+    content: "See less";
+    font-size: 0.9rem;
+  }
+  @media (max-width: 1120px) {
+    .site-banners {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+  }
+</style>

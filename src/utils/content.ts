@@ -62,6 +62,23 @@ export type RedirectEntry = {
   url: string;
 };
 
+export type SiteBanner = {
+  message: string;
+  color: string;
+  placement: "Public site" | "Member portal" | "Both";
+  visibility: "Homepage only" | "One event page" | "All pages";
+  eventSlug: string;
+  enabled: boolean;
+};
+
+export async function getSiteBanners(): Promise<SiteBanner[]> {
+  const { banners } = await readCollectionData<{ banners: SiteBanner[] }>(
+    "banners",
+  );
+
+  return banners;
+}
+
 export type ManagedEvent = {
   title: string;
   slug: string;

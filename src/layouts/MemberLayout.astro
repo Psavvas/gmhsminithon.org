@@ -11,6 +11,7 @@ import {
 import { isAdminRequest } from "../utils/admin/session";
 import { DIAMOND_MASTHEAD_ON_DARK, FAVICON_HREF } from "../utils/brand";
 import PortalIcon from "../components/PortalIcon.astro";
+import SiteBanners from "../components/SiteBanners.astro";
 
 export interface Props {
   title: string;
@@ -129,6 +130,7 @@ function isActive(link: (typeof navLinks)[number]): boolean {
       </nav>
 
       <main class="mp-main">
+        <SiteBanners audience="members" path={currentPath} />
         {
           (heading || intro) && (
             <div class="mp-page-header">

@@ -16,6 +16,7 @@ export type TextFieldKind =
   | "text"
   | "textarea"
   | "markdown"
+  | "color"
   | "url"
   | "email"
   | "date"
@@ -235,6 +236,13 @@ function coerceTextField(
     issues.push({
       path,
       message: `${spec.label} must be an uploaded image or an https:// URL.`,
+    });
+  }
+
+  if (spec.kind === "color" && !/^#[0-9a-f]{6}$/i.test(text)) {
+    issues.push({
+      path,
+      message: `${spec.label} must be a six-digit hexadecimal color.`,
     });
   }
 
@@ -532,6 +540,8 @@ export function normalizeCollection(
  */
 export function emptyValueForField(spec: FieldSpec): unknown {
   switch (spec.kind) {
+    case "color":
+      return "#1f5c9c";
     case "number":
       return 0;
     case "boolean":

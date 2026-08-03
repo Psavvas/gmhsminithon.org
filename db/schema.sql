@@ -11,7 +11,7 @@
 -- One row per content section, holding that section's whole document.
 -- `collection` matches the ids in src/utils/content/collections.ts:
 -- fundraising, sponsors, events, clubInfo, redirects, memberAnnouncements,
--- memberResources.
+-- memberResources, banners.
 create table if not exists site_content (
   collection text primary key,
   data jsonb not null,

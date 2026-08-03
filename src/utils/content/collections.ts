@@ -11,6 +11,7 @@ import memberAnnouncementsDefaults from "../../data/memberAnnouncements.json";
 import memberResourcesDefaults from "../../data/memberResources.json";
 import redirectsDefaults from "../../data/redirects.json";
 import sponsorsDefaults from "../../data/sponsors.json";
+import bannersDefaults from "../../data/banners.json";
 import {
   normalizeCollection,
   type ClientCollectionSpec,
@@ -61,6 +62,72 @@ const SPONSOR_TIER_OPTIONS = [
 ];
 
 export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
+  banners: {
+    id: "banners",
+    label: "Site banners",
+    description:
+      "Notices shown on the public site, the member portal, or both.",
+    icon: "megaphone",
+    scope: "public",
+    previewPath: "/",
+    defaults: bannersDefaults,
+    notes: [
+      "Long notices automatically show a See more control after two lines.",
+      "For an event-only banner, enter the event's URL slug (for example: spring-5k).",
+    ],
+    root: {
+      kind: "object",
+      label: "Banners",
+      fields: {
+        banners: {
+          kind: "list",
+          label: "Banners",
+          itemLabel: "Banner",
+          titleField: "message",
+          subtitleField: "placement",
+          fields: {
+            message: {
+              kind: "markdown",
+              label: "Message",
+              required: true,
+              rows: 5,
+              help: "Markdown is supported and safely rendered on the site.",
+            },
+            color: {
+              kind: "color",
+              label: "Banner color",
+              required: true,
+              help: "Choose the background color for this banner.",
+            },
+            placement: {
+              kind: "select",
+              label: "Show on",
+              options: ["Public site", "Member portal", "Both"],
+              required: true,
+            },
+            visibility: {
+              kind: "select",
+              label: "Pages",
+              options: ["Homepage only", "One event page", "All pages"],
+              required: true,
+            },
+            eventSlug: {
+              kind: "text",
+              label: "Event URL slug",
+              placeholder: "spring-5k",
+              pattern: SLUG_PATTERN,
+              patternMessage: "Use lowercase letters, numbers, and hyphens.",
+              help: "Required when Pages is set to One event page.",
+            },
+            enabled: {
+              kind: "boolean",
+              label: "Show this banner",
+            },
+          },
+        },
+      },
+    },
+  },
   fundraising: {
     id: "fundraising",
     label: "Fundraising totals",
