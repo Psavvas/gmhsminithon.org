@@ -5,9 +5,10 @@ import { renderContentMarkdown } from "../utils/markdown";
 export interface Props {
   audience: "public" | "members";
   path: string;
+  fullWidth?: boolean;
 }
 
-const { audience, path } = Astro.props;
+const { audience, path, fullWidth = false } = Astro.props;
 const banners = await getSiteBanners();
 
 function matchesPage(banner: SiteBanner): boolean {
@@ -31,6 +32,22 @@ function matchesAudience(banner: SiteBanner): boolean {
   );
 }
 
+function getTextColor(background: string): string {
+  const match = background.match(/^#([0-9a-f]{6})$/i);
+
+  if (!match) return "#ffffff";
+
+  const channels = [0, 2, 4].map(
+    (offset) => Number.parseInt(match[1].slice(offset, offset + 2), 16) / 255,
+  );
+  const [red, green, blue] = channels.map((channel) =>
+    channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4,
+  );
+  const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+  return luminance > 0.42 ? "#172033" : "#ffffff";
+}
+
 const visibleBanners = banners.filter(
   (banner) => banner.enabled && matchesAudience(banner) && matchesPage(banner),
 );
@@ -41,18 +58,28 @@ const visibleBanners = banners.filter(
     <section
       class:list={{
         "site-banners": true,
-        "site-banners--full": audience === "public",
+        "site-banners--full": fullWidth,
       }}
       aria-label="Site notices"
     >
       {visibleBanners.map((banner) => (
-        <details class="site-banner" style={`--banner-color: ${banner.color}`}>
-          <summary class="site-banner__toggle">See more</summary>
+        <div
+          class="site-banner"
+          style={`--banner-color: ${banner.color}; --banner-text: ${getTextColor(banner.color)}`}
+        >
           <div
             class="site-banner__content"
             set:html={renderContentMarkdown(banner.message)}
           />
-        </details>
+          <button
+            class="site-banner__toggle"
+            type="button"
+            hidden
+            aria-expanded="false"
+          >
+            See more
+          </button>
+        </div>
       ))}
     </section>
   )
@@ -64,14 +91,30 @@ const visibleBanners = banners.filter(
       const content = banner.querySelector<HTMLElement>(
         ".site-banner__content",
       );
-      if (!content) return;
+      const toggle = banner.querySelector<HTMLButtonElement>(
+        ".site-banner__toggle",
+      );
+      if (!content || !toggle) return;
+
       banner.removeAttribute("data-expandable");
+      toggle.hidden = true;
       const lineHeight = Number.parseFloat(
         getComputedStyle(content).lineHeight,
       );
       const twoLines = (Number.isFinite(lineHeight) ? lineHeight : 24) * 2 + 2;
-      if (content.scrollHeight > twoLines)
+      if (content.scrollHeight > twoLines) {
         banner.setAttribute("data-expandable", "");
+        toggle.hidden = false;
+      }
+
+      if (!toggle.dataset.bound) {
+        toggle.dataset.bound = "true";
+        toggle.addEventListener("click", () => {
+          const expanded = banner.classList.toggle("is-expanded");
+          toggle.setAttribute("aria-expanded", String(expanded));
+          toggle.textContent = expanded ? "See less" : "See more";
+        });
+      }
     });
   }
 
@@ -95,11 +138,11 @@ const visibleBanners = banners.filter(
   .site-banner {
     background: var(--banner-color);
     border-radius: 12px;
-    color: white;
-    display: flex;
-    flex-direction: column;
+    color: var(--banner-text);
     overflow: hidden;
     padding: 0.9rem 1.25rem;
+    position: relative;
+    text-align: center;
   }
   .site-banners--full .site-banner {
     border-radius: 0;
@@ -122,27 +165,32 @@ const visibleBanners = banners.filter(
     font-weight: 700;
   }
   .site-banner__toggle {
-    display: none;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    bottom: 0.9rem;
+    color: inherit;
     cursor: pointer;
     font-weight: 700;
-    margin-top: 0.6rem;
-    order: 2;
+    padding: 0;
+    position: absolute;
+    right: 1.25rem;
+    text-decoration: underline;
+    white-space: nowrap;
   }
-  .site-banner[data-expandable]:not([open]) .site-banner__content {
+  .site-banner[data-expandable]:not(.is-expanded) .site-banner__content {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
+    padding-left: 5.5rem;
+    padding-right: 5.5rem;
   }
-  .site-banner[data-expandable] .site-banner__toggle {
-    display: block;
-  }
-  .site-banner[data-expandable][open] .site-banner__toggle {
-    font-size: 0;
-  }
-  .site-banner[data-expandable][open] .site-banner__toggle::after {
-    content: "See less";
-    font-size: 0.9rem;
+  .site-banner.is-expanded .site-banner__toggle {
+    bottom: 0.4rem;
+    position: relative;
+    right: auto;
+    width: auto;
   }
   @media (max-width: 1120px) {
     .site-banners {
@@ -156,6 +204,13 @@ const visibleBanners = banners.filter(
     .site-banners--full .site-banner {
       padding-left: 1rem;
       padding-right: 1rem;
+    }
+    .site-banner[data-expandable]:not(.is-expanded) .site-banner__content {
+      padding-left: 4.75rem;
+      padding-right: 4.75rem;
+    }
+    .site-banner__toggle {
+      right: 1rem;
     }
   }
 </style>
