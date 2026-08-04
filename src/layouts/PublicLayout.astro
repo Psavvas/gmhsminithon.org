@@ -48,6 +48,9 @@ const currentPath = Astro.url.pathname;
     <Analytics />
   </head>
   <body>
+    <div class="site-notice-area">
+      <SiteBanners audience="public" path={currentPath} fullWidth />
+    </div>
     <nav class="navbar">
       <div class="nav-container">
         <a href="/" class="logo">
@@ -119,9 +122,6 @@ const currentPath = Astro.url.pathname;
         </ul>
       </div>
     </nav>
-    <div class="site-notice-area">
-      <SiteBanners audience="public" path={currentPath} fullWidth />
-    </div>
     <main>
       <slot />
     </main>
@@ -502,7 +502,7 @@ const currentPath = Astro.url.pathname;
     padding: 1rem 0;
     box-shadow: 0 4px 20px rgba(28, 42, 58, 0.15);
     backdrop-filter: blur(14px);
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
@@ -521,12 +521,11 @@ const currentPath = Astro.url.pathname;
   }
 
   .navbar.is-hidden {
-    transform: translateY(-100%);
-    box-shadow: none;
+    transform: none;
   }
 
   .site-notice-area {
-    padding-top: var(--nav-offset);
+    width: 100%;
   }
 
   .nav-container {
