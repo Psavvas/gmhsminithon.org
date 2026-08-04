@@ -136,11 +136,15 @@ const visibleBanners = banners.filter(
     width: 100%;
   }
   .site-banner {
+    align-items: center;
     background: var(--banner-color);
     border-radius: 12px;
     color: var(--banner-text);
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
     overflow: hidden;
-    padding: 0.9rem 1.25rem;
+    padding: 0.7rem 1.25rem;
     position: relative;
     text-align: center;
   }
@@ -150,11 +154,24 @@ const visibleBanners = banners.filter(
     padding-right: max(1.25rem, calc((100vw - 1160px) / 2 + 2rem));
   }
   .site-banner__content {
+    flex: 0 1 920px;
     line-height: 1.5;
-    max-width: 920px;
+    min-width: 0;
   }
   .site-banner__content :global(p) {
+    display: inline;
     margin: 0;
+  }
+  .site-banner__content :global(h2),
+  .site-banner__content :global(h3),
+  .site-banner__content :global(h4),
+  .site-banner__content :global(h5) {
+    display: inline;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 800;
+    line-height: inherit;
+    margin: 0 0.5rem 0 0;
   }
   .site-banner__content :global(p + p),
   .site-banner__content :global(ul),
@@ -168,15 +185,17 @@ const visibleBanners = banners.filter(
   .site-banner__toggle {
     appearance: none;
     align-items: center;
-    background: color-mix(in srgb, var(--banner-text) 16%, transparent);
-    border: 1px solid color-mix(in srgb, var(--banner-text) 45%, transparent);
+    background: color-mix(in srgb, var(--banner-text) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--banner-text) 32%, transparent);
     border-radius: 999px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
     color: inherit;
     cursor: pointer;
     display: inline-flex;
     font-weight: 700;
-    margin-top: 0.7rem;
-    padding: 0.4rem 0.9rem;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.32rem 0.78rem;
     position: relative;
     transition:
       background 0.2s ease,
@@ -187,7 +206,7 @@ const visibleBanners = banners.filter(
     display: none;
   }
   .site-banner__toggle:hover {
-    background: color-mix(in srgb, var(--banner-text) 25%, transparent);
+    background: color-mix(in srgb, var(--banner-text) 22%, transparent);
     transform: translateY(-1px);
   }
   .site-banner__toggle:focus-visible {
@@ -212,6 +231,15 @@ const visibleBanners = banners.filter(
     .site-banners--full .site-banner {
       padding-left: 1rem;
       padding-right: 1rem;
+    }
+  }
+  @media (max-width: 640px) {
+    .site-banner {
+      align-items: center;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-bottom: 0.8rem;
+      padding-top: 0.8rem;
     }
   }
 </style>
