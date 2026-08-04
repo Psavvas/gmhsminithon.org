@@ -77,7 +77,7 @@ const visibleBanners = banners.filter(
             hidden
             aria-expanded="false"
           >
-            See more
+            Learn more
           </button>
         </div>
       ))}
@@ -112,7 +112,7 @@ const visibleBanners = banners.filter(
         toggle.addEventListener("click", () => {
           const expanded = banner.classList.toggle("is-expanded");
           toggle.setAttribute("aria-expanded", String(expanded));
-          toggle.textContent = expanded ? "See less" : "See more";
+          toggle.textContent = expanded ? "Show less" : "Learn more";
         });
       }
     });
@@ -151,6 +151,7 @@ const visibleBanners = banners.filter(
   }
   .site-banner__content {
     line-height: 1.5;
+    max-width: 920px;
   }
   .site-banner__content :global(p) {
     margin: 0;
@@ -166,31 +167,38 @@ const visibleBanners = banners.filter(
   }
   .site-banner__toggle {
     appearance: none;
-    background: transparent;
-    border: 0;
-    bottom: 0.9rem;
+    align-items: center;
+    background: color-mix(in srgb, var(--banner-text) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--banner-text) 45%, transparent);
+    border-radius: 999px;
     color: inherit;
     cursor: pointer;
+    display: inline-flex;
     font-weight: 700;
-    padding: 0;
-    position: absolute;
-    right: 1.25rem;
-    text-decoration: underline;
+    margin-top: 0.7rem;
+    padding: 0.4rem 0.9rem;
+    position: relative;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
     white-space: nowrap;
+  }
+  .site-banner__toggle[hidden] {
+    display: none;
+  }
+  .site-banner__toggle:hover {
+    background: color-mix(in srgb, var(--banner-text) 25%, transparent);
+    transform: translateY(-1px);
+  }
+  .site-banner__toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
   }
   .site-banner[data-expandable]:not(.is-expanded) .site-banner__content {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
-    padding-left: 5.5rem;
-    padding-right: 5.5rem;
-  }
-  .site-banner.is-expanded .site-banner__toggle {
-    bottom: 0.4rem;
-    position: relative;
-    right: auto;
-    width: auto;
   }
   @media (max-width: 1120px) {
     .site-banners {
@@ -204,13 +212,6 @@ const visibleBanners = banners.filter(
     .site-banners--full .site-banner {
       padding-left: 1rem;
       padding-right: 1rem;
-    }
-    .site-banner[data-expandable]:not(.is-expanded) .site-banner__content {
-      padding-left: 4.75rem;
-      padding-right: 4.75rem;
-    }
-    .site-banner__toggle {
-      right: 1rem;
     }
   }
 </style>
