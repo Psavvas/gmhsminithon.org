@@ -76,6 +76,7 @@ function isActive(link: (typeof navLinks)[number]): boolean {
     <Analytics />
   </head>
   <body>
+    <SiteBanners audience="members" path={currentPath} fullWidth />
     <header class="mp-topbar">
       <div class="mp-topbar__inner">
         <a class="mp-topbar__brand" href="/members">
@@ -130,7 +131,6 @@ function isActive(link: (typeof navLinks)[number]): boolean {
       </nav>
 
       <main class="mp-main">
-        <SiteBanners audience="members" path={currentPath} />
         {
           (heading || intro) && (
             <div class="mp-page-header">
@@ -158,3 +158,4 @@ function isActive(link: (typeof navLinks)[number]): boolean {
     <SpeedInsights />
   </body>
 </html>
+
