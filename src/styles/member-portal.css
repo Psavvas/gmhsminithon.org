@@ -596,6 +596,58 @@ a.mp-card:hover {
   overflow-wrap: anywhere;
 }
 
+/*
+ * Event flyers and video embeds, injected by renderManagedEventBody. Capped by
+ * height and centred, because a flyer uploaded from a phone is usually portrait
+ * and would otherwise fill the whole panel.
+ */
+.mp-prose .event-media {
+  margin: 1.25rem 0 0;
+  padding: 0;
+}
+
+.mp-prose .event-media--image {
+  display: flex;
+  justify-content: center;
+  background: var(--mp-surface);
+  border: 1px solid var(--mp-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mp-prose .event-media__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: min(70vh, 26rem);
+  object-fit: contain;
+}
+
+.mp-prose .event-media--video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: min(70vh, 26rem);
+  margin-inline: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.mp-prose .event-media__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .mp-prose .event-media__image,
+  .mp-prose .event-media--video {
+    max-height: 60vh;
+  }
+}
+
 .mp-prose code {
   font-family:
     "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, monospace;

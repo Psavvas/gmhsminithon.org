@@ -124,9 +124,15 @@ export function renderManagedEventBody(event: Event): string {
 
   blocks.push(renderContentMarkdown(event.descriptionMarkdown || summaryText));
 
+  // Styling lives in the layouts (`.event-media`), not in inline attributes, so
+  // a flyer can be capped and re-laid-out per breakpoint. Portal-uploaded
+  // flyers are often tall phone photos, which at full width would push the rest
+  // of the page off the screen.
   if (event.image) {
     blocks.push(
-      `<img src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)}" loading="lazy" style="display:block;max-width:100%;height:auto;border-radius:12px;margin:1.25rem 0" />`,
+      `<figure class="event-media event-media--image">` +
+        `<img class="event-media__image" src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)}" loading="lazy" decoding="async" />` +
+        `</figure>`,
     );
   }
 
@@ -134,8 +140,8 @@ export function renderManagedEventBody(event: Event): string {
 
   if (embedSrc) {
     blocks.push(
-      `<div style="position:relative;padding-top:56.25%;margin:1.25rem 0;border-radius:12px;overflow:hidden;background:#000">` +
-        `<iframe src="${escapeHtml(embedSrc)}" title="${escapeHtml(event.title)} video" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>` +
+      `<div class="event-media event-media--video">` +
+        `<iframe class="event-media__frame" src="${escapeHtml(embedSrc)}" title="${escapeHtml(event.title)} video" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>` +
         `</div>`,
     );
   }

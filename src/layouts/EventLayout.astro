@@ -327,6 +327,59 @@ const hasMemberDetails =
     text-transform: uppercase;
   }
 
+  /*
+   * Flyers and video embeds injected by renderManagedEventBody. A flyer
+   * uploaded from a phone is usually portrait, so it is capped by height and
+   * centred rather than stretched to the column width — otherwise one image
+   * fills the screen and pushes the event details out of view.
+   */
+  .description-card :global(.event-media) {
+    margin: 1.5rem 0 0;
+    padding: 0;
+  }
+
+  .description-card :global(.event-media--image) {
+    display: flex;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .description-card :global(.event-media__image) {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: min(70vh, 30rem);
+    object-fit: contain;
+  }
+
+  .description-card :global(.event-media--video) {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    max-height: min(70vh, 30rem);
+    margin-inline: auto;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .description-card :global(.event-media__frame) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  @media (max-width: 600px) {
+    .description-card :global(.event-media__image),
+    .description-card :global(.event-media--video) {
+      max-height: 60vh;
+    }
+  }
+
   .member-details-body :global(h4),
   .member-details-body :global(h5) {
     margin: 1.25rem 0 0.5rem;
