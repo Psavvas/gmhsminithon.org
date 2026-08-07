@@ -156,6 +156,7 @@ const visibleBanners = banners.filter(
   .site-banner__content {
     flex: 0 1 920px;
     line-height: 1.5;
+    max-width: 920px;
     min-width: 0;
   }
   .site-banner__content :global(p) {
@@ -241,6 +242,15 @@ const visibleBanners = banners.filter(
       padding-bottom: 0.8rem;
       padding-top: 0.8rem;
     }
+    /*
+     * The 920px basis above sizes the width while the banner is a row. Stacking
+     * turns it into a height, which made every banner 920px tall no matter how
+     * short its message — and left scrollHeight large enough that the "Learn
+     * more" control appeared on one-line notices too.
+     */
+    .site-banner__content {
+      flex-basis: auto;
+      width: 100%;
+    }
   }
 </style>
-
