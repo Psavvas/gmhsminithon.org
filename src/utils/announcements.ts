@@ -1,3 +1,5 @@
+import { renderContentMarkdown } from "./markdown";
+
 export interface RawMemberAnnouncement {
   title: string;
   descriptionMdx?: string;
@@ -68,64 +70,10 @@ export function getPinnedAnnouncements(
   );
 }
 
+/**
+ * Announcements are written in the admin portal, so they go through the
+ * escaping Markdown renderer rather than being trusted as HTML.
+ */
 export function renderAnnouncementMdx(content: string): string {
-  if (!content) {
-    return "";
-  }
-
-  let html = content;
-
-  html = html.replace(/^###\s+(.+)$/gm, "<h4>$1</h4>");
-  html = html.replace(/^##\s+(.+)$/gm, "<h3>$1</h3>");
-  html = html.replace(/^#\s+(.+)$/gm, "<h2>$1</h2>");
-
-  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-  html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
-  html = html.replace(
-    /\[([^\]]+)\]\(([^)]+)\)/g,
-    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
-  );
-
-  const lines = html.split("\n");
-  const processedLines: string[] = [];
-  let inList = false;
-
-  for (const line of lines) {
-    const trimmedLine = line.trim();
-
-    if (trimmedLine.startsWith("- ")) {
-      if (!inList) {
-        processedLines.push("<ul>");
-        inList = true;
-      }
-      processedLines.push(`<li>${trimmedLine.substring(2)}</li>`);
-      continue;
-    }
-
-    if (inList) {
-      processedLines.push("</ul>");
-      inList = false;
-    }
-
-    if (!trimmedLine) {
-      processedLines.push("");
-      continue;
-    }
-
-    if (
-      trimmedLine.startsWith("<h2>") ||
-      trimmedLine.startsWith("<h3>") ||
-      trimmedLine.startsWith("<h4>")
-    ) {
-      processedLines.push(trimmedLine);
-    } else {
-      processedLines.push(`<p>${trimmedLine}</p>`);
-    }
-  }
-
-  if (inList) {
-    processedLines.push("</ul>");
-  }
-
-  return processedLines.join("\n");
+  return renderContentMarkdown(content);
 }

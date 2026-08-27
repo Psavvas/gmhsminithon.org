@@ -1,7 +1,7 @@
 ---
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
-import memberAnnouncements from "../../data/memberAnnouncements.json";
+import { getMemberAnnouncements } from "../../utils/content";
 import {
   normalizeAnnouncements,
   renderAnnouncementMdx,
@@ -13,168 +13,50 @@ if (!(await checkMemberAuth(Astro.request))) {
 }
 
 const announcements = sortAnnouncementsPinnedThenDate(
-  normalizeAnnouncements(memberAnnouncements.announcements),
+  normalizeAnnouncements(await getMemberAnnouncements()),
 );
 ---
 
-<MemberLayout title="Announcements - Mini-THON Members">
-  <h1>Announcements</h1>
-  <section class="intro">
-    <p>
-      Latest announcements about upcoming events, volunteer opportunities and
-      more.
-    </p>
-  </section>
-
-  <section class="announcements-list">
-    {
-      announcements.length > 0 ? (
-        announcements.map((announcement) => (
+<MemberLayout
+  title="Announcements - Mini-THON Members"
+  heading="Announcements"
+  intro="Updates about upcoming events, volunteer needs, and anything else the team should know."
+>
+  {
+    announcements.length > 0 ? (
+      <div class="mp-stack">
+        {announcements.map((announcement) => (
           <article
-            class={`announcement-card ${announcement.type === "urgent" ? "urgent" : ""}`}
+            class={`mp-announcement${announcement.type === "urgent" ? " mp-announcement--urgent" : ""}`}
           >
-            <div class="announcement-header">
-              <h2>{announcement.title}</h2>
-              <div class="announcement-meta">
-                {announcement.pin && <span class="pin-badge">Pinned</span>}
+            <div class="mp-announcement__head">
+              <h2 class="mp-announcement__title">{announcement.title}</h2>
+              <div class="mp-announcement__meta">
+                {announcement.pin && (
+                  <span class="mp-badge mp-badge--pinned">Pinned</span>
+                )}
+                {announcement.type === "urgent" && (
+                  <span class="mp-badge mp-badge--urgent">Urgent</span>
+                )}
                 {announcement.dateAdded && (
                   <time datetime={announcement.dateAdded}>
                     {new Date(announcement.dateAdded).toLocaleDateString(
                       "en-US",
-                      {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      },
+                      { year: "numeric", month: "short", day: "numeric" },
                     )}
                   </time>
                 )}
               </div>
             </div>
             <div
-              class="announcement-body"
+              class="mp-prose"
               set:html={renderAnnouncementMdx(announcement.descriptionMdx)}
             />
           </article>
-        ))
-      ) : (
-        <p class="empty-state">No announcements yet.</p>
-      )
-    }
-  </section>
+        ))}
+      </div>
+    ) : (
+      <p class="mp-empty">No announcements yet.</p>
+    )
+  }
 </MemberLayout>
-
-<style>
-  h1 {
-    font-size: clamp(2rem, 4vw, 2.6rem);
-    color: var(--ink-900);
-    margin-bottom: 1.5rem;
-  }
-
-  .intro,
-  .announcements-list {
-    background: var(--surface-raised);
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--border-soft);
-    margin-bottom: 2rem;
-  }
-
-  .intro p {
-    color: var(--ink-700);
-    line-height: 1.7;
-    margin: 0;
-  }
-
-  .announcements-list {
-    display: grid;
-    gap: 1rem;
-  }
-
-  .announcement-card {
-    background: linear-gradient(
-      135deg,
-      rgba(106, 170, 228, 0.08),
-      rgba(106, 170, 228, 0.03)
-    );
-    padding: 1.5rem;
-    border-radius: 16px;
-    border: 1px solid var(--border-soft);
-    border-left: 4px solid var(--brand-sky);
-  }
-
-  .announcement-card.urgent {
-    background: linear-gradient(
-      135deg,
-      rgba(253, 185, 39, 0.18),
-      rgba(255, 255, 255, 0.6)
-    );
-    border-left-color: #fdb927;
-  }
-
-  .announcement-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.5rem;
-  }
-
-  .announcement-header h2 {
-    font-size: 1.2rem;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-
-  .announcement-meta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  time {
-    color: var(--ink-500);
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-
-  .pin-badge {
-    background: var(--brand-ink);
-    color: var(--white);
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-  }
-
-  .announcement-body {
-    color: var(--ink-700);
-    line-height: 1.7;
-  }
-
-  .announcement-body :global(p) {
-    margin: 0.5rem 0;
-  }
-
-  .announcement-body :global(ul) {
-    margin: 0.6rem 0 0.6rem 1.25rem;
-  }
-
-  .announcement-body :global(li) {
-    margin: 0.2rem 0;
-  }
-
-  .announcement-body :global(a) {
-    color: var(--brand-ink);
-    font-weight: 600;
-  }
-
-  .empty-state {
-    color: var(--ink-500);
-    margin: 0;
-  }
-</style>

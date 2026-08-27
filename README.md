@@ -6,7 +6,9 @@ This repository contains the official website for Great Mills High School Mini-T
 
 - **Framework:** [Astro](https://docs.astro.build/) (static site generator with SSR support)
 - **Hosting:** [Vercel](https://vercel.com/) (via `@astrojs/vercel` adapter)
-- **Content:** JSON data files + MDX pages
+- **Content:** Admin portal backed by [Neon](https://neon.tech/) Postgres, falling back to the JSON data files in the repository
+- **Auth:** [Shoo](https://shoo.dev/) for both the member portal and the admin portal
+- **Images:** [UploadThing](https://uploadthing.com/)
 - **Runtime & Package Manager:** [Bun](https://bun.sh/)
 
 ## Project Structure
@@ -14,6 +16,12 @@ This repository contains the official website for Great Mills High School Mini-T
 ```
 src/
 ├── components/       # Reusable UI components
+│   ├── admin/                 # Admin portal UI (React islands)
+│   │   ├── AccessManager.tsx      # Add/remove admin and member Shoo IDs
+│   │   ├── AdminAuthCallback.tsx  # Shoo callback handling for /admin
+│   │   ├── AdminLogin.tsx         # Shoo sign-in for /admin
+│   │   ├── CollectionEditor.tsx   # Schema-driven content editor
+│   │   └── ImageField.tsx         # Image upload field (UploadThing)
 │   ├── Card.astro             # Card display component
 │   ├── EventCountdown.astro   # Countdown timer for upcoming events
 │   ├── EventMDXContent.astro  # Renders MDX content for event pages
@@ -21,14 +29,16 @@ src/
 │   ├── MDXContent.astro       # General MDX content renderer
 │   ├── NavBehavior.astro      # Navigation bar behavior/logic
 │   └── SocialPopup.astro      # Social media links popup
-├── data/             # JSON data files (edit these to update site content)
+├── data/             # Default content, used until a section is saved in the admin portal
 │   ├── clubInfo.json            # Officers, mission, meeting times, social media
+│   ├── events.json              # Events created in the admin portal (empty by default)
 │   ├── fundraising.json         # Fundraising totals, goals, and history
 │   ├── memberAnnouncements.json # Member portal announcements
 │   ├── memberResources.json     # Member resource links
 │   ├── redirects.json           # Short URL redirects (e.g., /redirect/donate)
 │   └── sponsors.json            # Sponsor names, tiers, logos, and websites
 ├── layouts/          # Page layout templates
+│   ├── AdminLayout.astro        # Layout + styles for the admin portal
 │   ├── EventLayout.astro        # Layout for individual event pages
 │   ├── Layout.astro             # Base layout
 │   ├── MemberEventLayout.astro  # Layout for member-facing event details
@@ -38,32 +48,264 @@ src/
 │   ├── index.astro              # Homepage
 │   ├── about.astro              # About the club
 │   ├── events.astro             # Events listing page
-│   ├── events/                  # Individual event pages (MDX files)
+│   ├── events/                  # Event pages: MDX files + [slug] for portal events
 │   ├── fundraising.astro        # Fundraising progress and history
 │   ├── get-involved.astro       # How to join or help
 │   ├── sponsors.astro           # Current sponsors display
 │   ├── sponsorship.astro        # Sponsorship info for potential sponsors
 │   ├── members/                 # Member-only portal pages
-│   ├── api/                     # API endpoints (e.g., newsletter)
+│   ├── admin/                   # Admin portal (sign-in, overview, editors, access)
+│   ├── api/                     # API endpoints (newsletter, member auth, admin)
 │   ├── redirect/[slug].astro    # Dynamic redirect handler
 │   └── 404.astro                # Custom 404 page
+├── styles/
+│   └── member-portal.css        # Member portal design system (mirrors the admin look)
 └── utils/            # Utility functions
+    ├── admin/
+    │   ├── access.ts            # Admin + member Shoo ID lists
+    │   ├── session.ts           # Admin session cookies and API guards
+    │   └── uploads.ts           # UploadThing image uploads
     ├── announcements.ts         # Announcement display helpers
     ├── auth.ts                  # Member authentication logic
-    └── events.ts                # Event data processing
+    ├── content.ts               # Content accessors used by pages
+    ├── content/
+    │   ├── collections.ts       # What the admin portal can edit
+    │   ├── db.ts                # Neon connection + table setup
+    │   ├── fieldSpec.ts         # Field schema, validation, normalization
+    │   └── store.ts             # Reads/writes content, with caching
+    ├── env.ts                   # Environment variable helpers
+    ├── events.ts                # Event data processing
+    └── markdown.ts              # Escaping Markdown renderer for portal content
 ```
 
 Key configuration files in the project root:
 
-| File              | Purpose                                                        |
-| ----------------- | -------------------------------------------------------------- |
-| `astro.config.ts` | Astro framework configuration (Vercel adapter, MDX, analytics) |
-| `package.json`    | Dependencies and npm scripts                                   |
-| `bun.lock`        | Locked dependency versions                                     |
+| File              | Purpose                                                          |
+| ----------------- | ---------------------------------------------------------------- |
+| `astro.config.ts` | Astro framework configuration (Vercel adapter, MDX, analytics)   |
+| `package.json`    | Dependencies and npm scripts                                     |
+| `bun.lock`        | Locked dependency versions                                       |
+| `db/schema.sql`   | Admin portal tables, for running by hand instead of on first use |
+
+## Admin Portal
+
+The admin portal at **`/admin`** is the normal way to change site content — no code,
+no pull request, no redeploy. It signs in with Shoo (the same login the member
+portal uses) and stores content in a Neon Postgres database.
+
+### What you can edit
+
+| Section              | What it controls                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| Fundraising totals   | Running total, goal, previous years, DonorDrive link                                     |
+| Sponsors             | Names, tiers, logos (uploaded to UploadThing), websites                                  |
+| Events               | Events on `/events`, with a description, optional flyer and video, and member-only notes |
+| Club info            | Mission, about text, officers, meeting times, social links, contact email                |
+| Short links          | `/redirect/<slug>` short URLs                                                            |
+| Member announcements | Announcements in the member portal                                                       |
+| Member resources     | Quick links for members                                                                  |
+| Shoo IDs             | Who can use the admin portal, and who can use the member portal                          |
+
+### Where content comes from
+
+Each section is read in this order:
+
+1. **The database**, if that section has been saved in the portal at least once.
+2. **The JSON file in `src/data/`**, otherwise.
+
+So the site keeps working with no database attached — it just serves what is in
+the repository, and the portal is read-only. The moment `DATABASE_URL` is set,
+saving a section takes over that section for good — saving is one-way, so the
+JSON files are the starting point rather than something the portal can fall back
+to.
+
+Content pages are server-rendered with a 30-second CDN cache
+(`s-maxage=30, stale-while-revalidate=300`), so edits appear on the live site
+within about half a minute without a redeploy.
+
+### First-time setup
+
+0. **Decide which address you will administer the site from**, and use it for
+   every step below. A Shoo user ID is tied to the exact web address it was
+   issued on, so this choice matters — see
+   [Shoo user IDs are per web address](#shoo-user-ids-are-per-web-address).
+   The production domain is the right answer unless you are testing a branch.
+1. **Find your Shoo user ID.** Visit `/admin/login` (or `/members/login`) on that
+   address and sign in with Shoo. Because you are not on the admin list yet, the
+   page shows your Shoo user ID and a copy button.
+2. **In Vercel → Settings → Environment Variables**, add:
+   - `ADMIN_APPROVED_SHOO_SUBS` — your Shoo user ID. This is the bootstrap list;
+     IDs here cannot be removed from inside the portal, so you cannot lock
+     yourself out.
+   - `ADMIN_SESSION_SECRET` — a long random value (`openssl rand -hex 32`).
+     Required; the portal refuses to sign anyone in without it.
+3. **Redeploy**, then sign in at `/admin`.
+4. **Connect Neon** when you are ready to edit content (see below). Until then
+   the portal shows the current content read-only and tells you what is missing.
+5. **Add `UPLOADTHING_TOKEN`** to enable image uploads. Without it you can still
+   paste image URLs.
+
+### If you cannot sign in
+
+Open **`/api/admin/status`** on the deployment you are trying to use, or expand
+"Setup status for this deployment" on `/admin/login`. Both report what that
+deployment actually has (counts and booleans only — no secrets or IDs):
+
+```json
+{
+  "adminSessionSecretConfigured": true,
+  "adminIdsFromEnv": 1,
+  "databaseConfigured": false,
+  "requestOrigin": "https://gmhsminithon.org"
+}
+```
+
+Common causes, in the order worth checking:
+
+1. **The Shoo ID came from a different web address.** See below — this is the
+   most common one, and the least obvious.
+2. **The deployment does not have the portal yet.** `/admin` only exists on a
+   deployment built from a branch that contains it. On production that means
+   merging to `main`.
+3. **No redeploy after adding the variables.** Vercel only picks up environment
+   variables on a new deployment.
+4. **The variable was added to the wrong environment.** Vercel keeps Production,
+   Preview, and Development separate. A `*.vercel.app` preview URL needs the
+   values added to Preview.
+5. **Quotes came along with the value.** Pasting `"ps_abc123"` into Vercel makes
+   the quotes part of the ID. The site strips surrounding quotes, but the
+   cleanest fix is to paste the bare value.
+
+Admins can also use the member portal, so a Shoo ID in
+`ADMIN_APPROVED_SHOO_SUBS` needs no separate member approval.
+
+### Shoo user IDs are per web address
+
+Shoo identifies a site by its origin — its `client_id` is literally
+`origin:https://example.com` — and a user's `pairwise_sub` is per client. **The
+same person therefore has a different Shoo user ID on every web address**:
+
+| Address                                        | Stable?              | Shoo ID          |
+| ---------------------------------------------- | -------------------- | ---------------- |
+| `gmhsminithon.org`                             | yes                  | `ps_aaa…`        |
+| `gmhsminithon-git-<branch>-<scope>.vercel.app` | yes, per branch      | `ps_bbb…`        |
+| `gmhsminithon-<hash>-<scope>.vercel.app`       | no, new every deploy | new every deploy |
+
+So an ID copied from one address will never authorize on another, and an ID
+captured on a per-deployment URL is worthless by the next deploy. **Do admin
+sign-in on one stable address** — the production domain, or a branch alias while
+testing — and put the ID from _that_ address in `ADMIN_APPROVED_SHOO_SUBS`.
+`ADMIN_APPROVED_SHOO_SUBS` is a list, so if you administer from two addresses,
+add the ID from each.
+
+Both sign-in pages detect this: land on a per-deployment URL and they say so, and
+link to the stable address to use instead. `/api/admin/status` reports the same
+under `signInOrigin`.
+
+Two things this is _not_ fixable with:
+
+- **`PUBLIC_SITE_URL`** tells the server which token origins to accept, so tokens
+  minted on the canonical address verify anywhere. It cannot change which address
+  the browser is on, so it does not make the Shoo ID stable. Set it anyway — it is
+  what lets a stable-address sign-in work across deployments.
+- **Session cookies** are scoped to one host by the browser, so a new address
+  always means signing in again regardless of configuration.
+
+Vercel sets `VERCEL_URL` (this deployment), `VERCEL_BRANCH_URL` (stable per
+branch), and `VERCEL_PROJECT_PRODUCTION_URL` (production) automatically; all
+three are accepted as token origins, so nothing extra is needed for the stable
+aliases to work.
+
+### Adding a new domain
+
+`security.allowedDomains` in `astro.config.ts` lists the hosts this site is
+served from. Vercel terminates TLS at its edge and passes the real host in
+`x-forwarded-host`; Astro only trusts that header for hosts matching this list,
+and with no match it falls back to `localhost`. That makes `Astro.url` wrong on
+every request and makes Astro's built-in CSRF check reject form posts, because
+the browser's `Origin` can never equal `https://localhost`.
+
+`**.vercel.app` covers every preview and branch alias, so **if you point a new
+custom domain at this project, add it there** — otherwise pages that read
+`Astro.url` report the wrong host on that domain.
+
+### Connecting Neon
+
+1. Create a Neon project (or use Vercel's Neon integration, which sets the
+   environment variables automatically).
+2. Copy the pooled connection string and add it in Vercel as `DATABASE_URL`
+   (`CONTENT_DATABASE_URL`, `NEON_DATABASE_URL`, `POSTGRES_URL`,
+   `DATABASE_URL_UNPOOLED`, and `POSTGRES_URL_NON_POOLING` are also accepted, in
+   that order of preference).
+3. Redeploy. The tables are created automatically on first use — there is no
+   migration step. To create them yourself instead (for example in the Neon SQL
+   Editor), run [`db/schema.sql`](db/schema.sql); it is safe to run more than
+   once. Either way you end up with:
+
+   | Table                | Purpose                                     |
+   | -------------------- | ------------------------------------------- |
+   | `site_content`       | One JSONB document per content section      |
+   | `admin_users`        | Shoo IDs with admin access                  |
+   | `member_approvals`   | Shoo IDs approved for the member portal     |
+   | `admin_activity_log` | Who changed what, shown as "Recent changes" |
+
+4. Open `/admin` — the Setup panel should show the database as connected.
+
+If the database is unreachable, the site serves the last content it read (or the
+JSON files) rather than erroring, and the portal shows a warning.
+
+### Managing Shoo IDs
+
+`/admin/access` manages two lists:
+
+- **Admins** — can edit content and manage both lists.
+- **Approved members** — can sign in at `/members`.
+
+Admins can use the member portal too, so an admin does not need a separate member
+approval.
+
+Ask the person to sign in once at `/members/login`; the page shows their Shoo user
+ID, which you paste into the portal with an optional note ("Sam, treasurer").
+Nothing personal is committed to the repository. Removing an ID takes effect
+within seconds.
+
+Member approvals from the portal are merged with the two existing sources —
+`MEMBER_APPROVED_SHOO_SUBS` and the Google Sheet — so nothing that already works
+stops working. IDs that come from an environment variable are shown in the portal
+but marked read-only, and you cannot remove your own admin access.
+
+### Images
+
+Image fields (such as sponsor logos) upload straight to UploadThing from the
+editor: pick a file or drag one in, and the resulting URL is stored with the
+content. PNG, JPEG, WebP, AVIF, GIF, and SVG are accepted, **up to 4 MB** —
+the file passes through a Vercel serverless function, which rejects request
+bodies over 4.5 MB. The UploadThing token never leaves the server: the browser
+posts the file to `/api/admin/upload`, which forwards it.
+
+`UPLOADTHING_TOKEN` must be the token from the dashboard's API Keys tab, which
+base64-decodes to `{ apiKey, appId, regions }`. The `sk_live_…` secret key is
+only the `apiKey` field inside it and will not work by itself; the portal checks
+the shape and says so rather than failing at upload time.
+
+### Events
+
+Every event is editable in the portal, past ones included — nothing is hidden by
+date, and `/events` keeps showing past events in its own section. Each event has
+an optional flyer (uploaded to UploadThing) and an optional video embed, which
+accepts YouTube, Vimeo, and Google Drive links only.
+
+Events created in the portal get a page at `/events/<slug>`. Adding an
+`.mdx` file back into `src/pages/events/` still works if an event ever needs
+markup the portal cannot express — such an event appears in the listings
+alongside portal events, and wins if it uses the same slug, but it can only be
+edited in the repository.
 
 ## How to Update the Site
 
-Most site content is managed through JSON files in `src/data/`. Edit these files and the site will automatically reflect your changes on the next deploy.
+Everything below is the manual, in-repository alternative to the admin portal.
+It still works, and it is what the site falls back to for any section that has
+never been saved in the portal.
 
 ### Adding a New Event
 
@@ -235,8 +477,10 @@ bun run preview   # Preview the production build locally
 
 - `PUBLIC_SHOO_BASE_URL` (optional): overrides the Shoo base URL. Defaults to
   `https://shoo.dev`.
-- `MEMBER_APPROVED_SHOO_SUBS` (required for member access): a comma-separated
-  or newline-separated list of approved Shoo `pairwise_sub` values.
+- `MEMBER_APPROVED_SHOO_SUBS` (one way to grant member access): a comma-separated
+  or newline-separated list of approved Shoo `pairwise_sub` values. The admin
+  portal's "Approved members" list is merged with this and with the Google Sheet
+  below, so any of the three grants access.
 - `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL` (optional): an HTTPS
   `docs.google.com` CSV export URL for a Google Sheet whose first column
   contains approved Shoo `pairwise_sub` values. The server combines this with
@@ -305,15 +549,38 @@ yet after Shoo authentication.
 
 The site is automatically deployed to [Vercel](https://vercel.com/) when changes are pushed to the main branch. No manual deployment steps are needed.
 
+### Admin Portal Configuration
+
+- `ADMIN_APPROVED_SHOO_SUBS` (required to get started): Shoo user IDs that always
+  have admin access. Cannot be removed from inside the portal, and also grants
+  member portal access.
+- `ADMIN_SESSION_SECRET` (required): secret for signing admin session cookies.
+  Falls back to `MEMBER_SESSION_SECRET`, but a separate value is better. Admin
+  sessions last 8 hours.
+- `DATABASE_URL` (required to save content): Neon Postgres connection string.
+  Without it the portal is read-only and the site serves `src/data/*.json`.
+- `UPLOADTHING_TOKEN` (optional): enables image uploads from the portal. Use
+  the token from the UploadThing dashboard's API Keys tab, not the `sk_live_…`
+  secret key — the secret key is one field inside the token and does not work on
+  its own. The portal's Setup panel says so if the wrong value is set.
+- `ADMIN_AUTH_DEBUG` (optional): set to `true` for verbose admin sign-in logging.
+
 ## Additional Notes
 
-- All site content is managed via JSON files and MDX pages — no database is required.
-- Static assets (images, logos) can be placed in the `src/assets/` directory or uploaded externally.
+- Site content is edited in the admin portal at `/admin` and stored in Neon; the
+  JSON files in `src/data/` are the defaults the site falls back to, so the site
+  runs fine with no database attached.
+- Static assets (images, logos) can be placed in the `src/assets/` directory,
+  uploaded through the admin portal, or uploaded externally.
 - The member portal (`/members/`) uses Shoo authentication plus a private
-  server-side allowlist stored in `MEMBER_APPROVED_SHOO_SUBS` and/or an
-  optional Google Sheet CSV configured with
+  server-side allowlist: the admin portal's "Approved members" list,
+  `MEMBER_APPROVED_SHOO_SUBS`, and an optional Google Sheet CSV configured with
   `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL`. Use Shoo `pairwise_sub`
   values rather than committed email addresses.
+- Content written in the admin portal is rendered through an escaping Markdown
+  renderer (`src/utils/markdown.ts`), so portal text cannot inject HTML into a
+  page, and link targets are limited to `http(s)`, `mailto`, `tel`, and
+  site-relative paths.
 - For questions or help, contact the current club officers (see `src/data/clubInfo.json`).
 
 ---

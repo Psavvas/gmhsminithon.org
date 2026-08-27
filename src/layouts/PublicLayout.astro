@@ -1,19 +1,24 @@
 ---
 import Analytics from "@vercel/analytics/astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
+import {
+  DIAMOND_MASTHEAD_ON_DARK,
+  FAVICON_HREF,
+  GMHS_LOGO,
+} from "../utils/brand";
 import NavBehavior from "../components/NavBehavior.astro";
-import clubInfo from "../data/clubInfo.json";
+import SiteBanners from "../components/SiteBanners.astro";
+import { getClubInfo } from "../utils/content";
 
 export interface Props {
   title: string;
   description?: string;
 }
 
+const clubInfo = await getClubInfo();
+
 const defaultDescription =
   "Great Mills High School Mini-THON is a student-led effort raising funds and awareness for Four Diamonds to fight pediatric cancer through school events, community partnerships, and year-round fundraising.";
-const diamondFaviconHref =
-  "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao";
-
 const { title, description = defaultDescription } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
@@ -35,27 +40,30 @@ const currentPath = Astro.url.pathname;
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href={diamondFaviconHref} />
-    <link rel="shortcut icon" href={diamondFaviconHref} />
-    <link rel="apple-touch-icon" href={diamondFaviconHref} />
+    <link rel="icon" href={FAVICON_HREF} />
+    <link rel="shortcut icon" href={FAVICON_HREF} />
+    <link rel="apple-touch-icon" href={FAVICON_HREF} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <Analytics />
   </head>
   <body>
+    <div class="site-notice-area">
+      <SiteBanners audience="public" path={currentPath} fullWidth />
+    </div>
     <nav class="navbar">
       <div class="nav-container">
         <a href="/" class="logo">
           <img
             class="logo-gmhs"
-            src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZJMvUcyKDkXFACBzYx7mrThJWZb6eUpl1wcH4"
+            src={GMHS_LOGO}
             alt="Great Mills High School"
             loading="eager"
           />
           <span class="logo-divider" aria-hidden="true"></span>
           <img
             class="logo-diamond"
-            src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZZoJE4qULqN4ePIY1XT27BczblO8y6VKuQtEf"
+            src={DIAMOND_MASTHEAD_ON_DARK}
             alt="Mini-THON diamond"
             loading="eager"
           />
@@ -124,14 +132,14 @@ const currentPath = Astro.url.pathname;
           <div class="footer-brand">
             <a href="/" class="footer-logo">
               <img
-                src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZJMvUcyKDkXFACBzYx7mrThJWZb6eUpl1wcH4"
+                src={GMHS_LOGO}
                 alt="Great Mills High School"
                 class="footer-logo-gmhs"
                 loading="lazy"
               />
               <span class="footer-logo-divider" aria-hidden="true"></span>
               <img
-                src="https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZZoJE4qULqN4ePIY1XT27BczblO8y6VKuQtEf"
+                src={DIAMOND_MASTHEAD_ON_DARK}
                 alt="Mini-THON diamond"
                 class="footer-logo-diamond"
                 loading="lazy"
@@ -458,6 +466,7 @@ const currentPath = Astro.url.pathname;
   }
 
   main,
+  .site-notice-area,
   .navbar,
   footer {
     position: relative;
@@ -493,7 +502,7 @@ const currentPath = Astro.url.pathname;
     padding: 1rem 0;
     box-shadow: 0 4px 20px rgba(28, 42, 58, 0.15);
     backdrop-filter: blur(14px);
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
@@ -512,8 +521,11 @@ const currentPath = Astro.url.pathname;
   }
 
   .navbar.is-hidden {
-    transform: translateY(-100%);
-    box-shadow: none;
+    transform: none;
+  }
+
+  .site-notice-area {
+    width: 100%;
   }
 
   .nav-container {
@@ -623,7 +635,7 @@ const currentPath = Astro.url.pathname;
     flex: 1;
     max-width: 1160px;
     margin: 0 auto;
-    padding: calc(3rem + var(--nav-offset, 0px)) 2rem 4rem;
+    padding: 3rem 2rem 4rem;
     width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
@@ -962,7 +974,7 @@ const currentPath = Astro.url.pathname;
     }
 
     main {
-      padding: calc(2rem + var(--nav-offset, 0px)) 1rem 3rem;
+      padding: 2rem 1rem 3rem;
     }
 
     /* In the full-screen mobile overlay, remove per-link underlines so
@@ -1018,3 +1030,4 @@ const currentPath = Astro.url.pathname;
     }
   }
 </style>
+

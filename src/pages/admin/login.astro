@@ -1,0 +1,96 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AdminLogin from "../../components/admin/AdminLogin";
+import SignInOriginNotice from "../../components/SignInOriginNotice.astro";
+import { getShooBaseUrl } from "../../utils/auth";
+import {
+  ADMIN_AUTH_CALLBACK_PATH,
+  ADMIN_HOME_PATH,
+  ADMIN_LOGIN_PATH,
+  getAdminSession,
+  isAdminSessionConfigured,
+} from "../../utils/admin/session";
+import { hasAdminBootstrapConfigured } from "../../utils/admin/access";
+import { isDatabaseConfigured } from "../../utils/content/db";
+import {
+  describeAdminSetup,
+  getAdminSetupStatus,
+} from "../../utils/admin/setup";
+
+if (await getAdminSession(Astro.request)) {
+  return Astro.redirect(ADMIN_HOME_PATH);
+}
+
+const sessionConfigured = isAdminSessionConfigured();
+const hasAdminSource = hasAdminBootstrapConfigured() || isDatabaseConfigured();
+const signedOut = Astro.url.searchParams.get("signedOut") === "1";
+const setupStatus = getAdminSetupStatus(Astro.request);
+const setupChecks = describeAdminSetup(setupStatus);
+const setupNeedsAttention = setupChecks.some(
+  (check) => check.critical && !check.ok,
+);
+
+const configurationNotice = !sessionConfigured
+  ? "This deployment is missing ADMIN_SESSION_SECRET (or MEMBER_SESSION_SECRET). Add one in Vercel's environment variables, redeploy, and try again."
+  : !hasAdminSource
+    ? "No admins are configured yet. Add your Shoo user ID to ADMIN_APPROVED_SHOO_SUBS in Vercel — sign in below to see what your ID is."
+    : undefined;
+---
+
+<AdminLayout title="Admin Sign-In - Mini-THON" variant="bare">
+  <div class="admin-login-card">
+    <h1>Mini-THON Admin</h1>
+    <p>
+      Sign in with Shoo to edit site content. Only Shoo accounts on the admin
+      list can get in.
+    </p>
+
+    {
+      signedOut && (
+        <p class="admin-callout admin-callout--success">You are signed out.</p>
+      )
+    }
+
+    <SignInOriginNotice path="/admin/login" />
+
+    <AdminLogin
+      client:load
+      shooBaseUrl={getShooBaseUrl()}
+      callbackPath={ADMIN_AUTH_CALLBACK_PATH}
+      loginPath={ADMIN_LOGIN_PATH}
+      adminHomePath={ADMIN_HOME_PATH}
+      sessionEndpoint="/api/admin/session"
+      configurationNotice={configurationNotice}
+      originHost={Astro.url.host}
+    />
+
+    <p class="admin-field__help">
+      Looking for the member portal instead? <a href="/members/login"
+        >Member sign-in</a
+      >.
+    </p>
+
+    <details class="admin-setup-details" open={setupNeedsAttention}>
+      <summary>Setup status for this deployment</summary>
+      <ul class="admin-status-list">
+        {
+          setupChecks.map((check) => (
+            <li class="admin-status">
+              <span class="admin-status__state" aria-hidden="true">
+                {check.ok ? "✅" : "⚠️"}
+              </span>
+              <span class="admin-status__label">{check.label}</span>
+              <p class="admin-status__detail">{check.detail}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="admin-field__help">
+        Signing in from <code class="admin-code"
+          >{setupStatus.requestOrigin}</code
+        >. Environment variables only take effect after a redeploy, and they are
+        per-environment in Vercel, so a Preview URL needs them added to Preview.
+      </p>
+    </details>
+  </div>
+</AdminLayout>

@@ -1,6 +1,7 @@
 ---
 import PublicLayout from "../../layouts/PublicLayout.astro";
 import MemberLogin from "../../components/member-auth/MemberLogin";
+import SignInOriginNotice from "../../components/SignInOriginNotice.astro";
 import {
   MEMBER_AUTH_CALLBACK_PATH,
   MEMBER_HOME_PATH,
@@ -29,6 +30,8 @@ const authConfigured = hasMemberApprovalSourceConfigured();
     <p class="info-note">
       If your Shoo ID is not approved yet, please contact an admin.
     </p>
+
+    <SignInOriginNotice path="/members/login" />
 
     <MemberLogin
       client:load

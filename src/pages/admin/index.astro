@@ -1,0 +1,166 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { listCollectionSpecs } from "../../utils/content/collections";
+import { getCollectionStatuses } from "../../utils/content/store";
+import {
+  checkDatabaseConnection,
+  getRecentAdminActivity,
+  type AdminActivityEntry,
+} from "../../utils/content/db";
+import {
+  ADMIN_LOGIN_PATH,
+  getAdminSession,
+  redactShooSub,
+} from "../../utils/admin/session";
+import { getAccessListState } from "../../utils/admin/access";
+import PortalIcon from "../../components/PortalIcon.astro";
+
+const session = await getAdminSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect(ADMIN_LOGIN_PATH);
+}
+
+const specs = listCollectionSpecs();
+const [{ statuses, error: contentWarning }, database, adminList] =
+  await Promise.all([
+    getCollectionStatuses(specs),
+    checkDatabaseConnection(),
+    getAccessListState("admins"),
+  ]);
+
+const canEdit = database.configured && database.reachable;
+
+let activity: AdminActivityEntry[] = [];
+
+if (canEdit) {
+  try {
+    activity = await getRecentAdminActivity(8);
+  } catch {
+    activity = [];
+  }
+}
+
+const savedCount = statuses.filter(
+  (status) => status.source === "database",
+).length;
+
+function formatDateTime(value: string | null): string {
+  if (!value) {
+    return "";
+  }
+
+  const parsed = new Date(value);
+
+  return Number.isNaN(parsed.getTime())
+    ? value
+    : parsed.toLocaleString("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+}
+
+const activityLabels: Record<string, string> = {
+  "content.update": "Updated content",
+  "content.reset": "Reverted content",
+  "access.admin_added": "Added an admin",
+  "access.admin_removed": "Removed an admin",
+  "access.member_added": "Approved a member",
+  "access.member_removed": "Removed a member",
+  "upload.image": "Uploaded an image",
+};
+---
+
+<AdminLayout
+  title="Admin Overview - Mini-THON"
+  heading="Site content"
+  intro="Everything on the website that changes during the year lives here. Pick a section, make your edits, and save — no code, no deploy."
+>
+  {
+    contentWarning && (
+      <p class="admin-callout admin-callout--warning">
+        Heads up: {contentWarning} The site is showing the last content it could
+        read.
+      </p>
+    )
+  }
+
+  <section class="admin-section">
+    <h2 class="admin-section__title">Sections</h2>
+    <div class="admin-cards">
+      {
+        statuses.map((status) => (
+          <a class="admin-card" href={`/admin/content/${status.id}`}>
+            <span class="admin-card__icon">
+              <PortalIcon name={status.icon} size={22} />
+            </span>
+            <span class="admin-card__title">{status.label}</span>
+            <span class="admin-card__description">{status.description}</span>
+            <span class="admin-card__meta">
+              {status.source === "database"
+                ? `Edited ${formatDateTime(status.updatedAt)}`
+                : canEdit
+                  ? "Not edited yet — showing the built-in copy"
+                  : "Read-only — no database connected"}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <h2>Who has access</h2>
+    <p class="admin-field__help">
+      {adminList.entries.length}
+      {adminList.entries.length === 1 ? " admin" : " admins"} can edit this portal.
+      Signed in as <code class="admin-code"
+        >{redactShooSub(session.pairwiseSub)}</code
+      >.
+    </p>
+    <p>
+      <a class="admin-button admin-button--secondary" href="/admin/access"
+        >Manage Shoo IDs</a
+      >
+    </p>
+  </section>
+
+  {
+    activity.length > 0 && (
+      <section class="admin-panel">
+        <h2>Recent changes</h2>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th scope="col">What</th>
+                <th scope="col">Where</th>
+                <th scope="col">When</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activity.map((entry) => (
+                <tr>
+                  <td>{activityLabels[entry.action] ?? entry.action}</td>
+                  <td>{entry.target ?? "—"}</td>
+                  <td>{formatDateTime(entry.createdAt)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    canEdit && savedCount === 0 && (
+      <p class="admin-callout">
+        The database is connected but nothing has been saved through the portal
+        yet, so every section still shows the copy that ships with the website.
+        Open a section and press Save and that section moves to the database —
+        the label changes to "Edited" once it has.
+      </p>
+    )
+  }
+</AdminLayout>

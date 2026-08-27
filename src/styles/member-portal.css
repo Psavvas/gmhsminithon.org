@@ -1,0 +1,839 @@
+/**
+ * Member portal design system.
+ *
+ * Deliberately mirrors the admin portal's look (same palette, spacing, radii,
+ * and component shapes) so the two portals read as one product. Class names are
+ * prefixed `mp-` to keep them independent of the admin styles.
+ */
+
+:root {
+  --mp-ink: #2c4672;
+  --mp-sky: #6aaae4;
+  --mp-ink-900: #16202e;
+  --mp-ink-700: #3d4c5c;
+  --mp-ink-500: #6a7a8a;
+  --mp-surface: #f2f5fa;
+  --mp-raised: #ffffff;
+  --mp-border: #dbe4f0;
+  --mp-border-strong: #c3d2e6;
+  --mp-accent-bg: #eef3fa;
+  --mp-radius: 14px;
+  --mp-shadow: 0 2px 14px rgba(16, 32, 46, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--mp-surface);
+  color: var(--mp-ink-900);
+  font-family: "Montserrat", "Helvetica Neue", "Noto Sans", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Merriweather", "Times New Roman", serif;
+  color: var(--mp-ink-900);
+  line-height: 1.25;
+}
+
+/* Shell ------------------------------------------------------------------- */
+
+.mp-topbar {
+  background: linear-gradient(120deg, #2c4672, #35527f);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 2px 14px rgba(16, 32, 46, 0.18);
+}
+
+.mp-topbar__inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mp-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.mp-topbar__brand strong {
+  font-size: 1rem;
+  display: block;
+  line-height: 1.2;
+}
+
+.mp-topbar__brand small {
+  display: block;
+  font-size: 0.72rem;
+  opacity: 0.75;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mp-topbar__mark {
+  display: block;
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.mp-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mp-topbar .mp-button--ghost {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  background: transparent;
+}
+
+.mp-topbar .mp-button--ghost:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.mp-shell {
+  flex: 1;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.mp-nav {
+  position: sticky;
+  top: 5.5rem;
+  display: grid;
+  gap: 0.1rem;
+  padding: 0;
+}
+
+.mp-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 9px;
+  color: var(--mp-ink-700);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.3;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.mp-nav__link .portal-icon {
+  color: var(--mp-ink-500);
+}
+
+.mp-nav__link:hover {
+  background: #e7eef8;
+  color: var(--mp-ink);
+}
+
+.mp-nav__link:hover .portal-icon {
+  color: var(--mp-ink);
+}
+
+.mp-nav__link.is-active {
+  background: var(--mp-ink);
+  color: #fff;
+  font-weight: 600;
+}
+
+.mp-nav__link.is-active .portal-icon {
+  color: #fff;
+}
+
+.mp-main {
+  min-width: 0;
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.mp-page-header h1 {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+}
+
+.mp-page-header__intro {
+  margin: 0;
+  color: var(--mp-ink-700);
+  max-width: 68ch;
+}
+
+.mp-footer {
+  background: linear-gradient(120deg, #2c4672, #35527f);
+  color: #fff;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+.mp-footer__inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.mp-footer p {
+  margin: 0.35rem 0;
+  font-size: 0.9rem;
+}
+
+.mp-footer__legal {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+/* Panels and sections ----------------------------------------------------- */
+
+.mp-panel {
+  background: var(--mp-raised);
+  border: 1px solid var(--mp-border);
+  border-radius: var(--mp-radius);
+  padding: 1.25rem;
+  box-shadow: var(--mp-shadow);
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.mp-panel__title {
+  margin: 0;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mp-panel__note {
+  margin: 0;
+  color: var(--mp-ink-500);
+  font-size: 0.9rem;
+}
+
+.mp-section-title {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.mp-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Buttons and links ------------------------------------------------------- */
+
+.mp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 0.6rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.94rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.mp-button--primary {
+  background: var(--mp-ink);
+  color: #fff;
+}
+
+.mp-button--primary:hover {
+  background: #223a60;
+}
+
+.mp-button--secondary {
+  background: var(--mp-accent-bg);
+  color: var(--mp-ink);
+  border-color: var(--mp-border-strong);
+}
+
+.mp-button--secondary:hover {
+  background: #d9e7f7;
+}
+
+.mp-button--ghost {
+  background: transparent;
+  color: var(--mp-ink);
+  border-color: var(--mp-border-strong);
+}
+
+.mp-button--ghost:hover {
+  background: var(--mp-accent-bg);
+}
+
+.mp-button--small {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.mp-link {
+  color: var(--mp-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mp-link:hover {
+  color: var(--mp-sky);
+}
+
+/* Cards ------------------------------------------------------------------- */
+
+.mp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: 0.9rem;
+}
+
+.mp-card {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+  padding: 1.1rem;
+  background: var(--mp-raised);
+  border: 1px solid var(--mp-border);
+  border-radius: var(--mp-radius);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--mp-shadow);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+  min-width: 0;
+}
+
+a.mp-card:hover {
+  border-color: var(--mp-sky);
+  transform: translateY(-2px);
+}
+
+.mp-card__icon {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 10px;
+  background: var(--mp-accent-bg);
+  color: var(--mp-ink);
+  margin-bottom: 0.15rem;
+}
+
+.mp-card__title {
+  font-family: "Merriweather", serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.mp-card__description {
+  font-size: 0.88rem;
+  color: var(--mp-ink-500);
+  margin: 0;
+}
+
+.mp-card__meta {
+  font-size: 0.8rem;
+  color: var(--mp-ink-500);
+}
+
+/* The headline fact on a card, such as a meeting time. */
+.mp-card__value {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--mp-ink-900);
+}
+
+.mp-card__link {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--mp-ink);
+}
+
+/* Events ------------------------------------------------------------------ */
+
+.mp-event {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  background: var(--mp-raised);
+  border: 1px solid var(--mp-border);
+  border-left: 4px solid var(--mp-sky);
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.mp-event--past {
+  border-left-color: var(--mp-border-strong);
+  opacity: 0.85;
+}
+
+.mp-event__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.mp-event__title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.mp-event__meta {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--mp-ink-500);
+}
+
+.mp-event__summary {
+  margin: 0;
+  color: var(--mp-ink-700);
+  font-size: 0.94rem;
+}
+
+.mp-event__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+/* Badges ------------------------------------------------------------------ */
+
+.mp-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--mp-accent-bg);
+  color: var(--mp-ink);
+  white-space: nowrap;
+}
+
+.mp-badge--muted {
+  background: #e9eef6;
+  color: var(--mp-ink-500);
+}
+
+.mp-badge--pinned {
+  background: #fff3d6;
+  color: #7a5600;
+}
+
+.mp-badge--urgent {
+  background: #fdecea;
+  color: #8c1d18;
+}
+
+.mp-badge--members {
+  background: #e8f0fb;
+  color: var(--mp-ink);
+}
+
+/* Event type chips keep the colours the public site uses. */
+.mp-type--gaming {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.mp-type--dine-to-donate {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.mp-type--fundraiser {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.mp-type--sports {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.mp-type--race {
+  background: #e0f7fa;
+  color: #006064;
+}
+
+.mp-type--tournament {
+  background: #ede7f6;
+  color: #4527a0;
+}
+
+/* Announcements ----------------------------------------------------------- */
+
+.mp-announcement {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.1rem;
+  background: var(--mp-raised);
+  border: 1px solid var(--mp-border);
+  border-left: 4px solid var(--mp-sky);
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.mp-announcement--urgent {
+  border-left-color: #e5a50a;
+  background: #fffdf6;
+}
+
+.mp-announcement__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.mp-announcement__title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.mp-announcement__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--mp-ink-500);
+}
+
+/* Rendered content -------------------------------------------------------- */
+
+.mp-prose {
+  color: var(--mp-ink-700);
+  min-width: 0;
+}
+
+.mp-prose > *:first-child {
+  margin-top: 0;
+}
+
+.mp-prose > *:last-child {
+  margin-bottom: 0;
+}
+
+.mp-prose p {
+  margin: 0.5rem 0;
+  line-height: 1.65;
+}
+
+.mp-prose h2,
+.mp-prose h3,
+.mp-prose h4,
+.mp-prose h5 {
+  margin: 1.1rem 0 0.4rem;
+  font-size: 1.02rem;
+  color: var(--mp-ink-900);
+}
+
+.mp-prose ul,
+.mp-prose ol {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.mp-prose li {
+  margin: 0.25rem 0;
+  line-height: 1.6;
+}
+
+.mp-prose a {
+  color: var(--mp-ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Event flyers and video embeds, injected by renderManagedEventBody. Capped by
+ * height and centred, because a flyer uploaded from a phone is usually portrait
+ * and would otherwise fill the whole panel.
+ */
+.mp-prose .event-media {
+  margin: 1.25rem 0 0;
+  padding: 0;
+}
+
+.mp-prose .event-media--image {
+  display: flex;
+  justify-content: center;
+  background: var(--mp-surface);
+  border: 1px solid var(--mp-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mp-prose .event-media__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: min(70vh, 26rem);
+  object-fit: contain;
+}
+
+.mp-prose .event-media--video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: min(70vh, 26rem);
+  margin-inline: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.mp-prose .event-media__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .mp-prose .event-media__image,
+  .mp-prose .event-media--video {
+    max-height: 60vh;
+  }
+}
+
+.mp-prose code {
+  font-family:
+    "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85em;
+  background: var(--mp-accent-bg);
+  padding: 0.05rem 0.3rem;
+  border-radius: 5px;
+}
+
+.mp-prose img {
+  max-width: 100%;
+  height: auto;
+}
+
+.mp-prose hr {
+  border: 0;
+  border-top: 1px solid var(--mp-border);
+  margin: 1rem 0;
+}
+
+/* Odds and ends ----------------------------------------------------------- */
+
+.mp-empty {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px dashed var(--mp-border-strong);
+  border-radius: 12px;
+  color: var(--mp-ink-500);
+  font-size: 0.92rem;
+  background: #f8fafd;
+}
+
+.mp-callout {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--mp-border);
+  background: var(--mp-accent-bg);
+  color: var(--mp-ink-700);
+  font-size: 0.94rem;
+}
+
+.mp-callout--locked {
+  background: #f8fafd;
+  border-style: dashed;
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+}
+
+.mp-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--mp-ink);
+}
+
+.mp-details[open] > summary {
+  margin-bottom: 0.75rem;
+}
+
+.mp-definition {
+  margin: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.mp-definition dt {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mp-ink-500);
+}
+
+.mp-definition dd {
+  margin: 0;
+  color: var(--mp-ink-900);
+  overflow-wrap: anywhere;
+}
+
+.mp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The Shoo sign-out button is a React island with its own class name. */
+.member-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.member-logout:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.member-logout-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  display: block;
+  fill: currentColor;
+}
+
+.member-cache-tools {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+}
+
+.member-cache-tools__button {
+  border-radius: 999px;
+  border: 1px solid var(--mp-border-strong);
+  background: transparent;
+  color: var(--mp-ink);
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.member-cache-tools__button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.member-cache-tools__message {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--mp-ink-500);
+}
+
+.member-cache-tools__message--success {
+  color: #1b5e20;
+}
+
+.member-cache-tools__message--error {
+  color: #8c1d18;
+}
+
+@media (max-width: 900px) {
+  .mp-shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .mp-nav {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .mp-nav__heading {
+    width: 100%;
+    margin: 0.4rem 0 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .mp-shell {
+    padding: 1.25rem 0.9rem 3rem;
+  }
+
+  .mp-panel {
+    padding: 1rem;
+  }
+
+  .mp-topbar__inner {
+    padding: 0.75rem 0.9rem;
+  }
+}

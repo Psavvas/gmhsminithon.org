@@ -1,4 +1,11 @@
 import { createRemoteJWKSet, jwtVerify, SignJWT, type JWTPayload } from "jose";
+import {
+  getAccessListState,
+  getDatabaseMemberSubjectsState,
+  hasAdminBootstrapConfigured,
+} from "./admin/access";
+import { isDatabaseConfigured } from "./content/db";
+import { readEnv } from "./env";
 
 const DEFAULT_SHOO_BASE_URL = "https://shoo.dev";
 const MEMBER_SESSION_COOKIE = "member_session";
@@ -73,7 +80,9 @@ export function getShooBaseUrl(): string {
 export function hasMemberApprovalSourceConfigured(): boolean {
   return (
     parseApprovedMemberSubjects(getMemberApprovedShooSubsEnv()).size > 0 ||
-    Boolean(getMemberApprovedGoogleSheetCsvUrl())
+    Boolean(getMemberApprovedGoogleSheetCsvUrl()) ||
+    hasAdminBootstrapConfigured() ||
+    isDatabaseConfigured()
   );
 }
 
@@ -233,8 +242,53 @@ export async function getApprovedMemberSubjectsState(
     }
   }
 
+  // Admins run the club, so admin access implies member portal access. This
+  // also means a working admin list is enough to get into /members.
+  const adminState = await getAccessListState("admins", {
+    forceRefresh: options.forceRefresh,
+  });
+
+  for (const subject of adminState.subjects) {
+    subjects.add(subject);
+  }
+
+  // Shoo IDs added through the admin portal live in the database and are merged
+  // with the environment variable and Google Sheet sources above.
+  const databaseMemberState = await getDatabaseMemberSubjectsState({
+    forceRefresh: options.forceRefresh,
+  });
+
+  if (databaseMemberState.configured) {
+    for (const subject of databaseMemberState.subjects) {
+      subjects.add(subject);
+    }
+
+    if (databaseMemberState.error) {
+      loadError = loadError ?? databaseMemberState.error;
+    }
+
+    if (!googleSheetCsvUrl) {
+      cacheStatus = databaseMemberState.cacheStatus;
+    }
+
+    logMemberAuth(
+      "debug",
+      "approval.database_source_loaded",
+      {
+        subjectCount: databaseMemberState.subjects.size,
+        cacheStatus: databaseMemberState.cacheStatus,
+        loadError: databaseMemberState.error,
+      },
+      options.logContext,
+    );
+  }
+
   return {
-    isConfigured: envSubjects.size > 0 || Boolean(googleSheetCsvUrl),
+    isConfigured:
+      envSubjects.size > 0 ||
+      Boolean(googleSheetCsvUrl) ||
+      adminState.subjects.size > 0 ||
+      databaseMemberState.configured,
     loadError,
     subjects,
     cacheStatus,
@@ -243,25 +297,11 @@ export async function getApprovedMemberSubjectsState(
 }
 
 function getMemberApprovedShooSubsEnv(): string | undefined {
-  if (
-    typeof process !== "undefined" &&
-    process.env?.MEMBER_APPROVED_SHOO_SUBS
-  ) {
-    return process.env.MEMBER_APPROVED_SHOO_SUBS;
-  }
-
-  return import.meta.env.MEMBER_APPROVED_SHOO_SUBS;
+  return readEnv("MEMBER_APPROVED_SHOO_SUBS");
 }
 
 function getMemberApprovedGoogleSheetCsvUrl(): string | undefined {
-  if (
-    typeof process !== "undefined" &&
-    process.env?.MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL
-  ) {
-    return process.env.MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL;
-  }
-
-  return import.meta.env.MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL;
+  return readEnv("MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL");
 }
 
 async function getApprovedMemberSubjectsFromGoogleSheet(
@@ -282,12 +322,12 @@ async function getApprovedMemberSubjectsFromGoogleSheet(
     options.forceRefresh &&
     (!cachedEntry ||
       now - approvedMemberSheetLastForcedRefreshAt >=
-      APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
+        APPROVED_MEMBER_SHEET_AUTH_MISS_REFRESH_MIN_INTERVAL_MS);
   const shouldRefreshStaleCache =
     !hasFreshCache &&
     Boolean(cachedEntry) &&
     now - approvedMemberSheetLastBackgroundRefreshAt >=
-    APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
+      APPROVED_MEMBER_SHEET_BACKGROUND_REFRESH_MIN_INTERVAL_MS;
 
   if (hasFreshCache && cachedEntry && !shouldForceRefresh) {
     logMemberAuth(
@@ -758,27 +798,40 @@ export function getShooAudienceOriginsForRequest(request: Request): string[] {
 
   addOrigin(requestUrl.origin);
   addOrigin(getVercelDeploymentOrigin());
+  // Vercel's stable aliases, so a token minted on the branch or production URL
+  // still verifies when the request arrives on a different host.
+  addOrigin(getVercelBranchOrigin());
+  addOrigin(getVercelProductionOrigin());
   addOrigin(getPublicSiteUrl());
 
   return Array.from(origins);
 }
 
-function getPublicSiteUrl(): string | undefined {
-  const siteUrl =
-    (typeof process !== "undefined" && process.env?.PUBLIC_SITE_URL) ||
-    import.meta.env.PUBLIC_SITE_URL;
-
-  return siteUrl?.trim() || undefined;
+export function getPublicSiteUrl(): string | undefined {
+  return readEnv("PUBLIC_SITE_URL");
 }
 
-function getVercelDeploymentOrigin(): string | undefined {
-  const vercelUrl = process?.env?.VERCEL_URL?.trim();
-
-  if (!vercelUrl) {
+function hostToOrigin(host?: string): string | undefined {
+  if (!host) {
     return undefined;
   }
 
-  return `https://${vercelUrl}`;
+  return /^https?:\/\//i.test(host) ? host : `https://${host}`;
+}
+
+/** The URL of this exact deployment. Changes on every deploy. */
+export function getVercelDeploymentOrigin(): string | undefined {
+  return hostToOrigin(readEnv("VERCEL_URL"));
+}
+
+/** Stable per-branch alias, always pointing at that branch's latest deploy. */
+export function getVercelBranchOrigin(): string | undefined {
+  return hostToOrigin(readEnv("VERCEL_BRANCH_URL"));
+}
+
+/** The project's production URL. */
+export function getVercelProductionOrigin(): string | undefined {
+  return hostToOrigin(readEnv("VERCEL_PROJECT_PRODUCTION_URL"));
 }
 
 export async function checkMemberAuth(request: Request): Promise<boolean> {

@@ -2,11 +2,13 @@
 import MemberLayout from "../../../layouts/MemberLayout.astro";
 import EventCountdown from "../../../components/EventCountdown.astro";
 import { checkMemberAuth } from "../../../utils/auth";
+import { renderContentMarkdown } from "../../../utils/markdown";
 import {
   formatEventDate,
   getEventBySlug,
   getEventDateTimeValue,
   getEventTypeClass,
+  renderManagedEventBody,
 } from "../../../utils/events";
 
 // Check authentication
@@ -27,13 +29,16 @@ const {
   time,
   location,
   event_type: eventType,
-  summary,
   links = [],
-  Content,
 } = event;
 
 const fullDate = formatEventDate(date, time);
 const eventDateTime = getEventDateTimeValue(date, time);
+
+const startOfToday = new Date();
+startOfToday.setHours(0, 0, 0, 0);
+const eventDay = new Date(eventDateTime);
+const isPast = !Number.isNaN(eventDay.getTime()) && eventDay < startOfToday;
 
 // Parse member details from raw MDX content
 const eventFiles = import.meta.glob("/src/pages/events/*.mdx", {
@@ -169,468 +174,80 @@ if (rawContent) {
 
   publicBodyHtml = renderMarkdown(body);
 }
+
+// Events created in the admin portal store their content as Markdown instead of
+// living in an .mdx file, and are rendered with the escaping renderer.
+if (event.source === "managed") {
+  publicBodyHtml = renderManagedEventBody(event);
+}
+
+const memberDetailsHtml =
+  event.source === "managed"
+    ? renderContentMarkdown(event.memberDetailsMarkdown)
+    : memberDetailsMarkdown
+      ? renderMarkdown(memberDetailsMarkdown)
+      : "";
 ---
 
 <MemberLayout title={`${title} - Mini-THON`}>
-  <article class="event-detail">
-    <header class="event-hero">
-      <div class="event-hero-content">
-        <div class="event-meta">
-          <span class={`event-type ${getEventTypeClass(eventType)}`}
-            >{eventType}</span
-          >
-        </div>
-        <h1>{title}</h1>
-        <div class="event-info-row">
-          <div class="event-info-item">
-            <span class="info-icon" aria-hidden="true">
-              <svg
-                viewBox="0 0 24 24"
-                role="img"
-                aria-hidden="true"
-                focusable="false"
+  <div class="mp-page-header">
+    <div class="mp-event__head">
+      <span class={`mp-badge mp-type--${getEventTypeClass(eventType)}`}>
+        {eventType}
+      </span>
+      {isPast && <span class="mp-badge mp-badge--muted">Past event</span>}
+    </div>
+    <h1>{title}</h1>
+    <p class="mp-page-header__intro">
+      <time datetime={eventDateTime}>{fullDate}</time>
+      {location ? ` · ${location}` : ""}
+    </p>
+  </div>
+
+  {!isPast && <EventCountdown eventDate={eventDateTime} />}
+
+  {
+    memberDetailsHtml && (
+      <section class="mp-panel">
+        <h2 class="mp-panel__title">
+          Member details
+          <span class="mp-badge mp-badge--members">Members only</span>
+        </h2>
+        <div class="mp-prose" set:html={memberDetailsHtml} />
+      </section>
+    )
+  }
+
+  <section class="mp-panel">
+    <h2 class="mp-panel__title">About this event</h2>
+    <div class="mp-prose" set:html={publicBodyHtml} />
+  </section>
+
+  {
+    (links as string[]).length > 0 && (
+      <section class="mp-panel">
+        <h2 class="mp-panel__title">Related links</h2>
+        <ul class="mp-stack">
+          {(links as string[]).map((link: string) => (
+            <li>
+              <a
+                class="mp-link"
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <path
-                  d="M12 6.75a.75.75 0 0 1 .75.75v4.44l3.02 1.74a.75.75 0 1 1-.75 1.3l-3.4-1.96a.75.75 0 0 1-.37-.65V7.5a.75.75 0 0 1 .75-.75Z"
-                  fill="currentColor"></path>
-                <path
-                  d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5Zm0 1.5a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Z"
-                  fill="currentColor"></path>
-              </svg>
-            </span>
-            <time datetime={eventDateTime}>{fullDate}</time>
-          </div>
-          {
-            location && (
-              <div class="event-info-item">
-                <span class="info-icon" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 24 24"
-                    role="img"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path
-                      d="M12 2.5a7 7 0 0 0-7 7c0 5.25 6.16 11.2 6.42 11.45a.82.82 0 0 0 1.16 0c.26-.25 6.42-6.2 6.42-11.45a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </span>
-                <span>{location}</span>
-              </div>
-            )
-          }
-        </div>
-      </div>
-      <div class="event-countdown-wrapper">
-        <EventCountdown eventDate={eventDateTime} />
-      </div>
-    </header>
+                {link}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 
-    <section class="event-content">
-      {
-        memberDetailsMarkdown && (
-          <div class="description-card member-card">
-            <div class="member-card-header">
-              <h2>Member Details</h2>
-              <span class="member-badge">Members only</span>
-            </div>
-            <div
-              class="member-details-body"
-              set:html={renderMarkdown(memberDetailsMarkdown)}
-            />
-          </div>
-        )
-      }
-
-      <div class="description-card">
-        <h2>About This Event</h2>
-        <div class="public-event-body" set:html={publicBodyHtml} />
-      </div>
-
-      {
-        (links as string[]).length > 0 && (
-          <div class="event-links-card">
-            <h2>Related Links</h2>
-            <ul>
-              {(links as string[]).map((link: string) => (
-                <li>
-                  <a href={link} target="_blank" rel="noopener noreferrer">
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      }
-    </section>
-
-    <footer class="event-footer">
-      <a href="/members/upcoming-events" class="back-link"
-        >← Back to Upcoming Events</a
-      >
-    </footer>
-  </article>
+  <p>
+    <a class="mp-button mp-button--ghost" href="/members/upcoming-events">
+      ← Back to events
+    </a>
+  </p>
 </MemberLayout>
-
-<style>
-  .event-detail {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .event-hero {
-    background: var(--surface-raised);
-    padding: 2.25rem;
-    border-radius: 20px;
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--border-soft);
-    margin-bottom: 2rem;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 2rem;
-    align-items: center;
-    animation: fade-rise 0.6s ease both;
-  }
-
-  .event-meta {
-    margin-bottom: 0.75rem;
-  }
-
-  .event-type {
-    display: inline-block;
-    padding: 0.3rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .event-type.gaming {
-    background: rgba(106, 170, 228, 0.18);
-    color: var(--brand-ink);
-  }
-
-  .event-type.dine-to-donate {
-    background: rgba(255, 152, 0, 0.18);
-    color: #e65100;
-  }
-
-  .event-type.fundraiser {
-    background: rgba(156, 39, 176, 0.15);
-    color: #6a1b9a;
-  }
-
-  .event-type.sports {
-    background: rgba(76, 175, 80, 0.15);
-    color: #2e7d32;
-  }
-
-  .event-type.race {
-    background: rgba(0, 188, 212, 0.15);
-    color: #006064;
-  }
-
-  h1 {
-    font-size: clamp(2rem, 4vw, 2.8rem);
-    color: var(--ink-900);
-    margin: 0 0 1.25rem 0;
-    line-height: 1.2;
-  }
-
-  .event-info-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: center;
-  }
-
-  .event-info-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--ink-900);
-  }
-
-  .info-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: rgba(106, 170, 228, 0.15);
-    color: var(--brand-ink);
-  }
-
-  .info-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .event-countdown-wrapper {
-    min-width: 260px;
-  }
-
-  .event-content {
-    display: grid;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .description-card {
-    background: var(--surface-raised);
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--border-soft);
-    animation: fade-rise 0.8s ease both;
-    animation-delay: 0.1s;
-  }
-
-  .description-card h2 {
-    font-size: 1.5rem;
-    color: var(--ink-900);
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--brand-sky);
-  }
-
-  .description-card p {
-    color: var(--ink-700);
-    line-height: 1.8;
-    margin: 0 0 0.75rem 0;
-  }
-
-  .description-card p:last-child {
-    margin-bottom: 0;
-  }
-
-  .public-event-body :global(a) {
-    color: var(--brand-ink);
-    font-weight: 600;
-    text-decoration: underline;
-    transition: color 0.2s ease;
-  }
-
-  .public-event-body :global(a:hover) {
-    color: var(--brand-sky);
-  }
-
-  .public-event-body :global(img) {
-    max-width: 100%;
-    height: auto;
-    margin: 1rem 0;
-    border-radius: 12px;
-    box-shadow: var(--shadow-card);
-  }
-
-  .public-event-body :global(iframe) {
-    max-width: 100%;
-    margin: 1rem 0;
-    border-radius: 12px;
-    border: 1px solid var(--border-soft);
-  }
-
-  .public-event-body :global(h2),
-  .public-event-body :global(h3),
-  .public-event-body :global(h4) {
-    margin: 1.25rem 0 0.75rem;
-    color: var(--ink-900);
-  }
-
-  .public-event-body :global(ul) {
-    padding-left: 1.5rem;
-    margin: 0.5rem 0 1rem;
-  }
-
-  .public-event-body :global(li) {
-    color: var(--ink-700);
-    line-height: 1.7;
-    margin-bottom: 0.5rem;
-  }
-
-  .public-event-body :global(em) {
-    color: var(--ink-500);
-  }
-
-  .member-card {
-    background: var(--surface-raised);
-    border: 1px solid var(--border-soft);
-    animation-delay: 0.1s;
-  }
-
-  .member-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--brand-sky);
-  }
-
-  .member-card-header h2 {
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
-
-  .member-badge {
-    background: rgba(44, 70, 114, 0.12);
-    color: var(--brand-ink);
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .member-details-body h4 {
-    font-size: 1.1rem;
-    color: var(--ink-900);
-    margin: 1.25rem 0 0.75rem 0;
-  }
-
-  .member-details-body h4:first-child {
-    margin-top: 0;
-  }
-
-  .member-details-body p {
-    color: var(--ink-700);
-    line-height: 1.7;
-    margin: 0 0 0.75rem 0;
-  }
-
-  .member-details-body ul {
-    margin: 0.5rem 0 1rem 0;
-    padding-left: 1.5rem;
-  }
-
-  .member-details-body li {
-    color: var(--ink-700);
-    line-height: 1.7;
-    margin-bottom: 0.5rem;
-  }
-
-  .member-details-body li:last-child {
-    margin-bottom: 0;
-  }
-
-  .event-links-card {
-    background: linear-gradient(
-      135deg,
-      rgba(106, 170, 228, 0.08),
-      rgba(106, 170, 228, 0.03)
-    );
-    padding: 1.5rem;
-    border-radius: 16px;
-    border: 1px solid var(--border-soft);
-    animation: fade-rise 0.8s ease both;
-    animation-delay: 0.2s;
-  }
-
-  .event-links-card h2 {
-    font-size: 1.2rem;
-    color: var(--brand-ink);
-    margin-bottom: 1rem;
-  }
-
-  .event-links-card ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0.5rem;
-  }
-
-  .event-links-card li {
-    margin: 0;
-  }
-
-  .event-links-card a {
-    color: var(--brand-ink);
-    text-decoration: none;
-    word-break: break-all;
-    transition: color 0.2s ease;
-    display: inline-block;
-    padding: 0.25rem 0;
-  }
-
-  .event-links-card a:hover {
-    color: var(--brand-sky);
-    text-decoration: underline;
-  }
-
-  .event-footer {
-    padding-top: 2rem;
-    border-top: 2px solid var(--border-soft);
-    animation: fade-rise 0.8s ease both;
-    animation-delay: 0.3s;
-  }
-
-  .back-link {
-    color: var(--brand-ink);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .back-link:hover {
-    color: var(--brand-sky);
-    transform: translateX(-4px);
-  }
-
-  @keyframes fade-rise {
-    from {
-      opacity: 0;
-      transform: translateY(16px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (max-width: 900px) {
-    .event-hero {
-      grid-template-columns: 1fr;
-      align-items: start;
-    }
-
-    .event-countdown-wrapper {
-      min-width: auto;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .event-hero {
-      padding: 1.5rem;
-      gap: 1.5rem;
-    }
-
-    h1 {
-      font-size: 1.75rem;
-    }
-
-    .event-info-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-
-    .description-card {
-      padding: 1.5rem;
-    }
-  }
-</style>

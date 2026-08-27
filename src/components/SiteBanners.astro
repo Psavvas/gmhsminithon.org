@@ -1,0 +1,256 @@
+---
+import { getSiteBanners, type SiteBanner } from "../utils/content";
+import { renderContentMarkdown } from "../utils/markdown";
+
+export interface Props {
+  audience: "public" | "members";
+  path: string;
+  fullWidth?: boolean;
+}
+
+const { audience, path, fullWidth = false } = Astro.props;
+const banners = await getSiteBanners();
+
+function matchesPage(banner: SiteBanner): boolean {
+  if (banner.visibility === "All pages") return true;
+  if (banner.visibility === "Homepage only") {
+    return audience === "public" && path === "/";
+  }
+
+  const slug = banner.eventSlug.trim();
+  return (
+    Boolean(slug) &&
+    (path === `/events/${slug}` || path === `/members/events/${slug}`)
+  );
+}
+
+function matchesAudience(banner: SiteBanner): boolean {
+  return (
+    banner.placement === "Both" ||
+    (audience === "public" && banner.placement === "Public site") ||
+    (audience === "members" && banner.placement === "Member portal")
+  );
+}
+
+function getTextColor(background: string): string {
+  const match = background.match(/^#([0-9a-f]{6})$/i);
+
+  if (!match) return "#ffffff";
+
+  const channels = [0, 2, 4].map(
+    (offset) => Number.parseInt(match[1].slice(offset, offset + 2), 16) / 255,
+  );
+  const [red, green, blue] = channels.map((channel) =>
+    channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4,
+  );
+  const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+  return luminance > 0.42 ? "#172033" : "#ffffff";
+}
+
+const visibleBanners = banners.filter(
+  (banner) => banner.enabled && matchesAudience(banner) && matchesPage(banner),
+);
+---
+
+{
+  visibleBanners.length > 0 && (
+    <section
+      class:list={{
+        "site-banners": true,
+        "site-banners--full": fullWidth,
+      }}
+      aria-label="Site notices"
+    >
+      {visibleBanners.map((banner) => (
+        <div
+          class="site-banner"
+          style={`--banner-color: ${banner.color}; --banner-text: ${getTextColor(banner.color)}`}
+        >
+          <div
+            class="site-banner__content"
+            set:html={renderContentMarkdown(banner.message)}
+          />
+          <button
+            class="site-banner__toggle"
+            type="button"
+            hidden
+            aria-expanded="false"
+          >
+            Learn more
+          </button>
+        </div>
+      ))}
+    </section>
+  )
+}
+
+<script>
+  function refreshBanners() {
+    document.querySelectorAll<HTMLElement>(".site-banner").forEach((banner) => {
+      const content = banner.querySelector<HTMLElement>(
+        ".site-banner__content",
+      );
+      const toggle = banner.querySelector<HTMLButtonElement>(
+        ".site-banner__toggle",
+      );
+      if (!content || !toggle) return;
+
+      banner.removeAttribute("data-expandable");
+      toggle.hidden = true;
+      const lineHeight = Number.parseFloat(
+        getComputedStyle(content).lineHeight,
+      );
+      const twoLines = (Number.isFinite(lineHeight) ? lineHeight : 24) * 2 + 2;
+      if (content.scrollHeight > twoLines) {
+        banner.setAttribute("data-expandable", "");
+        toggle.hidden = false;
+      }
+
+      if (!toggle.dataset.bound) {
+        toggle.dataset.bound = "true";
+        toggle.addEventListener("click", () => {
+          const expanded = banner.classList.toggle("is-expanded");
+          toggle.setAttribute("aria-expanded", String(expanded));
+          toggle.textContent = expanded ? "Show less" : "Learn more";
+        });
+      }
+    });
+  }
+
+  refreshBanners();
+  window.addEventListener("resize", refreshBanners);
+</script>
+
+<style>
+  .site-banners {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0 auto 1.5rem;
+    max-width: 1180px;
+  }
+  .site-banners--full {
+    gap: 1px;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+  }
+  .site-banner {
+    align-items: center;
+    background: var(--banner-color);
+    border-radius: 12px;
+    color: var(--banner-text);
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.7rem 1.25rem;
+    position: relative;
+    text-align: center;
+  }
+  .site-banners--full .site-banner {
+    border-radius: 0;
+    padding-left: max(1.25rem, calc((100vw - 1160px) / 2 + 2rem));
+    padding-right: max(1.25rem, calc((100vw - 1160px) / 2 + 2rem));
+  }
+  .site-banner__content {
+    flex: 0 1 920px;
+    line-height: 1.5;
+    max-width: 920px;
+    min-width: 0;
+  }
+  .site-banner__content :global(p) {
+    display: inline;
+    margin: 0;
+  }
+  .site-banner__content :global(h2),
+  .site-banner__content :global(h3),
+  .site-banner__content :global(h4),
+  .site-banner__content :global(h5) {
+    display: inline;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 800;
+    line-height: inherit;
+    margin: 0 0.5rem 0 0;
+  }
+  .site-banner__content :global(p + p),
+  .site-banner__content :global(ul),
+  .site-banner__content :global(ol) {
+    margin: 0.75rem 0 0;
+  }
+  .site-banner__content :global(a) {
+    color: inherit;
+    font-weight: 700;
+  }
+  .site-banner__toggle {
+    appearance: none;
+    align-items: center;
+    background: color-mix(in srgb, var(--banner-text) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--banner-text) 32%, transparent);
+    border-radius: 999px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 700;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.32rem 0.78rem;
+    position: relative;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+    white-space: nowrap;
+  }
+  .site-banner__toggle[hidden] {
+    display: none;
+  }
+  .site-banner__toggle:hover {
+    background: color-mix(in srgb, var(--banner-text) 22%, transparent);
+    transform: translateY(-1px);
+  }
+  .site-banner__toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+  .site-banner[data-expandable]:not(.is-expanded) .site-banner__content {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  @media (max-width: 1120px) {
+    .site-banners {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+    .site-banners--full {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .site-banners--full .site-banner {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+  @media (max-width: 640px) {
+    .site-banner {
+      align-items: center;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-bottom: 0.8rem;
+      padding-top: 0.8rem;
+    }
+    /*
+     * The 920px basis above sizes the width while the banner is a row. Stacking
+     * turns it into a height, which made every banner 920px tall no matter how
+     * short its message — and left scrollHeight large enough that the "Learn
+     * more" control appeared on one-line notices too.
+     */
+    .site-banner__content {
+      flex-basis: auto;
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+// Event pages for events created in the admin portal. Events that exist as
+// .mdx files in this folder keep their own routes, which Astro matches first.
+import EventLayout from "../../layouts/EventLayout.astro";
+import { getEventBySlug, renderManagedEventBody } from "../../utils/events";
+import { renderContentMarkdown } from "../../utils/markdown";
+
+const { slug } = Astro.params;
+const event = slug ? await getEventBySlug(slug) : undefined;
+
+if (!event || event.source !== "managed") {
+  return Astro.rewrite("/404");
+}
+
+const descriptionHtml = renderManagedEventBody(event);
+const memberDetailsHtml = renderContentMarkdown(event.memberDetailsMarkdown);
+---
+
+<EventLayout
+  frontmatter={{
+    title: event.title,
+    date: event.date,
+    time: event.time,
+    location: event.location,
+    event_type: event.event_type,
+    links: event.links ?? [],
+  }}
+  memberDetailsHtml={memberDetailsHtml}
+>
+  <Fragment set:html={descriptionHtml} />
+</EventLayout>

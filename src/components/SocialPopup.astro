@@ -1,5 +1,7 @@
 ---
-import clubInfo from "../data/clubInfo.json";
+import { getClubInfo } from "../utils/content";
+
+const clubInfo = await getClubInfo();
 ---
 
 <!-- Social Popup Modal -->
@@ -173,9 +175,15 @@ import clubInfo from "../data/clubInfo.json";
         <div class="newsletter-content">
           <h3>Newsletter</h3>
           <p>Subscribe to get event updates delivered to your inbox.</p>
-          <form class="popup-newsletter-form" id="popup-newsletter-form" novalidate>
+          <form
+            class="popup-newsletter-form"
+            id="popup-newsletter-form"
+            novalidate
+          >
             <div class="popup-newsletter-row">
-              <label for="popup-newsletter-email" class="sr-only">Email address</label>
+              <label for="popup-newsletter-email" class="sr-only"
+                >Email address</label
+              >
               <input
                 id="popup-newsletter-email"
                 name="email"
@@ -186,7 +194,12 @@ import clubInfo from "../data/clubInfo.json";
               />
               <button type="submit">Subscribe</button>
             </div>
-            <p class="popup-newsletter-status" id="popup-newsletter-status" aria-live="polite"></p>
+            <p
+              class="popup-newsletter-status"
+              id="popup-newsletter-status"
+              aria-live="polite"
+            >
+            </p>
           </form>
         </div>
       </div>

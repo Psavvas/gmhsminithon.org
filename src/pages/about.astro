@@ -1,17 +1,13 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
 import ImageCarousel from "../components/ImageCarousel.astro";
-import clubInfo from "../data/clubInfo.json";
+import { applyContentCacheHeaders, getClubInfo } from "../utils/content";
 
-export const prerender = true;
+applyContentCacheHeaders(Astro.response);
 
-const aboutParagraphs = Array.isArray(clubInfo.about)
-  ? clubInfo.about
-  : clubInfo.about.split("\n\n").filter(Boolean);
-
-const aboutContinuedParagraphs = Array.isArray(clubInfo.aboutContinued)
-  ? clubInfo.aboutContinued
-  : clubInfo.aboutContinued.split("\n\n").filter(Boolean);
+const clubInfo = await getClubInfo();
+const aboutParagraphs = clubInfo.about;
+const aboutContinuedParagraphs = clubInfo.aboutContinued;
 
 // Team images for carousel
 const teamImages = [

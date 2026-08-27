@@ -1,3 +1,6 @@
+import { getManagedEvents, type ManagedEvent } from "./content";
+import { escapeHtml, renderContentMarkdown } from "./markdown";
+
 export interface EventFrontmatter {
   title: string;
   date: string | Date;
@@ -12,6 +15,16 @@ export interface EventFrontmatter {
 export interface Event extends EventFrontmatter {
   url: string;
   Content?: any;
+  /** Where the event is defined: an .mdx file, or the admin portal. */
+  source?: "mdx" | "managed";
+  /** Markdown body, for events managed in the admin portal. */
+  descriptionMarkdown?: string;
+  /** Members-only markdown, for events managed in the admin portal. */
+  memberDetailsMarkdown?: string;
+  /** Flyer or photo, for events managed in the admin portal. */
+  image?: string;
+  /** Video embed, for events managed in the admin portal. */
+  embedUrl?: string;
 }
 
 export interface SplitEvents {
@@ -41,19 +54,122 @@ async function loadEventModules(): Promise<
   }));
 }
 
+function managedEventToEvent(event: ManagedEvent): Event {
+  return {
+    title: event.title,
+    date: event.date,
+    time: event.time || undefined,
+    location: event.location || undefined,
+    event_type: event.event_type,
+    summary: event.summary,
+    links: event.links,
+    url: `/events/${event.slug}`,
+    source: "managed",
+    descriptionMarkdown: event.description,
+    memberDetailsMarkdown: event.memberDetails,
+    image: event.image || undefined,
+    embedUrl: event.embedUrl || undefined,
+  };
+}
+
 /**
- * Get all events from MDX files in src/pages/events.
+ * Turn a share link into something an iframe can actually load. Hosts are
+ * already restricted by the schema's embed validation.
+ */
+export function toEmbedSrc(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname === "youtu.be") {
+      const id = parsed.pathname.slice(1);
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (
+      parsed.hostname.endsWith("youtube.com") ||
+      parsed.hostname.endsWith("youtube-nocookie.com")
+    ) {
+      const id = parsed.searchParams.get("v");
+
+      if (id) {
+        return `https://www.youtube.com/embed/${id}`;
+      }
+
+      return parsed.toString();
+    }
+
+    if (
+      parsed.hostname === "drive.google.com" ||
+      parsed.hostname === "docs.google.com"
+    ) {
+      // /file/d/<id>/view -> /file/d/<id>/preview
+      return parsed.toString().replace(/\/(view|edit)(\?.*)?$/, "/preview");
+    }
+
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The public body of a portal-managed event: description, then any flyer and
+ * video embed. Everything is escaped or validated before it reaches the page.
+ */
+export function renderManagedEventBody(event: Event): string {
+  const blocks: string[] = [];
+  const summaryText = Array.isArray(event.summary)
+    ? event.summary.join("\n\n")
+    : event.summary;
+
+  blocks.push(renderContentMarkdown(event.descriptionMarkdown || summaryText));
+
+  // Styling lives in the layouts (`.event-media`), not in inline attributes, so
+  // a flyer can be capped and re-laid-out per breakpoint. Portal-uploaded
+  // flyers are often tall phone photos, which at full width would push the rest
+  // of the page off the screen.
+  if (event.image) {
+    blocks.push(
+      `<figure class="event-media event-media--image">` +
+        `<img class="event-media__image" src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)}" loading="lazy" decoding="async" />` +
+        `</figure>`,
+    );
+  }
+
+  const embedSrc = event.embedUrl ? toEmbedSrc(event.embedUrl) : null;
+
+  if (embedSrc) {
+    blocks.push(
+      `<div class="event-media event-media--video">` +
+        `<iframe class="event-media__frame" src="${escapeHtml(embedSrc)}" title="${escapeHtml(event.title)} video" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>` +
+        `</div>`,
+    );
+  }
+
+  return blocks.filter(Boolean).join("\n");
+}
+
+/**
+ * Get all events: the MDX files in src/pages/events plus anything added in the
+ * admin portal. An .mdx file wins if both use the same slug, because the file
+ * owns that route.
  */
 export async function getAllEvents(): Promise<Event[]> {
   const modules = await loadEventModules();
+  const mdxEvents: Event[] = modules.map(({ filePath, module }) => ({
+    ...module.frontmatter,
+    url: filePathToEventUrl(filePath),
+    Content: module.default,
+    source: "mdx" as const,
+  }));
+  const mdxUrls = new Set(mdxEvents.map((event) => event.url));
+  const managedEvents = (await getManagedEvents())
+    .map(managedEventToEvent)
+    .filter((event) => !mdxUrls.has(event.url));
 
-  return modules
-    .map(({ filePath, module }) => ({
-      ...module.frontmatter,
-      url: filePathToEventUrl(filePath),
-      Content: module.default,
-    }))
-    .sort((a, b) => getEventDayTimestamp(a.date) - getEventDayTimestamp(b.date));
+  return [...mdxEvents, ...managedEvents].sort(
+    (a, b) => getEventDayTimestamp(a.date) - getEventDayTimestamp(b.date),
+  );
 }
 
 /**
@@ -79,7 +195,11 @@ export async function getUpcomingEvents(limit?: number): Promise<Event[]> {
 
 function parseEventDate(dateValue: string | Date): Date {
   if (dateValue instanceof Date) {
-    return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
+    return new Date(
+      dateValue.getFullYear(),
+      dateValue.getMonth(),
+      dateValue.getDate(),
+    );
   }
 
   const trimmedValue = dateValue.trim();

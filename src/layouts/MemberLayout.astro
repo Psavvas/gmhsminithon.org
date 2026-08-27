@@ -1,26 +1,53 @@
 ---
+import "../styles/member-portal.css";
 import Analytics from "@vercel/analytics/astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
-import NavBehavior from "../components/NavBehavior.astro";
 import MemberLogoutButton from "../components/member-auth/MemberLogoutButton";
 import {
   MEMBER_AUTH_CALLBACK_PATH,
   MEMBER_LOGIN_PATH,
   getShooBaseUrl,
 } from "../utils/auth";
+import { isAdminRequest } from "../utils/admin/session";
+import { DIAMOND_MASTHEAD_ON_DARK, FAVICON_HREF } from "../utils/brand";
+import PortalIcon from "../components/PortalIcon.astro";
+import SiteBanners from "../components/SiteBanners.astro";
 
 export interface Props {
   title: string;
   description?: string;
+  heading?: string;
+  intro?: string;
 }
 
 const defaultDescription =
   "Great Mills High School Mini-THON member portal with event details, announcements, resources, and volunteer updates supporting Four Diamonds and the fight against pediatric cancer.";
-const diamondFaviconHref =
-  "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2ZZoJE4qULqN4ePIY1XT27BczblO8y6VKuQtEf";
-
-const { title, description = defaultDescription } = Astro.props;
+const { title, description = defaultDescription, heading, intro } = Astro.props;
 const currentPath = Astro.url.pathname;
+// Only admins see the link to the content portal.
+const showAdminLink = await isAdminRequest(Astro.request);
+
+const navLinks = [
+  { href: "/members", label: "Dashboard", icon: "home", exact: true },
+  {
+    href: "/members/upcoming-events",
+    label: "Events",
+    icon: "calendar",
+    match: ["/members/upcoming-events", "/members/events/"],
+  },
+  { href: "/members/announcements", label: "Announcements", icon: "megaphone" },
+  { href: "/members/club-info", label: "Club Info", icon: "building" },
+  { href: "/members/resources", label: "Resources", icon: "book" },
+];
+
+function isActive(link: (typeof navLinks)[number]): boolean {
+  if (link.exact) {
+    return currentPath === link.href;
+  }
+
+  const patterns = link.match ?? [link.href];
+  return patterns.some((pattern) => currentPath.startsWith(pattern));
+}
 ---
 
 <!doctype html>
@@ -29,6 +56,7 @@ const currentPath = Astro.url.pathname;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
     <meta property="og:description" content={description} />
     <meta property="og:title" content={title} />
     <meta name="twitter:card" content="summary" />
@@ -40,422 +68,94 @@ const currentPath = Astro.url.pathname;
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href={diamondFaviconHref} />
-    <link rel="shortcut icon" href={diamondFaviconHref} />
-    <link rel="apple-touch-icon" href={diamondFaviconHref} />
+    <link rel="icon" href={FAVICON_HREF} />
+    <link rel="shortcut icon" href={FAVICON_HREF} />
+    <link rel="apple-touch-icon" href={FAVICON_HREF} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <Analytics />
   </head>
   <body>
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="/members" class="logo">GMHS Mini-THON Members</a>
-        <button
-          class="nav-toggle"
-          type="button"
-          aria-controls="member-nav"
-          aria-expanded="false"
-        >
-          <span class="nav-toggle-bar"></span>
-          <span class="nav-toggle-bar"></span>
-          <span class="nav-toggle-bar"></span>
-        </button>
-        <ul class="nav-links" id="member-nav">
-          <li>
-            <a
-              href="/members"
-              class={currentPath === "/members" ? "active" : ""}>Dashboard</a
-            >
-          </li>
-          <li>
-            <a
-              href="/members/upcoming-events"
-              class={currentPath.startsWith("/members/upcoming-events") ||
-              currentPath.startsWith("/members/events/")
-                ? "active"
-                : ""}>Events</a
-            >
-          </li>
-          <li>
-            <a
-              href="/members/announcements"
-              class={currentPath === "/members/announcements" ? "active" : ""}
-              >Announcements</a
-            >
-          </li>
-          <li>
-            <a
-              href="/members/club-info"
-              class={currentPath === "/members/club-info" ? "active" : ""}
-              >Club Info</a
-            >
-          </li>
-          <li>
-            <a
-              href="/members/resources"
-              class={currentPath === "/members/resources" ? "active" : ""}
-              >Member Resources</a
-            >
-          </li>
-          <li>
-            <MemberLogoutButton
-              client:load
-              shooBaseUrl={getShooBaseUrl()}
-              callbackPath={MEMBER_AUTH_CALLBACK_PATH}
-              logoutEndpoint="/api/member-auth/logout"
-              loginPath={MEMBER_LOGIN_PATH}
-            />
-          </li>
-          <li><a href="/" class="return-main">Return to Main Site</a></li>
-        </ul>
+    <SiteBanners audience="members" path={currentPath} fullWidth />
+    <header class="mp-topbar">
+      <div class="mp-topbar__inner">
+        <a class="mp-topbar__brand" href="/members">
+          <img
+            class="mp-topbar__mark"
+            src={DIAMOND_MASTHEAD_ON_DARK}
+            alt=""
+            loading="eager"
+          />
+          <span>
+            <strong>Mini-THON Members</strong>
+            <small>Member portal</small>
+          </span>
+        </a>
+        <div class="mp-topbar__actions">
+          {
+            showAdminLink && (
+              <a
+                class="mp-button mp-button--ghost mp-button--small"
+                href="/admin"
+              >
+                Admin
+              </a>
+            )
+          }
+          <a class="mp-button mp-button--ghost mp-button--small" href="/">
+            View site
+          </a>
+          <MemberLogoutButton
+            client:load
+            shooBaseUrl={getShooBaseUrl()}
+            callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+            logoutEndpoint="/api/member-auth/logout"
+            loginPath={MEMBER_LOGIN_PATH}
+          />
+        </div>
       </div>
-    </nav>
-    <main>
-      <slot />
-    </main>
-    <footer>
-      <div class="footer-container">
+    </header>
+
+    <div class="mp-shell">
+      <nav class="mp-nav" aria-label="Member portal sections">
+        {
+          navLinks.map((link) => (
+            <a
+              class={`mp-nav__link${isActive(link) ? " is-active" : ""}`}
+              href={link.href}
+            >
+              <PortalIcon name={link.icon} /> {link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <main class="mp-main">
+        {
+          (heading || intro) && (
+            <div class="mp-page-header">
+              {heading && <h1>{heading}</h1>}
+              {intro && <p class="mp-page-header__intro">{intro}</p>}
+            </div>
+          )
+        }
+        <slot />
+      </main>
+    </div>
+
+    <footer class="mp-footer">
+      <div class="mp-footer__inner">
         <p>
           &copy; {new Date().getFullYear()} Great Mills High School Mini-THON.
         </p>
-        <p class="footer-legal">
+        <p class="mp-footer__legal">
           Mini-THON® and Four Diamonds Mini-THON® are registered trademarks. The
           Diamond Masthead and DonorDrive® are owned by their respective
           trademark holders. Used with permission.
         </p>
       </div>
     </footer>
-    <NavBehavior />
     <SpeedInsights />
   </body>
 </html>
 
-<style>
-  :root {
-    --brand-ink: #2c4672;
-    --brand-sky: #6aaae4;
-    --ink-900: #1c2a3a;
-    --ink-700: #3d4c5c;
-    --ink-500: #6a7a8a;
-    --surface: #f4f7fb;
-    --surface-raised: #ffffff;
-    --border-soft: #d7e2ef;
-    --white: #ffffff;
-    --shadow-soft: 0 18px 45px rgba(28, 42, 58, 0.12);
-    --shadow-card: 0 12px 30px rgba(28, 42, 58, 0.08);
-    --nav-overlay: linear-gradient(
-      135deg,
-      rgba(44, 70, 114, 0.98),
-      rgba(106, 170, 228, 0.95)
-    );
-    --nav-offset: 84px;
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  html {
-    font-family: "Montserrat", "Helvetica Neue", "Noto Sans", sans-serif;
-    background-color: var(--surface);
-    color: var(--ink-900);
-    overflow-x: hidden;
-  }
-
-  body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    position: relative;
-    background:
-      radial-gradient(
-        circle at 10% 10%,
-        rgba(106, 170, 228, 0.18),
-        transparent 45%
-      ),
-      linear-gradient(140deg, rgba(44, 70, 114, 0.05), transparent 35%),
-      var(--surface);
-    overflow-x: hidden;
-    padding-top: 0;
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(
-      120deg,
-      rgba(44, 70, 114, 0.08),
-      rgba(106, 170, 228, 0.06)
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  main,
-  .navbar,
-  footer {
-    position: relative;
-    z-index: 1;
-  }
-
-  body.nav-hidden {
-    padding-top: 0;
-  }
-
-  :global(h1),
-  :global(h2),
-  :global(h3) {
-    font-family: "Merriweather", "Times New Roman", serif;
-    letter-spacing: 0.01em;
-    color: var(--ink-900);
-  }
-
-  .navbar {
-    background: linear-gradient(
-      120deg,
-      rgba(44, 70, 114, 0.98),
-      rgba(44, 70, 114, 0.92)
-    );
-    color: var(--white);
-    padding: 1rem 0;
-    box-shadow: 0 4px 20px rgba(28, 42, 58, 0.15);
-    backdrop-filter: blur(14px);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease,
-      background 0.25s ease;
-  }
-
-  .navbar.is-hidden {
-    transform: translateY(-100%);
-    box-shadow: none;
-  }
-
-  .nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    min-width: 0;
-  }
-
-  .logo {
-    font-size: 1.15rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--white);
-    text-decoration: none;
-    line-height: 1.25;
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: min(100%, 17rem);
-    white-space: nowrap;
-  }
-
-  .nav-links {
-    display: flex;
-    list-style: none;
-    gap: 0.9rem;
-    align-items: center;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-  }
-
-  .nav-links li {
-    min-width: 0;
-  }
-
-  .nav-links a {
-    color: var(--white);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    padding: 0.5rem 0;
-    border-bottom: 2px solid transparent;
-    font-weight: 500;
-    font-size: 0.9rem;
-    white-space: nowrap;
-  }
-
-  .nav-links a:hover,
-  .nav-links a.active {
-    color: var(--brand-sky);
-    border-bottom-color: var(--brand-sky);
-  }
-
-  .return-main {
-    background-color: var(--brand-sky);
-    color: var(--brand-ink) !important;
-    padding: 0.4rem 0.85rem !important;
-    border-radius: 999px;
-    font-weight: 600;
-    border-bottom: 2px solid transparent !important;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-  }
-
-  .return-main:hover {
-    background-color: var(--white);
-    color: var(--brand-ink) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(106, 170, 228, 0.3);
-  }
-
-  :global(.member-logout) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    border-radius: 999px;
-    color: var(--white);
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-    width: 2.2rem;
-    height: 2.2rem;
-    padding: 0.45rem;
-    line-height: 0;
-    flex-shrink: 0;
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease,
-      transform 0.3s ease;
-  }
-
-  :global(.member-logout-icon) {
-    width: 1rem;
-    height: 1rem;
-    display: block;
-    fill: currentColor;
-  }
-
-  :global(.member-logout:hover) {
-    background-color: var(--white);
-    color: var(--brand-ink);
-    transform: translateY(-2px);
-  }
-
-  main {
-    flex: 1;
-    max-width: 1160px;
-    margin: 0 auto;
-    padding: calc(3rem + var(--nav-offset, 0px)) 2rem 4rem;
-    width: 100%;
-    min-width: 0;
-  }
-
-  footer {
-    background: linear-gradient(
-      120deg,
-      rgba(44, 70, 114, 0.98),
-      rgba(44, 70, 114, 0.9)
-    );
-    color: var(--white);
-    padding: 1.75rem 0;
-    margin-top: 2rem;
-    text-align: center;
-  }
-
-  .footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  footer p {
-    margin: 0.35rem 0;
-  }
-
-  .footer-legal {
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-
-  @media (max-width: 1120px) {
-    .nav-container {
-      flex-direction: row;
-      gap: 1rem;
-      padding: 0 1.5rem;
-    }
-
-    .logo {
-      font-size: 1.1rem;
-      max-width: 16rem;
-    }
-
-    /* In the full-screen mobile overlay, center nav items vertically
-       (override the default flex-end used for desktop) */
-    .nav-links {
-      justify-content: center;
-    }
-
-    /* Remove per-link underlines; they span the full overlay width on mobile */
-    .nav-links a {
-      border-bottom: none;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      border-bottom: none;
-    }
-
-    /* Pill-shaped button should not stretch to full overlay width */
-    .return-main {
-      width: auto;
-    }
-
-    /* Ensure logout button is full-width and centered in the mobile overlay.
-       This must appear after the base :global(.member-logout) rule so it wins. */
-    :global(.member-logout) {
-      width: 100%;
-      justify-content: center;
-      min-height: 3rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .nav-links {
-      flex-wrap: wrap;
-    }
-
-    main {
-      padding: calc(2rem + var(--nav-offset, 0px)) 1.25rem 3rem;
-    }
-
-    .footer-container {
-      padding: 0 1.25rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .logo {
-      font-size: 0.95rem;
-      max-width: 12.5rem;
-    }
-
-    .nav-container {
-      padding: 0 1rem;
-    }
-
-    main {
-      padding: calc(1.5rem + var(--nav-offset, 0px)) 1rem 2.5rem;
-    }
-
-    .footer-container {
-      padding: 0 1rem;
-    }
-  }
-</style>

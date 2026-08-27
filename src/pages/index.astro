@@ -2,11 +2,19 @@
 import PublicLayout from "../layouts/PublicLayout.astro";
 import ImageCarousel from "../components/ImageCarousel.astro";
 import SocialPopup from "../components/SocialPopup.astro";
-import fundraisingData from "../data/fundraising.json";
-import clubInfo from "../data/clubInfo.json";
+import {
+  applyContentCacheHeaders,
+  getClubInfo,
+  getFundraising,
+} from "../utils/content";
 import { getCurrentYearEvents } from "../utils/events";
 
-export const prerender = true;
+applyContentCacheHeaders(Astro.response);
+
+const [fundraisingData, clubInfo] = await Promise.all([
+  getFundraising(),
+  getClubInfo(),
+]);
 
 const currentTotal = fundraisingData.currentTotal.toLocaleString("en-US", {
   style: "currency",
@@ -50,12 +58,8 @@ const formatDate = (dateString: string) =>
     day: "numeric",
   });
 
-const missionLead = Array.isArray(clubInfo.mission)
-  ? (clubInfo.mission[0] ?? "")
-  : clubInfo.mission;
-const aboutParagraphs = Array.isArray(clubInfo.about)
-  ? clubInfo.about
-  : clubInfo.about.split("\n\n").filter(Boolean);
+const missionLead = clubInfo.mission[0] ?? "";
+const aboutParagraphs = clubInfo.about;
 
 // Gallery images for carousel
 const galleryImages = [

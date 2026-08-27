@@ -1,6 +1,7 @@
 ---
 import Analytics from "@vercel/analytics/astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
+import { FAVICON_HREF } from "../utils/brand";
 
 export interface Props {
   title: string;
@@ -9,9 +10,6 @@ export interface Props {
 
 const defaultDescription =
   "Great Mills High School Mini-THON is a student-led effort raising funds and awareness for Four Diamonds to fight pediatric cancer.";
-const diamondFaviconHref =
-  "https://wzec6kbgu0.ufs.sh/f/f6kAnf2T9Q2Zxzo0qoSr820WrGA4XB3zgCfdDvuEQsyLjZao";
-
 const { title, description = defaultDescription } = Astro.props as Props;
 ---
 
@@ -26,9 +24,9 @@ const { title, description = defaultDescription } = Astro.props as Props;
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <link rel="icon" href={diamondFaviconHref} />
-    <link rel="shortcut icon" href={diamondFaviconHref} />
-    <link rel="apple-touch-icon" href={diamondFaviconHref} />
+    <link rel="icon" href={FAVICON_HREF} />
+    <link rel="shortcut icon" href={FAVICON_HREF} />
+    <link rel="apple-touch-icon" href={FAVICON_HREF} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <Analytics />
