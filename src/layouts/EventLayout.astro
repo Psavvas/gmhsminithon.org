@@ -91,31 +91,19 @@ const hasMemberDetails =
       </div>
 
       {
-        hasMemberDetails && (
+        isMember && hasMemberDetails && (
           <div class="member-details-card" id="member-details">
             <div class="member-details-header">
               <h3>Member Details</h3>
               <span class="member-badge">Members only</span>
             </div>
-            {isMember ? (
-              <div class="member-details-body">
-                {memberDetailsHtml ? (
-                  <Fragment set:html={memberDetailsHtml} />
-                ) : (
-                  <slot name="member-details" />
-                )}
-              </div>
-            ) : (
-              <div class="member-locked">
-                <p>
-                  Log in to view volunteer needs, shift details, and member-only
-                  updates for this event.
-                </p>
-                <a href="/members/login" class="member-login-link">
-                  Member login →
-                </a>
-              </div>
-            )}
+            <div class="member-details-body">
+              {memberDetailsHtml ? (
+                <Fragment set:html={memberDetailsHtml} />
+              ) : (
+                <slot name="member-details" />
+              )}
+            </div>
           </div>
         )
       }
@@ -395,35 +383,6 @@ const hasMemberDetails =
   .member-details-body :global(ul) {
     padding-left: 1.25rem;
     margin: 0.5rem 0 0;
-  }
-
-  .member-locked {
-    background: var(--white);
-    border-radius: 14px;
-    padding: 1.25rem;
-    border: 1px solid var(--border-soft);
-  }
-
-  .member-locked p {
-    margin: 0 0 0.75rem 0;
-    color: var(--ink-700);
-  }
-
-  .member-login-link {
-    color: var(--brand-ink);
-    font-weight: 600;
-    text-decoration: none;
-    transition:
-      color 0.2s ease,
-      transform 0.2s ease;
-    display: inline-flex;
-    gap: 0.4rem;
-    align-items: center;
-  }
-
-  .member-login-link:hover {
-    color: var(--brand-sky);
-    transform: translateX(4px);
   }
 
   .event-links-card h3 {

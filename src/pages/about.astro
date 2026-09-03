@@ -86,9 +86,6 @@ const teamImages = [
           <div class="officer-card">
             <h3>{officer.role}</h3>
             <p class="name">{officer.name}</p>
-            <a href={`mailto:${officer.email}`} class="email">
-              {officer.email}
-            </a>
           </div>
         ))
       }
@@ -256,19 +253,8 @@ const teamImages = [
   .officer-card .name {
     font-weight: 600;
     color: var(--ink-900);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
     font-size: 1rem;
-  }
-
-  .officer-card .email {
-    color: var(--ink-500);
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .officer-card .email:hover {
-    color: var(--brand-sky);
   }
 
   @keyframes fade-rise {
