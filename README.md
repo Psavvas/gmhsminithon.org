@@ -242,12 +242,12 @@ custom domain at this project, add it there** — otherwise pages that read
    Editor), run [`db/schema.sql`](db/schema.sql); it is safe to run more than
    once. Either way you end up with:
 
-   | Table                | Purpose                                     |
-   | -------------------- | ------------------------------------------- |
-   | `site_content`       | One JSONB document per content section      |
-   | `admin_users`        | Shoo IDs with admin access                  |
-   | `member_approvals`   | Shoo IDs approved for the member portal     |
-   | `admin_activity_log` | Who changed what, shown as "Recent changes" |
+   | Table                | Purpose                                                                                            |
+   | -------------------- | -------------------------------------------------------------------------------------------------- |
+   | `site_content`       | One JSONB document per content section                                                             |
+   | `admin_users`        | Shoo IDs with admin access                                                                         |
+   | `member_approvals`   | Shoo IDs approved for the member portal                                                            |
+   | `admin_activity_log` | Who changed what, shown as "Recent changes". Entries older than 18 months are pruned automatically |
 
 4. Open `/admin` — the Setup panel should show the database as connected.
 

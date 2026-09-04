@@ -38,7 +38,9 @@ create table if not exists member_approvals (
   created_by text
 );
 
--- Audit trail shown as "Recent changes" on the admin overview.
+-- Audit trail shown as "Recent changes" on the admin overview. Entries are
+-- kept for 18 months; the site prunes older rows as new ones are written
+-- (see ADMIN_ACTIVITY_LOG_RETENTION_MONTHS in src/utils/content/db.ts).
 create table if not exists admin_activity_log (
   id bigserial primary key,
   created_at timestamptz not null default now(),

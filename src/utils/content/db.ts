@@ -159,6 +159,56 @@ export async function checkDatabaseConnection(): Promise<{
 }
 
 /**
+ * How long an activity log entry is kept. The privacy policy states this
+ * number, so changing it here means changing it there too.
+ */
+export const ADMIN_ACTIVITY_LOG_RETENTION_MONTHS = 18;
+
+/** At most one prune per warm instance per this interval. */
+const ADMIN_ACTIVITY_LOG_PRUNE_MIN_INTERVAL_MS = 6 * 60 * 60 * 1000;
+
+let adminActivityLogLastPrunedAt = 0;
+let adminActivityLogPrunePromise: Promise<void> | undefined;
+
+/**
+ * Deletes entries past the retention window. Writes are rare, so piggybacking
+ * on them is enough to keep the table bounded without a scheduled job — and
+ * `getRecentAdminActivity` filters by the same window, so an entry is never
+ * shown after it expires, even if no prune has run yet.
+ */
+async function pruneAdminActivityLog(sql: Sql): Promise<void> {
+  await sql`
+    delete from admin_activity_log
+    where created_at < now() - make_interval(months => ${ADMIN_ACTIVITY_LOG_RETENTION_MONTHS})
+  `;
+}
+
+function schedulePruneAdminActivityLog(sql: Sql): void {
+  const now = Date.now();
+
+  if (
+    adminActivityLogPrunePromise ||
+    now - adminActivityLogLastPrunedAt <
+      ADMIN_ACTIVITY_LOG_PRUNE_MIN_INTERVAL_MS
+  ) {
+    return;
+  }
+
+  adminActivityLogLastPrunedAt = now;
+  adminActivityLogPrunePromise = pruneAdminActivityLog(sql)
+    .catch((error) => {
+      // Left for the next window to retry. Expired rows are already hidden
+      // from the portal, and a stuck prune must never fail an admin action.
+      console.warn("[admin] activity log prune failed", {
+        error: describeDatabaseError(error),
+      });
+    })
+    .finally(() => {
+      adminActivityLogPrunePromise = undefined;
+    });
+}
+
+/**
  * Best-effort audit trail. A logging failure must never block the action that
  * triggered it.
  */
@@ -184,6 +234,8 @@ export async function logAdminActivity(entry: {
         ${entry.details ? JSON.stringify(entry.details) : null}::jsonb
       )
     `;
+
+    schedulePruneAdminActivityLog(sql);
   } catch (error) {
     console.warn("[admin] activity log write failed", {
       action: entry.action,
@@ -212,6 +264,7 @@ export async function getRecentAdminActivity(
   const rows = (await sql`
     select id, created_at, actor, action, target
     from admin_activity_log
+    where created_at >= now() - make_interval(months => ${ADMIN_ACTIVITY_LOG_RETENTION_MONTHS})
     order by created_at desc
     limit ${Math.min(Math.max(limit, 1), 50)}
   `) as Array<{
