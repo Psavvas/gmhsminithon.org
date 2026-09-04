@@ -1,12 +1,12 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
 
-const lastUpdated = "March 9, 2026";
+const lastUpdated = "September 4, 2026";
 ---
 
 <PublicLayout
   title="Privacy Policy - Mini-THON"
-  description="Learn how GMHS Mini-THON uses newsletter, analytics, and member-login data on gmhsminithon.org."
+  description="Learn how GMHS Mini-THON handles newsletter, analytics, member-login, and admin-portal data on gmhsminithon.org."
 >
   <section class="policy-shell">
     <div class="policy-card">
@@ -15,8 +15,9 @@ const lastUpdated = "March 9, 2026";
 
       <p>
         This policy describes how gmhsminithon.org collects, uses, and handles
-        your information. It covers the public website, newsletter signup, and
-        the members-only portal.
+        your information. It covers the public website, the newsletter signup,
+        the members-only portal, and the admin portal that club officers use to
+        edit site content.
       </p>
 
       <div class="divider" aria-hidden="true"></div>
@@ -24,19 +25,28 @@ const lastUpdated = "March 9, 2026";
       <section>
         <h2>Information We Collect</h2>
         <p>
-          <strong>Newsletter subscriptions.</strong> If you sign up for our
-          newsletter, we collect your email address.
+          <strong>Newsletter subscriptions.</strong> If you sign up for our newsletter,
+          we collect your email address and pass it to EmailOctopus, which stores
+          it and sends the emails.
         </p>
         <p>
-          <strong>Member portal authentication.</strong> When you sign into the
-          members portal via Shoo (shoo.dev), we receive and verify your Shoo
-          identity token and use your Shoo user ID (<code>pairwise_sub</code>)
-          to determine whether your account is approved for member access.
+          <strong>Member and admin sign-in.</strong> When you sign into the members
+          portal or the admin portal via Shoo (shoo.dev), we verify your Shoo identity
+          token and use your Shoo user ID (<code>pairwise_sub</code>) to decide
+          whether your account is approved. That ID is specific to this site. We
+          do not store the name, email address, or profile picture that a Shoo
+          token may carry.
         </p>
         <p>
-          <strong>Technical and operational data.</strong> Our hosting
-          infrastructure automatically processes standard request metadata and
-          performance data necessary to deliver and secure the site.
+          <strong>Content entered in the admin portal.</strong> When an administrator
+          saves a change, we store the content they entered, any images they upload,
+          and their Shoo user ID alongside the change so the portal can show who edited
+          what and when.
+        </p>
+        <p>
+          <strong>Technical and operational data.</strong> Our hosting infrastructure
+          automatically processes standard request metadata, server logs, and performance
+          data necessary to deliver and secure the site.
         </p>
         <p>We do not collect more information than what is described above.</p>
       </section>
@@ -46,10 +56,16 @@ const lastUpdated = "March 9, 2026";
       <section>
         <h2>How We Use Your Information</h2>
         <ul>
-          <li>To operate the public website and members portal.</li>
           <li>
-            To verify member portal access against an administrator-maintained
-            approval list.
+            To operate the public website, members portal, and admin portal.
+          </li>
+          <li>
+            To verify portal access against administrator-maintained approval
+            lists.
+          </li>
+          <li>
+            To keep an internal record of who changed site content, so mistakes
+            can be traced and corrected.
           </li>
           <li>To send newsletter updates to subscribers.</li>
           <li>
@@ -57,6 +73,10 @@ const lastUpdated = "March 9, 2026";
             misuse.
           </li>
         </ul>
+        <p>
+          We do not use your information for advertising, and we do not profile
+          visitors.
+        </p>
       </section>
 
       <div class="divider" aria-hidden="true"></div>
@@ -64,22 +84,47 @@ const lastUpdated = "March 9, 2026";
       <section>
         <h2>Members Portal</h2>
         <p>
-          The members portal uses <strong>Shoo</strong> (shoo.dev) for
-          authentication. After Shoo verifies your identity, this site checks
-          your Shoo user ID against a private approval list maintained by GMHS
-          Mini-THON administrators. That list may be stored in server
-          environment variables and/or a private Google Sheet configured by
-          administrators.
+          The members portal uses <strong>Shoo</strong> (shoo.dev) for authentication.
+          After Shoo verifies your identity, this site checks your Shoo user ID against
+          a private approval list maintained by GMHS Mini-THON administrators. Approved
+          IDs may come from any combination of our content database, server environment
+          variables, and an optional private Google Sheet configured by administrators.
         </p>
         <p>
-          If your account is not yet approved, the sign-in flow may display
-          your Shoo user ID so you can share it with an administrator to
-          request access.
+          If your account is not yet approved, the sign-in flow may display your
+          Shoo user ID so you can share it with an administrator to request
+          access.
         </p>
         <p>
-          Upon successful authentication, the site issues a short-lived session
-          cookie so you can navigate protected pages without re-authenticating
-          on each load.
+          Upon successful authentication, the site issues a session cookie that
+          expires after 24 hours, so you can navigate protected pages without
+          re-authenticating on each load.
+        </p>
+      </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <section>
+        <h2>Admin Portal</h2>
+        <p>
+          The admin portal at <code>/admin</code> is limited to club administrators.
+          It uses the same Shoo sign-in as the members portal, with the additional
+          requirement that the Shoo user ID appears on the admin list. Admin sessions
+          use a separate cookie that expires after 8 hours, and every request re-checks
+          the admin list, so removing an ID takes effect immediately.
+        </p>
+        <p>
+          Administrators can add or remove Shoo user IDs from the member and
+          admin lists, and can attach a short label to an entry (for example, a
+          member's name) to keep the list readable. The portal keeps an activity
+          log recording the acting administrator's Shoo user ID, the action
+          taken, the affected item, and a timestamp. This log is visible only to
+          signed-in administrators.
+        </p>
+        <p>
+          Images uploaded through the admin portal are stored with UploadThing
+          and served publicly from its content delivery network, because they
+          appear on the public website.
         </p>
       </section>
 
@@ -97,19 +142,42 @@ const lastUpdated = "March 9, 2026";
           <tbody>
             <tr>
               <td><strong>Shoo</strong> (shoo.dev)</td>
-              <td>Member portal authentication</td>
-            </tr>
-            <tr>
-              <td><strong>EmailOctopus</strong></td>
-              <td>Newsletter subscriptions (when enabled)</td>
+              <td>Member and admin portal authentication</td>
             </tr>
             <tr>
               <td><strong>Vercel</strong></td>
-              <td>Hosting, analytics, and performance monitoring</td>
+              <td>
+                Hosting, image optimization, web analytics, and speed insights
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Neon</strong></td>
+              <td>
+                Postgres database for site content, portal approval lists, and
+                the admin activity log
+              </td>
+            </tr>
+            <tr>
+              <td><strong>UploadThing</strong></td>
+              <td>Storage and delivery of images uploaded by administrators</td>
+            </tr>
+            <tr>
+              <td><strong>EmailOctopus</strong></td>
+              <td>Newsletter subscriptions and delivery</td>
             </tr>
             <tr>
               <td><strong>Google Sheets</strong></td>
-              <td>Administrator-managed member approval list</td>
+              <td>
+                Optional administrator-managed member approval list, read as a
+                published CSV
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Google Fonts</strong></td>
+              <td>
+                Web fonts; your browser requests them directly from Google,
+                which receives your IP address
+              </td>
             </tr>
           </tbody>
         </table>
@@ -127,21 +195,74 @@ const lastUpdated = "March 9, 2026";
         <p>We do not sell personal information.</p>
         <p>
           We share data only with the service providers listed above, and only
-          as necessary to operate the site. Data is retained only for as long
-          as it is needed for its stated purpose - such as maintaining the
-          member approval list, keeping a newsletter subscription active, or
-          retaining short-lived session and diagnostic data.
+          as necessary to operate the site. Retention works as follows:
+        </p>
+        <ul>
+          <li>
+            <strong>Session cookies</strong> expire automatically - 24 hours for member
+            sessions, 8 hours for admin sessions - and are cleared when you sign out.
+          </li>
+          <li>
+            <strong>Approval list entries</strong> are kept until an administrator
+            removes them, or until the environment variable or Google Sheet that supplied
+            them is updated.
+          </li>
+          <li>
+            <strong>The admin activity log</strong> is retained as an audit trail
+            of content changes.
+          </li>
+          <li>
+            <strong>Newsletter subscriptions</strong> are kept until you unsubscribe
+            or ask us to remove your address.
+          </li>
+          <li>
+            <strong>Uploaded images</strong> remain available until an administrator
+            deletes them.
+          </li>
+          <li>
+            <strong>Server logs and analytics</strong> are retained by our hosting
+            provider for a limited period under its own retention schedule.
+          </li>
+        </ul>
+      </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <section>
+        <h2>Cookies and Browser Storage</h2>
+        <p>
+          This site sets cookies only for signing in. The members portal sets a
+          <code>member_session</code> cookie and the admin portal sets an
+          <code>admin_session</code> cookie. Both are signed, marked
+          <code>HttpOnly</code> and <code>SameSite=Lax</code>, sent only over
+          HTTPS in production, and cannot be read by scripts in your browser. We
+          do not use advertising or cross-site tracking cookies.
+        </p>
+        <p>
+          The site also uses your browser's <code>sessionStorage</code> for small
+          interface details, such as carrying a sign-in error message across a page
+          navigation and remembering whether the navigation animation has already
+          played. That data stays in your browser and is cleared when you close the
+          tab.
+        </p>
+        <p>
+          Vercel Web Analytics and Speed Insights measure traffic and
+          performance without using cookies to identify you across sites.
         </p>
       </section>
 
       <div class="divider" aria-hidden="true"></div>
 
       <section>
-        <h2>Cookies</h2>
+        <h2>Security</h2>
         <p>
-          The members portal sets a short-lived session cookie after successful
-          sign-in to maintain your authenticated session. Vercel may also use
-          service-side telemetry to measure site reliability and performance.
+          The site is served over HTTPS. Sign-in tokens are verified on the
+          server, session cookies are cryptographically signed, API keys and
+          database credentials are held in server-side environment variables and
+          never sent to your browser, and admin write requests are rejected
+          unless they originate from this site. No system is perfectly secure,
+          but we aim to collect as little as possible so there is little to
+          expose.
         </p>
       </section>
 
@@ -150,15 +271,16 @@ const lastUpdated = "March 9, 2026";
       <section>
         <h2>Your Privacy Rights</h2>
         <p>
-          Depending on your location, you may have the right to access,
-          correct, delete, or restrict certain personal data we hold. You can
-          also unsubscribe from newsletter emails at any time using the
-          unsubscribe link in any email we send.
+          Depending on your location, you may have the right to access, correct,
+          delete, or restrict certain personal data we hold. You can also
+          unsubscribe from newsletter emails at any time using the unsubscribe
+          link in any email we send.
         </p>
         <p>
-          You are not required to use the members portal or newsletter signup.
-          To ask about, update, or request removal of information associated
-          with this site, contact us at
+          Browsing the public site requires no account. You are not required to
+          use the members portal or newsletter signup. To ask about, update, or
+          request removal of information associated with this site, contact us
+          at
           <strong>
             <a href="mailto:hello@gmhsminithon.org">hello@gmhsminithon.org</a>
           </strong>
@@ -174,10 +296,11 @@ const lastUpdated = "March 9, 2026";
           This site is intended for the GMHS Mini-THON school community. We do
           not knowingly collect personal information from children under 13
           without appropriate parental or school authorization in compliance
-          with the Children's Online Privacy Protection Act (COPPA). If you
-          believe a child under 13 has submitted personal information in error,
-          contact us at hello@gmhsminithon.org and we will promptly review and
-          address it.
+          with the Children's Online Privacy Protection Act (COPPA). Student
+          participation in the portal requires only a Shoo user ID, not a name,
+          address, or other personal details. If you believe a child under 13
+          has submitted personal information in error, contact us at
+          hello@gmhsminithon.org and we will promptly review and address it.
         </p>
       </section>
 
@@ -303,7 +426,11 @@ const lastUpdated = "March 9, 2026";
 
   thead th {
     color: var(--ink-900);
-    background: color-mix(in srgb, var(--surface-raised) 85%, var(--brand-sky) 15%);
+    background: color-mix(
+      in srgb,
+      var(--surface-raised) 85%,
+      var(--brand-sky) 15%
+    );
     font-weight: 700;
   }
 
