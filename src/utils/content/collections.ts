@@ -12,6 +12,7 @@ import memberResourcesDefaults from "../../data/memberResources.json";
 import redirectsDefaults from "../../data/redirects.json";
 import sponsorsDefaults from "../../data/sponsors.json";
 import bannersDefaults from "../../data/banners.json";
+import siteSettingsDefaults from "../../data/siteSettings.json";
 import {
   normalizeCollection,
   type ClientCollectionSpec,
@@ -440,6 +441,44 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
         },
         label: { kind: "text", label: "Label", required: true },
         url: { kind: "url", label: "Destination URL", required: true },
+      },
+    },
+  },
+  siteSettings: {
+    id: "siteSettings",
+    label: "Site settings",
+    description:
+      "Switches for site-wide features, such as newsletter sign-ups.",
+    icon: "sliders",
+    scope: "public",
+    previewPath: "/",
+    defaults: siteSettingsDefaults,
+    notes: [
+      "Turning off newsletter sign-ups hides the form in the site footer and in the Find Us Online popup, and stops the sign-up endpoint from accepting new addresses.",
+      "Existing subscribers are untouched — this only controls whether the site takes new sign-ups.",
+    ],
+    root: {
+      kind: "object",
+      label: "Site settings",
+      fields: {
+        newsletter: {
+          kind: "object",
+          label: "Newsletter sign-up",
+          fields: {
+            enabled: {
+              kind: "boolean",
+              label: "Accept newsletter sign-ups",
+              help: "Uncheck to take the sign-up form off the site.",
+            },
+            disabledMessage: {
+              kind: "text",
+              label: "Message while sign-ups are off",
+              maxLength: 160,
+              placeholder: "Newsletter sign-ups are paused for now.",
+              help: "Optional. Shown where the form used to be. Leave blank to hide the section entirely.",
+            },
+          },
+        },
       },
     },
   },

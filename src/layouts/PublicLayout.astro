@@ -8,7 +8,7 @@ import {
 } from "../utils/brand";
 import NavBehavior from "../components/NavBehavior.astro";
 import SiteBanners from "../components/SiteBanners.astro";
-import { getClubInfo } from "../utils/content";
+import { getClubInfo, getNewsletterSettings } from "../utils/content";
 
 export interface Props {
   title: string;
@@ -16,6 +16,9 @@ export interface Props {
 }
 
 const clubInfo = await getClubInfo();
+const newsletter = await getNewsletterSettings();
+const showNewsletterColumn =
+  newsletter.enabled || Boolean(newsletter.disabledMessage);
 
 const defaultDescription =
   "Great Mills High School Mini-THON is a student-led effort raising funds and awareness for Four Diamonds to fight pediatric cancer through school events, community partnerships, and year-round fundraising.";
@@ -272,32 +275,48 @@ const currentPath = Astro.url.pathname;
 
           <!-- Newsletter column -->
           <div class="footer-newsletter">
-            <h3 class="footer-heading">Stay Updated</h3>
-            <p class="footer-newsletter-desc">
-              Subscribe to our newsletter and never miss an event or update.
-            </p>
-            <form class="newsletter-form" id="newsletter-form" novalidate>
-              <div class="newsletter-input-row">
-                <label for="newsletter-email" class="sr-only"
-                  >Email address</label
-                >
-                <input
-                  type="email"
-                  id="newsletter-email"
-                  name="email"
-                  placeholder="Your email address"
-                  required
-                  autocomplete="email"
-                />
-                <button type="submit">Subscribe</button>
-              </div>
-              <p
-                class="newsletter-status"
-                id="newsletter-status"
-                aria-live="polite"
-              >
-              </p>
-            </form>
+            {
+              showNewsletterColumn && (
+                <h3 class="footer-heading">Stay Updated</h3>
+              )
+            }
+            {
+              newsletter.enabled ? (
+                <Fragment>
+                  <p class="footer-newsletter-desc">
+                    Subscribe to our newsletter and never miss an event or
+                    update.
+                  </p>
+                  <form class="newsletter-form" id="newsletter-form" novalidate>
+                    <div class="newsletter-input-row">
+                      <label for="newsletter-email" class="sr-only">
+                        Email address
+                      </label>
+                      <input
+                        type="email"
+                        id="newsletter-email"
+                        name="email"
+                        placeholder="Your email address"
+                        required
+                        autocomplete="email"
+                      />
+                      <button type="submit">Subscribe</button>
+                    </div>
+                    <p
+                      class="newsletter-status"
+                      id="newsletter-status"
+                      aria-live="polite"
+                    />
+                  </form>
+                </Fragment>
+              ) : (
+                newsletter.disabledMessage && (
+                  <p class="footer-newsletter-desc">
+                    {newsletter.disabledMessage}
+                  </p>
+                )
+              )
+            }
             <h3 class="footer-heading">Contact Us</h3>
             <p class="footer-newsletter-desc">
               Send us an email at: <a
@@ -1030,4 +1049,3 @@ const currentPath = Astro.url.pathname;
     }
   }
 </style>
-

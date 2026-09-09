@@ -36,6 +36,7 @@ src/
 │   ├── memberAnnouncements.json # Member portal announcements
 │   ├── memberResources.json     # Member resource links
 │   ├── redirects.json           # Short URL redirects (e.g., /redirect/donate)
+│   ├── siteSettings.json        # Site-wide switches (newsletter sign-ups)
 │   └── sponsors.json            # Sponsor names, tiers, logos, and websites
 ├── layouts/          # Page layout templates
 │   ├── AdminLayout.astro        # Layout + styles for the admin portal
@@ -102,6 +103,7 @@ portal uses) and stores content in a Neon Postgres database.
 | Events               | Events on `/events`, with a description, optional flyer and video, and member-only notes |
 | Club info            | Mission, about text, officers, meeting times, social links, contact email                |
 | Short links          | `/redirect/<slug>` short URLs                                                            |
+| Site settings        | Site-wide switches, including whether newsletter sign-ups are open                       |
 | Member announcements | Announcements in the member portal                                                       |
 | Member resources     | Quick links for members                                                                  |
 | Shoo IDs             | Who can use the admin portal, and who can use the member portal                          |
@@ -433,6 +435,24 @@ Edit `src/data/redirects.json` to create short URLs. Each entry maps a slug to a
 ```
 
 This creates a redirect at `/redirect/donate` that points to the specified URL.
+
+### Turning Newsletter Sign-Ups On or Off
+
+Open **Site settings** in the admin portal and clear **Accept newsletter sign-ups**.
+That one switch:
+
+- removes the sign-up form from the site footer,
+- removes it from the "Find Us Online" popup, and
+- makes `POST /api/newsletter` reject new addresses with `403`, so the form
+  cannot be driven directly once it is hidden.
+
+Fill in **Message while sign-ups are off** to leave a short note where the form
+used to be (for example, "Newsletter sign-ups are paused for now."). Leave it
+blank and the whole section disappears instead.
+
+Turning sign-ups off changes nothing about people who already subscribed — it
+only controls whether the site takes new ones. Without a database connected the
+switch is read-only and sign-ups stay on, matching `src/data/siteSettings.json`.
 
 ## Local Development
 

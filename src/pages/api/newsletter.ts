@@ -1,6 +1,22 @@
 import type { APIRoute } from "astro";
+import { getNewsletterSettings } from "../../utils/content";
 
 export const POST: APIRoute = async ({ request }) => {
+	// Hiding the form is not enough — an admin who turns sign-ups off expects the
+	// endpoint to stop accepting addresses too.
+	const newsletter = await getNewsletterSettings();
+
+	if (!newsletter.enabled) {
+		return new Response(
+			JSON.stringify({
+				error:
+					newsletter.disabledMessage ||
+					"Newsletter sign-ups are closed right now. Please check back later.",
+			}),
+			{ status: 403, headers: { "Content-Type": "application/json" } },
+		);
+	}
+
 	let email = "";
 
 	const contentType = request.headers.get("content-type") ?? "";

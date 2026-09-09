@@ -79,6 +79,28 @@ export async function getSiteBanners(): Promise<SiteBanner[]> {
   return banners;
 }
 
+export type NewsletterSettings = {
+  enabled: boolean;
+  disabledMessage: string;
+};
+
+export type SiteSettings = {
+  newsletter: NewsletterSettings;
+};
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  return readCollectionData<SiteSettings>("siteSettings");
+}
+
+/**
+ * The newsletter switch, read by the footer, the social popup, and the
+ * subscribe endpoint so the form and the API agree on whether sign-ups are open.
+ */
+export async function getNewsletterSettings(): Promise<NewsletterSettings> {
+  const { newsletter } = await getSiteSettings();
+  return newsletter;
+}
+
 export type ManagedEvent = {
   title: string;
   slug: string;

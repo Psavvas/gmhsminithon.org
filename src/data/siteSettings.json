@@ -1,0 +1,6 @@
+{
+  "newsletter": {
+    "enabled": true,
+    "disabledMessage": ""
+  }
+}
