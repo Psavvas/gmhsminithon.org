@@ -25,7 +25,6 @@ export type ClubInfo = {
   officers: Array<{
     role: string;
     name: string;
-    email: string;
   }>;
   contact: {
     email: string;

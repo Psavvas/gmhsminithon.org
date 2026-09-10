@@ -401,7 +401,6 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
           fields: {
             role: { kind: "text", label: "Role", required: true },
             name: { kind: "text", label: "Name", required: true },
-            email: { kind: "email", label: "Email" },
           },
         },
         contact: {

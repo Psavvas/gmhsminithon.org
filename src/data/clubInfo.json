@@ -24,33 +24,27 @@
   "officers": [
     {
       "role": "Co-President",
-      "name": "Audrey Gutekunst",
-      "email": "president@gmhsminithon.org"
+      "name": "Audrey Gutekunst"
     },
     {
       "role": "Co-President",
-      "name": "Sam King",
-      "email": "president@gmhsminithon.org"
+      "name": "Sam King"
     },
     {
       "role": "Operations Lead",
-      "name": "Claire Davis",
-      "email": "operations@gmhsminithon.org"
+      "name": "Claire Davis"
     },
     {
       "role": "Marketing Lead",
-      "name": "Damir Hinmon",
-      "email": "marketing@gmhsminithon.org"
+      "name": "Damir Hinmon"
     },
     {
       "role": "Engagement Lead",
-      "name": "Mehek Panwala",
-      "email": "engagement@gmhsminithon.org"
+      "name": "Mehek Panwala"
     },
     {
       "role": "Adult Coordinator",
-      "name": "Brian Weisner",
-      "email": "bdweisner@smcps.org"
+      "name": "Brian Weisner"
     }
   ],
   "contact": {
