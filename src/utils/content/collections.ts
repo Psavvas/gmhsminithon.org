@@ -401,6 +401,11 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
           fields: {
             role: { kind: "text", label: "Role", required: true },
             name: { kind: "text", label: "Name", required: true },
+            email: {
+              kind: "email",
+              label: "Email",
+              help: "Optional. Only shown where Site settings turns officer emails on; blank addresses are always skipped.",
+            },
           },
         },
         contact: {
@@ -447,7 +452,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     id: "siteSettings",
     label: "Site settings",
     description:
-      "Switches for site-wide features, such as newsletter sign-ups.",
+      "Switches for site-wide features, such as newsletter sign-ups and officer emails.",
     icon: "sliders",
     scope: "public",
     previewPath: "/",
@@ -455,6 +460,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     notes: [
       "Turning off newsletter sign-ups hides the form in the site footer and in the Find Us Online popup, and stops the sign-up endpoint from accepting new addresses.",
       "Existing subscribers are untouched — this only controls whether the site takes new sign-ups.",
+      "Officer emails are off everywhere by default. The addresses themselves live in Club info → Officers, and an officer with no address is skipped even when these switches are on.",
     ],
     root: {
       kind: "object",
@@ -475,6 +481,23 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
               maxLength: 160,
               placeholder: "Newsletter sign-ups are paused for now.",
               help: "Optional. Shown where the form used to be. Leave blank to hide the section entirely.",
+            },
+          },
+        },
+        officerEmails: {
+          kind: "object",
+          label: "Officer emails",
+          help: "Where the leadership team's email addresses are shown. Off on both means no officer address is published anywhere.",
+          fields: {
+            showOnAboutPage: {
+              kind: "boolean",
+              label: "Show on the public about page",
+              help: "Anyone on the internet can read these, including address scrapers.",
+            },
+            showInMemberPortal: {
+              kind: "boolean",
+              label: "Show in the member portal",
+              help: "Only logged-in members see these, on the club info page.",
             },
           },
         },

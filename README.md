@@ -36,7 +36,7 @@ src/
 │   ├── memberAnnouncements.json # Member portal announcements
 │   ├── memberResources.json     # Member resource links
 │   ├── redirects.json           # Short URL redirects (e.g., /redirect/donate)
-│   ├── siteSettings.json        # Site-wide switches (newsletter sign-ups)
+│   ├── siteSettings.json        # Site-wide switches (newsletter, officer emails)
 │   └── sponsors.json            # Sponsor names, tiers, logos, and websites
 ├── layouts/          # Page layout templates
 │   ├── AdminLayout.astro        # Layout + styles for the admin portal
@@ -103,7 +103,7 @@ portal uses) and stores content in a Neon Postgres database.
 | Events               | Events on `/events`, with a description, optional flyer and video, and member-only notes |
 | Club info            | Mission, about text, officers, meeting times, social links, contact email                |
 | Short links          | `/redirect/<slug>` short URLs                                                            |
-| Site settings        | Site-wide switches, including whether newsletter sign-ups are open                       |
+| Site settings        | Site-wide switches: newsletter sign-ups, and where officer emails are shown              |
 | Member announcements | Announcements in the member portal                                                       |
 | Member resources     | Quick links for members                                                                  |
 | Shoo IDs             | Who can use the admin portal, and who can use the member portal                          |
@@ -453,6 +453,22 @@ blank and the whole section disappears instead.
 Turning sign-ups off changes nothing about people who already subscribed — it
 only controls whether the site takes new ones. Without a database connected the
 switch is read-only and sign-ups stay on, matching `src/data/siteSettings.json`.
+
+### Showing or Hiding Officer Emails
+
+Officer email addresses are hidden everywhere by default. Two switches under
+**Site settings → Officer emails** decide where they appear:
+
+- **Show on the public about page** — anyone on the internet can read them,
+  address scrapers included.
+- **Show in the member portal** — only logged-in members see them, on
+  `/members/club-info`.
+
+The addresses themselves are edited in **Club info → Officers**. They are blank
+in `src/data/clubInfo.json` on purpose: this repository is public, so an address
+typed into the admin portal is stored in the database and never committed here.
+An officer with no address is skipped even when the switch is on, so you can
+publish some contacts and not others.
 
 ## Local Development
 

@@ -1,7 +1,7 @@
 ---
 import MemberLayout from "../../layouts/MemberLayout.astro";
 import { checkMemberAuth } from "../../utils/auth";
-import { getClubInfo } from "../../utils/content";
+import { getClubInfo, getOfficerEmailSettings } from "../../utils/content";
 import PortalIcon from "../../components/PortalIcon.astro";
 
 // Check authentication
@@ -10,6 +10,8 @@ if (!(await checkMemberAuth(Astro.request))) {
 }
 
 const clubInfo = await getClubInfo();
+const { showInMemberPortal: showOfficerEmails } =
+  await getOfficerEmailSettings();
 
 function isLink(value: string): boolean {
   return /^https?:\/\//i.test(value);
@@ -125,6 +127,11 @@ const socialLinks = [
               </dt>
               <dd>{officer.name}</dd>
             </dl>
+            {showOfficerEmails && officer.email && (
+              <a class="mp-card__link" href={`mailto:${officer.email}`}>
+                {officer.email}
+              </a>
+            )}
           </div>
         ))
       }

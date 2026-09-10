@@ -2,5 +2,9 @@
   "newsletter": {
     "enabled": true,
     "disabledMessage": ""
+  },
+  "officerEmails": {
+    "showOnAboutPage": false,
+    "showInMemberPortal": false
   }
 }

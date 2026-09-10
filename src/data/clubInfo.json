@@ -24,27 +24,33 @@
   "officers": [
     {
       "role": "Co-President",
-      "name": "Audrey Gutekunst"
+      "name": "Audrey Gutekunst",
+      "email": ""
     },
     {
       "role": "Co-President",
-      "name": "Sam King"
+      "name": "Sam King",
+      "email": ""
     },
     {
       "role": "Operations Lead",
-      "name": "Claire Davis"
+      "name": "Claire Davis",
+      "email": ""
     },
     {
       "role": "Marketing Lead",
-      "name": "Damir Hinmon"
+      "name": "Damir Hinmon",
+      "email": ""
     },
     {
       "role": "Engagement Lead",
-      "name": "Mehek Panwala"
+      "name": "Mehek Panwala",
+      "email": ""
     },
     {
       "role": "Adult Coordinator",
-      "name": "Brian Weisner"
+      "name": "Brian Weisner",
+      "email": ""
     }
   ],
   "contact": {
