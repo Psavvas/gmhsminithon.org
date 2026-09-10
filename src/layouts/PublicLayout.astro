@@ -447,7 +447,12 @@ const currentPath = Astro.url.pathname;
     font-family: "Montserrat", "Helvetica Neue", "Noto Sans", sans-serif;
     background-color: var(--surface);
     color: var(--ink-900);
+    /* clip, not hidden: overflow-x: hidden turns html and body into scroll
+       containers, which stops the sticky navbar from ever pinning to the top.
+       clip trims the same overflow without creating a scroll container. The
+       hidden line stays first as a fallback for browsers without clip. */
     overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body {
@@ -464,6 +469,7 @@ const currentPath = Astro.url.pathname;
       linear-gradient(140deg, rgba(44, 70, 114, 0.05), transparent 35%),
       var(--surface);
     overflow-x: hidden;
+    overflow-x: clip;
     padding-top: 0;
   }
 
@@ -536,11 +542,16 @@ const currentPath = Astro.url.pathname;
   @media (prefers-reduced-motion: reduce) {
     .navbar {
       animation: none;
+      transition: none;
     }
   }
 
+  /* Hide-on-scroll-down: the navbar slides out of view and comes back as soon
+     as the reader scrolls up. NavBehavior.astro only sets this once the navbar
+     is stuck to the top, so it never slides over the site banners. */
   .navbar.is-hidden {
-    transform: none;
+    transform: translateY(-100%);
+    box-shadow: none;
   }
 
   .site-notice-area {

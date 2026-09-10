@@ -40,9 +40,13 @@
       );
     }
 
-    let lastScrollY = window.scrollY;
+    const noticeArea = document.querySelector<HTMLElement>(".site-notice-area");
     const hideOffset = 80;
     const scrollThreshold = 10;
+    let lastScrollY = window.scrollY;
+    let stickyStart = 0;
+    let scrollFrame = 0;
+
     const setNavOffset = () => {
       document.documentElement.style.setProperty(
         "--nav-offset",
@@ -50,22 +54,54 @@
       );
     };
 
-    setNavOffset();
-    window.addEventListener("resize", setNavOffset);
+    /* The navbar is sticky and sits below the site banners, so it only pins to
+       the top of the viewport once those banners have scrolled away. Hiding it
+       before that point would slide it up over the banners, so record where the
+       banners end and leave the navbar alone until the page is past it. */
+    const measureStickyStart = () => {
+      stickyStart = noticeArea
+        ? Math.max(
+            0,
+            Math.round(
+              noticeArea.getBoundingClientRect().bottom + window.scrollY,
+            ),
+          )
+        : 0;
+    };
+
+    const syncLayout = () => {
+      setNavOffset();
+      measureStickyStart();
+    };
+
+    const showNav = () => {
+      navbar.classList.remove("is-hidden");
+      document.body.classList.remove("nav-hidden");
+    };
+
+    const hideNav = () => {
+      navbar.classList.add("is-hidden");
+      document.body.classList.add("nav-hidden");
+    };
+
+    syncLayout();
+    window.addEventListener("resize", syncLayout);
 
     if ("ResizeObserver" in window) {
       const observer = new ResizeObserver(() => {
-        setNavOffset();
+        syncLayout();
       });
       observer.observe(navbar);
+      /* Banners can be expanded ("Learn more") or wrap on resize. */
+      if (noticeArea) observer.observe(noticeArea);
     }
 
     if (toggle && navLinks) {
       toggle.addEventListener("click", () => {
         const isOpen = navbar.classList.toggle("nav-open");
         toggle.setAttribute("aria-expanded", String(isOpen));
-        navbar.classList.remove("is-hidden");
-        document.body.classList.remove("nav-hidden");
+        showNav();
+        lastScrollY = window.scrollY;
       });
 
       navLinks.querySelectorAll("a").forEach((link) => {
@@ -76,25 +112,48 @@
       });
     }
 
+    /* Keyboard users tabbing through the nav should not have it yanked away,
+       but a click on the hamburger also leaves focus inside the navbar, so
+       only :focus-visible (keyboard-style focus) holds the navbar open. */
+    const hasKeyboardFocusInNav = () => {
+      const active = document.activeElement;
+      if (!active || !navbar.contains(active)) return false;
+      try {
+        return active.matches(":focus-visible");
+      } catch {
+        return true;
+      }
+    };
+
+    const updateNavVisibility = () => {
+      scrollFrame = 0;
+      const currentY = window.scrollY;
+      const delta = currentY - lastScrollY;
+
+      /* Never hide the mobile menu out from under someone. */
+      if (navbar.classList.contains("nav-open")) {
+        lastScrollY = currentY;
+        return;
+      }
+
+      if (currentY <= stickyStart + hideOffset || delta < -scrollThreshold) {
+        showNav();
+      } else if (delta > scrollThreshold && !hasKeyboardFocusInNav()) {
+        hideNav();
+      } else {
+        /* Movement too small to mean anything yet: keep the old reference
+           point so slow trackpad scrolling still adds up to a decision. */
+        return;
+      }
+
+      lastScrollY = currentY;
+    };
+
     window.addEventListener(
       "scroll",
       () => {
-        const currentY = window.scrollY;
-        const delta = currentY - lastScrollY;
-
-        if (!navbar.classList.contains("nav-open")) {
-          if (delta > scrollThreshold && currentY > hideOffset) {
-            navbar.classList.add("is-hidden");
-            document.body.classList.add("nav-hidden");
-          }
-
-          if (delta < -scrollThreshold || currentY <= hideOffset) {
-            navbar.classList.remove("is-hidden");
-            document.body.classList.remove("nav-hidden");
-          }
-        }
-
-        lastScrollY = currentY;
+        if (scrollFrame) return;
+        scrollFrame = window.requestAnimationFrame(updateNavVisibility);
       },
       { passive: true },
     );
