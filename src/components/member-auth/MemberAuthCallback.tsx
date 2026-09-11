@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useShooAuth } from "@shoojs/react";
 import MemberAuthError from "./MemberAuthError";
 import { persistSessionError, type ParsedSessionError } from "./sessionErrors";
+import { consumeAuthReturnPath } from "./authReturn";
 
 type MemberAuthCallbackProps = {
   shooBaseUrl: string;
@@ -24,6 +25,9 @@ export default function MemberAuthCallback({
     "Completing Shoo sign-in...",
   );
   const [errorState, setErrorState] = useState<ParsedSessionError | null>(null);
+  // The page that started sign-in may have asked to be returned to; /signup
+  // does, the member login page does not and keeps the old behaviour.
+  const [returnPath] = useState(() => consumeAuthReturnPath() ?? loginPath);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,9 +45,9 @@ export default function MemberAuthCallback({
           return;
         }
 
-        setStatusMessage("Redirecting back to member sign-in...");
+        setStatusMessage("Redirecting back to sign-in...");
         await handleCallback({
-          redirectTo: `${loginPath}?memberAuth=complete`,
+          redirectTo: withAuthCompleteParam(returnPath),
         });
       } catch (error) {
         const parsedError =
@@ -72,7 +76,7 @@ export default function MemberAuthCallback({
         if (!cancelled) {
           setStatusMessage("Sign-in could not be completed.");
           setErrorState(parsedError);
-          window.location.assign(loginPath);
+          window.location.assign(returnPath);
         }
       }
     })();
@@ -80,7 +84,7 @@ export default function MemberAuthCallback({
     return () => {
       cancelled = true;
     };
-  }, [clearIdentity, handleCallback, loginPath]);
+  }, [clearIdentity, handleCallback, returnPath]);
 
   return (
     <div className="callback-status">
@@ -92,11 +96,15 @@ export default function MemberAuthCallback({
             message={errorState.message}
             userId={errorState.userId}
           />
-          <a href={loginPath} className="callback-link">
-            Return to member login
+          <a href={returnPath} className="callback-link">
+            Go back and try again
           </a>
         </>
       )}
     </div>
   );
+}
+
+function withAuthCompleteParam(path: string): string {
+  return `${path}${path.includes("?") ? "&" : "?"}memberAuth=complete`;
 }

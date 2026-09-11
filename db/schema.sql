@@ -11,7 +11,7 @@
 -- One row per content section, holding that section's whole document.
 -- `collection` matches the ids in src/utils/content/collections.ts:
 -- fundraising, sponsors, events, clubInfo, redirects, memberAnnouncements,
--- memberResources, banners.
+-- memberResources, banners, siteSettings, memberSignup.
 create table if not exists site_content (
   collection text primary key,
   data jsonb not null,
@@ -31,6 +31,8 @@ create table if not exists admin_users (
 
 -- Shoo user IDs approved for the member portal at /members. Merged with
 -- MEMBER_APPROVED_SHOO_SUBS, the optional Google Sheet, and the admin list.
+-- Rows with created_by = 'signup' approved themselves at /signup with the
+-- access code from the memberSignup section.
 create table if not exists member_approvals (
   shoo_sub text primary key,
   label text,
@@ -52,3 +54,45 @@ create table if not exists admin_activity_log (
 
 create index if not exists admin_activity_log_created_at_idx
   on admin_activity_log (created_at desc);
+
+-- ---------------------------------------------------------------------------
+-- Handy queries
+-- ---------------------------------------------------------------------------
+--
+-- Open member sign-ups at /signup with a code, without going through the admin
+-- portal. Editing the "Member sign-up" section in the portal does exactly this.
+--
+--   insert into site_content (collection, data, updated_by)
+--   values (
+--     'memberSignup',
+--     jsonb_build_object(
+--       'enabled', true,
+--       'accessCode', 'FTK-2026-SPRING',
+--       'closedMessage', ''
+--     ),
+--     'neon-sql'
+--   )
+--   on conflict (collection) do update
+--     set data = excluded.data,
+--         updated_at = now(),
+--         updated_by = excluded.updated_by;
+--
+-- Close sign-ups again, leaving the code in place:
+--
+--   update site_content
+--   set data = jsonb_set(data, '{enabled}', 'false'::jsonb),
+--       updated_at = now()
+--   where collection = 'memberSignup';
+--
+-- Who has approved themselves with the code, newest first:
+--
+--   select shoo_sub, label, created_at
+--   from member_approvals
+--   where created_by = 'signup'
+--   order by created_at desc;
+--
+-- Approve someone by hand (the same thing the admin portal's Shoo IDs page does):
+--
+--   insert into member_approvals (shoo_sub, label, created_by)
+--   values ('THE-SHOO-ID', 'Added by hand', 'neon-sql')
+--   on conflict (shoo_sub) do nothing;

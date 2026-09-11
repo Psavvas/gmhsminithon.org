@@ -84,8 +84,14 @@ export type NewsletterSettings = {
   disabledMessage: string;
 };
 
+export type OfficerEmailSettings = {
+  showOnAboutPage: boolean;
+  showInMemberPortal: boolean;
+};
+
 export type SiteSettings = {
   newsletter: NewsletterSettings;
+  officerEmails: OfficerEmailSettings;
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -99,6 +105,29 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 export async function getNewsletterSettings(): Promise<NewsletterSettings> {
   const { newsletter } = await getSiteSettings();
   return newsletter;
+}
+
+/**
+ * The officer email switches, read by the about page and the member portal so
+ * each surface can show or hide the leadership team's addresses on its own.
+ */
+export async function getOfficerEmailSettings(): Promise<OfficerEmailSettings> {
+  const { officerEmails } = await getSiteSettings();
+  return officerEmails;
+}
+
+export type MemberSignupSettings = {
+  enabled: boolean;
+  accessCode: string;
+  closedMessage: string;
+};
+
+/**
+ * The /signup access code and switch. The code is only ever compared on the
+ * server — never render it into a page or an API response.
+ */
+export async function getMemberSignupSettings(): Promise<MemberSignupSettings> {
+  return readCollectionData<MemberSignupSettings>("memberSignup");
 }
 
 export type ManagedEvent = {

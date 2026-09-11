@@ -36,7 +36,8 @@ src/
 │   ├── memberAnnouncements.json # Member portal announcements
 │   ├── memberResources.json     # Member resource links
 │   ├── redirects.json           # Short URL redirects (e.g., /redirect/donate)
-│   ├── siteSettings.json        # Site-wide switches (newsletter sign-ups)
+│   ├── memberSignup.json       # /signup access code and switch
+│   ├── siteSettings.json        # Site-wide switches (newsletter, officer emails)
 │   └── sponsors.json            # Sponsor names, tiers, logos, and websites
 ├── layouts/          # Page layout templates
 │   ├── AdminLayout.astro        # Layout + styles for the admin portal
@@ -103,7 +104,8 @@ portal uses) and stores content in a Neon Postgres database.
 | Events               | Events on `/events`, with a description, optional flyer and video, and member-only notes |
 | Club info            | Mission, about text, officers, meeting times, social links, contact email                |
 | Short links          | `/redirect/<slug>` short URLs                                                            |
-| Site settings        | Site-wide switches, including whether newsletter sign-ups are open                       |
+| Site settings        | Site-wide switches: newsletter sign-ups, and where officer emails are shown              |
+| Member sign-up       | The access code that lets a new member approve themselves at `/signup`                   |
 | Member announcements | Announcements in the member portal                                                       |
 | Member resources     | Quick links for members                                                                  |
 | Shoo IDs             | Who can use the admin portal, and who can use the member portal                          |
@@ -453,6 +455,66 @@ blank and the whole section disappears instead.
 Turning sign-ups off changes nothing about people who already subscribed — it
 only controls whether the site takes new ones. Without a database connected the
 switch is read-only and sign-ups stay on, matching `src/data/siteSettings.json`.
+
+### Member Sign-Up at `/signup`
+
+`/signup` lets a new member approve themselves instead of filling in the Google
+Form and waiting for someone to copy their ID across:
+
+1. They type the access code.
+2. They sign in with Shoo.
+3. Their Shoo ID is written to `member_approvals` and they land in the portal
+   already signed in.
+
+Open it from **Member sign-up** in the admin portal: tick **Allow sign-ups at
+/signup** and set an **Access code**. Sign-ups stay closed while the switch is
+off _or_ the code is blank, and `/signup` then shows **Message while sign-ups
+are closed** instead of the form. Change the code to cut off everyone holding
+the old one; members already approved keep their access.
+
+Accounts that sign themselves up show up under **Shoo IDs** labelled
+"Signed up at /signup", so they can be removed like any other entry.
+
+How it is kept honest:
+
+- The code is compared on the server and never sent to the browser, so it is
+  not in the page source or the JavaScript bundle.
+- Shoo sign-in happens **before** the code is checked, so guessing the code
+  costs a real Shoo account rather than a loop with `curl`.
+- Five wrong codes from one account inside ten minutes gets a cooldown.
+- Comparison is constant-time and case-insensitive, and whitespace is trimmed.
+
+### Where the Approved Member List Comes From
+
+A Shoo ID gets into the member portal from any of these, and they all work at
+the same time:
+
+| Source                         | Set where                                        |
+| ------------------------------ | ------------------------------------------------ |
+| `member_approvals` table       | Admin portal → Shoo IDs, or `/signup`            |
+| Google Sheet CSV               | `MEMBER_APPROVED_SHOO_SUBS_GOOGLE_SHEET_CSV_URL` |
+| `MEMBER_APPROVED_SHOO_SUBS`    | Vercel environment variable                      |
+| The admin list (`admin_users`) | Admin portal → Shoo IDs                          |
+
+They are merged, not ranked, so turning on `/signup` takes nothing away from the
+Google Form — both keep working, and you can retire the form whenever you feel
+like it.
+
+### Showing or Hiding Officer Emails
+
+Officer email addresses are hidden everywhere by default. Two switches under
+**Site settings → Officer emails** decide where they appear:
+
+- **Show on the public about page** — anyone on the internet can read them,
+  address scrapers included.
+- **Show in the member portal** — only logged-in members see them, on
+  `/members/club-info`.
+
+The addresses themselves are edited in **Club info → Officers**. They are blank
+in `src/data/clubInfo.json` on purpose: this repository is public, so an address
+typed into the admin portal is stored in the database and never committed here.
+An officer with no address is skipped even when the switch is on, so you can
+publish some contacts and not others.
 
 ## Local Development
 

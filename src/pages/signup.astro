@@ -1,0 +1,216 @@
+---
+import PublicLayout from "../layouts/PublicLayout.astro";
+import MemberSignup from "../components/member-auth/MemberSignup";
+import SignInOriginNotice from "../components/SignInOriginNotice.astro";
+import {
+  MEMBER_AUTH_CALLBACK_PATH,
+  MEMBER_HOME_PATH,
+  MEMBER_LOGIN_PATH,
+  checkMemberAuth,
+  getShooBaseUrl,
+} from "../utils/auth";
+import { getSignupPageState } from "../utils/memberSignup";
+
+// Already a member? There is nothing to sign up for.
+if (await checkMemberAuth(Astro.request)) {
+  return Astro.redirect(MEMBER_HOME_PATH);
+}
+
+// Only ever `enabled` and the closed message — the access code stays server-side.
+const { enabled, closedMessage } = await getSignupPageState();
+---
+
+<PublicLayout title="Member Sign-Up - Mini-THON">
+  <div class="signup-container">
+    <h1>Join the Member Portal</h1>
+
+    {
+      enabled ? (
+        <>
+          <p class="subtitle">Enter your access code, then sign in with Shoo</p>
+          <p class="info-note">
+            Your Shoo account is added to the approved member list as soon as
+            the code checks out — no form to fill in and no waiting on an admin.
+          </p>
+
+          <SignInOriginNotice path="/signup" />
+
+          <MemberSignup
+            client:load
+            shooBaseUrl={getShooBaseUrl()}
+            callbackPath={MEMBER_AUTH_CALLBACK_PATH}
+            signupPath="/signup"
+            membersPath={MEMBER_HOME_PATH}
+            loginPath={MEMBER_LOGIN_PATH}
+            redeemEndpoint="/api/member-signup/redeem"
+          />
+        </>
+      ) : (
+        <>
+          <p class="subtitle">Sign-ups are closed right now</p>
+          <p class="info-note">
+            {closedMessage ||
+              "Ask a Mini-THON admin to add you to the member portal."}
+          </p>
+          <p class="info-note">
+            Already approved? <a href={MEMBER_LOGIN_PATH}>Sign in here</a>.
+          </p>
+        </>
+      )
+    }
+  </div>
+</PublicLayout>
+
+<style>
+  .signup-container {
+    box-sizing: border-box;
+    width: min(100%, 520px);
+    margin: 0 auto;
+    background: var(--surface-raised);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+  }
+
+  h1 {
+    font-size: 2rem;
+    color: var(--ink-900);
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--brand-ink);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+
+  .info-note {
+    text-align: center;
+    color: var(--ink-500);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .info-note a {
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
+
+  :global(.signup-panel) {
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  :global(.signup-field) {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  :global(.signup-label) {
+    font-weight: 700;
+    color: var(--ink-900);
+    font-size: 0.95rem;
+  }
+
+  :global(.signup-input) {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    background: var(--white);
+    color: var(--ink-900);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    font-family: inherit;
+  }
+
+  :global(.signup-input:focus-visible) {
+    outline: 2px solid var(--brand-sky);
+    outline-offset: 2px;
+  }
+
+  :global(.signup-input:disabled) {
+    opacity: 0.6;
+  }
+
+  :global(.signup-hint),
+  :global(.signup-footnote) {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--ink-500);
+    line-height: 1.5;
+  }
+
+  :global(.signup-footnote) {
+    text-align: center;
+  }
+
+  :global(.signup-footnote a) {
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
+
+  :global(.submit-button) {
+    width: 100%;
+    padding: 0.95rem 1.25rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--brand-ink);
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  :global(.submit-button:hover:not(:disabled)) {
+    transform: translateY(-2px);
+  }
+
+  :global(.submit-button:disabled) {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  :global(.error-message) {
+    background: #ffebee;
+    color: #c62828;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  :global(.member-auth-error) {
+    display: grid;
+    gap: 0.9rem;
+    line-height: 1.6;
+  }
+
+  :global(.member-auth-error__message) {
+    margin: 0;
+  }
+
+  @media (max-width: 600px) {
+    .signup-container {
+      padding: 2rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .signup-container {
+      padding: 1.5rem 1rem;
+      border-radius: 16px;
+    }
+  }
+</style>

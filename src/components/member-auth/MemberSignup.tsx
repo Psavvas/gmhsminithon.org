@@ -9,32 +9,38 @@ import {
 } from "./sessionErrors";
 import { persistAuthReturnPath } from "./authReturn";
 
-type MemberLoginProps = {
+type MemberSignupProps = {
   shooBaseUrl: string;
   callbackPath: string;
-  loginPath: string;
+  signupPath: string;
   membersPath: string;
-  sessionEndpoint: string;
-  showConfigurationNotice?: boolean;
+  loginPath: string;
+  redeemEndpoint: string;
 };
 
 const MEMBER_AUTH_COMPLETE_PARAM = "memberAuth";
 const MEMBER_AUTH_COMPLETE_VALUE = "complete";
+/**
+ * Shoo sign-in navigates away from this page, so the typed code is parked here
+ * for the round trip and cleared the moment it has been used.
+ */
+const ACCESS_CODE_STORAGE_KEY = "member-signup-access-code";
 
-export default function MemberLogin({
+export default function MemberSignup({
   shooBaseUrl,
   callbackPath,
-  loginPath,
+  signupPath,
   membersPath,
-  sessionEndpoint,
-  showConfigurationNotice = false,
-}: MemberLoginProps) {
+  loginPath,
+  redeemEndpoint,
+}: MemberSignupProps) {
   const { clearIdentity, error, identity, loading, signIn } = useShooAuth({
     shooBaseUrl,
     callbackPath,
     autoSessionMonitor: false,
   });
   const completionHandledRef = useRef(false);
+  const [accessCode, setAccessCode] = useState("");
   const [errorState, setErrorState] = useState<ParsedSessionError | null>(null);
   const [isWorking, setIsWorking] = useState(false);
 
@@ -82,10 +88,23 @@ export default function MemberLogin({
       );
     };
 
+    const storedCode =
+      window.sessionStorage.getItem(ACCESS_CODE_STORAGE_KEY) || "";
+    window.sessionStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
+
     if (!identity.token) {
       clearCompletionParam();
       setErrorState({
         message: "Shoo sign-in completed, but no session token was available.",
+      });
+      return;
+    }
+
+    if (!storedCode) {
+      clearCompletionParam();
+      setErrorState({
+        message:
+          "Your access code was not carried through sign-in. Enter it again below.",
       });
       return;
     }
@@ -95,13 +114,12 @@ export default function MemberLogin({
 
     void (async () => {
       try {
-        const response = await fetch(sessionEndpoint, {
+        const response = await fetch(redeemEndpoint, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             idToken: identity.token,
+            accessCode: storedCode,
           }),
         });
         const payload = await response.json().catch(() => null);
@@ -112,47 +130,28 @@ export default function MemberLogin({
 
         window.location.replace(membersPath);
       } catch (completionError) {
-        const parsedError =
-          completionError instanceof Error
-            ? {
-                message: completionError.message,
-              }
-            : typeof completionError === "object" &&
-                completionError !== null &&
-                "message" in completionError
-              ? {
-                  message:
-                    typeof completionError.message === "string"
-                      ? completionError.message
-                      : "We could not verify your member access.",
-                  userId:
-                    "userId" in completionError &&
-                    typeof completionError.userId === "string"
-                      ? completionError.userId
-                      : undefined,
-                }
-              : {
-                  message: "We could not verify your member access.",
-                };
+        const parsedError = toParsedError(completionError);
 
         persistSessionError(parsedError);
         clearIdentity();
         clearCompletionParam();
         setErrorState(parsedError);
+        setAccessCode("");
       } finally {
         setIsWorking(false);
       }
     })();
-  }, [clearIdentity, identity.token, loading, membersPath, sessionEndpoint]);
+  }, [clearIdentity, identity.token, loading, membersPath, redeemEndpoint]);
 
+  const trimmedCode = accessCode.trim();
   const buttonLabel = isWorking
-    ? "Completing sign-in..."
+    ? "Setting up your access..."
     : loading
       ? "Loading Shoo..."
       : "Continue with Shoo";
 
   const handleSignIn = async () => {
-    if (loading || isWorking) {
+    if (loading || isWorking || !trimmedCode) {
       return;
     }
 
@@ -160,11 +159,13 @@ export default function MemberLogin({
     setIsWorking(true);
 
     try {
-      persistAuthReturnPath(loginPath);
+      window.sessionStorage.setItem(ACCESS_CODE_STORAGE_KEY, trimmedCode);
+      persistAuthReturnPath(signupPath);
       await signIn({
-        returnTo: `${loginPath}?${MEMBER_AUTH_COMPLETE_PARAM}=${MEMBER_AUTH_COMPLETE_VALUE}`,
+        returnTo: `${signupPath}?${MEMBER_AUTH_COMPLETE_PARAM}=${MEMBER_AUTH_COMPLETE_VALUE}`,
       });
     } catch (signInError) {
+      window.sessionStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
       setIsWorking(false);
       setErrorState({
         message:
@@ -176,7 +177,13 @@ export default function MemberLogin({
   };
 
   return (
-    <div className="member-login-panel">
+    <form
+      className="signup-panel"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void handleSignIn();
+      }}
+    >
       {errorState && (
         <MemberAuthError
           message={errorState.message}
@@ -184,21 +191,62 @@ export default function MemberLogin({
         />
       )}
 
-      {showConfigurationNotice && (
-        <div className="configuration-message">
-          Member access is not fully configured yet. You can still sign in to
-          confirm your Shoo user ID and share it with an admin for setup.
-        </div>
-      )}
+      <div className="signup-field">
+        <label className="signup-label" htmlFor="member-access-code">
+          Access code
+        </label>
+        <input
+          id="member-access-code"
+          name="accessCode"
+          className="signup-input"
+          type="text"
+          value={accessCode}
+          onChange={(event) => setAccessCode(event.target.value)}
+          placeholder="Enter the code from an admin"
+          autoComplete="off"
+          autoCapitalize="characters"
+          spellCheck={false}
+          disabled={isWorking}
+          required
+        />
+        <p className="signup-hint">
+          Capitalization does not matter. Ask an admin if you do not have the
+          code.
+        </p>
+      </div>
 
       <button
-        type="button"
+        type="submit"
         className="submit-button"
-        onClick={() => void handleSignIn()}
-        disabled={loading || isWorking}
+        disabled={loading || isWorking || !trimmedCode}
       >
         {buttonLabel}
       </button>
-    </div>
+
+      <p className="signup-footnote">
+        Already approved? <a href={loginPath}>Sign in instead</a>.
+      </p>
+    </form>
   );
+}
+
+function toParsedError(error: unknown): ParsedSessionError {
+  if (error instanceof Error) {
+    return { message: error.message };
+  }
+
+  if (typeof error === "object" && error !== null && "message" in error) {
+    return {
+      message:
+        typeof error.message === "string"
+          ? error.message
+          : "We could not finish setting up your access.",
+      userId:
+        "userId" in error && typeof error.userId === "string"
+          ? error.userId
+          : undefined,
+    };
+  }
+
+  return { message: "We could not finish setting up your access." };
 }
