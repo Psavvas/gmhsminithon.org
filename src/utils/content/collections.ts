@@ -13,6 +13,7 @@ import redirectsDefaults from "../../data/redirects.json";
 import sponsorsDefaults from "../../data/sponsors.json";
 import bannersDefaults from "../../data/banners.json";
 import siteSettingsDefaults from "../../data/siteSettings.json";
+import memberSignupDefaults from "../../data/memberSignup.json";
 import {
   normalizeCollection,
   type ClientCollectionSpec,
@@ -500,6 +501,50 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
               help: "Only logged-in members see these, on the club info page.",
             },
           },
+        },
+      },
+    },
+  },
+  memberSignup: {
+    id: "memberSignup",
+    label: "Member sign-up",
+    description:
+      "The access code that lets a new member approve themselves at /signup.",
+    icon: "key",
+    scope: "members",
+    previewPath: "/signup",
+    defaults: memberSignupDefaults,
+    notes: [
+      "Sign-ups are closed until you turn them on, and turning them off again closes /signup immediately.",
+      "Share the code the way you share a meeting time — a slide, the GroupMe, a poster. Anyone who has it and a Shoo account can approve themselves.",
+      "Change the code whenever you want to cut off everyone who has the old one. Members already approved keep their access.",
+      'Accounts that sign themselves up appear under Shoo IDs as "Signed up at /signup", so you can still remove one by hand.',
+    ],
+    root: {
+      kind: "object",
+      label: "Member sign-up",
+      fields: {
+        enabled: {
+          kind: "boolean",
+          label: "Allow sign-ups at /signup",
+          help: "Off means the page says sign-ups are closed and no code is accepted.",
+        },
+        accessCode: {
+          kind: "text",
+          label: "Access code",
+          maxLength: 64,
+          placeholder: "FTK-2026-SPRING",
+          pattern: "^[A-Za-z0-9][A-Za-z0-9 _-]{5,63}$",
+          patternMessage:
+            "Use at least 6 characters: letters, numbers, spaces, hyphens, or underscores.",
+          help: "Typed by the member on /signup. Capitalization does not matter. Leave blank to keep sign-ups closed.",
+        },
+        closedMessage: {
+          kind: "text",
+          label: "Message while sign-ups are closed",
+          maxLength: 200,
+          placeholder: "Sign-ups open at the start of each semester.",
+          help: "Optional. Shown on /signup when sign-ups are off.",
         },
       },
     },

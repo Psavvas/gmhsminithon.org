@@ -10,6 +10,7 @@ import {
   getShooBaseUrl,
   hasMemberApprovalSourceConfigured,
 } from "../../utils/auth";
+import { getSignupPageState } from "../../utils/memberSignup";
 
 // Check if already logged in
 if (await checkMemberAuth(Astro.request)) {
@@ -17,6 +18,7 @@ if (await checkMemberAuth(Astro.request)) {
 }
 
 const authConfigured = hasMemberApprovalSourceConfigured();
+const { enabled: signupOpen } = await getSignupPageState();
 ---
 
 <PublicLayout title="Member Login - Mini-THON">
@@ -28,7 +30,16 @@ const authConfigured = hasMemberApprovalSourceConfigured();
       we verify your Shoo account before granting access to the portal.
     </p>
     <p class="info-note">
-      If your Shoo ID is not approved yet, please contact an admin.
+      {
+        signupOpen ? (
+          <>
+            New here and have an access code?{" "}
+            <a href="/signup">Sign up for portal access</a>.
+          </>
+        ) : (
+          "If your Shoo ID is not approved yet, please contact an admin."
+        )
+      }
     </p>
 
     <SignInOriginNotice path="/members/login" />
@@ -80,6 +91,11 @@ const authConfigured = hasMemberApprovalSourceConfigured();
     color: var(--ink-500);
     margin-bottom: 2rem;
     font-size: 0.95rem;
+  }
+
+  .info-note a {
+    color: var(--brand-ink);
+    font-weight: 600;
   }
 
   :global(.member-login-panel) {

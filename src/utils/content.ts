@@ -116,6 +116,20 @@ export async function getOfficerEmailSettings(): Promise<OfficerEmailSettings> {
   return officerEmails;
 }
 
+export type MemberSignupSettings = {
+  enabled: boolean;
+  accessCode: string;
+  closedMessage: string;
+};
+
+/**
+ * The /signup access code and switch. The code is only ever compared on the
+ * server — never render it into a page or an API response.
+ */
+export async function getMemberSignupSettings(): Promise<MemberSignupSettings> {
+  return readCollectionData<MemberSignupSettings>("memberSignup");
+}
+
 export type ManagedEvent = {
   title: string;
   slug: string;

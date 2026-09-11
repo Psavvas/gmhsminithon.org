@@ -54,7 +54,7 @@ type AuthorizedMemberSession = {
   pairwise_sub: string;
 };
 
-type MemberAuthLogContext = {
+export type MemberAuthLogContext = {
   requestId?: string;
   route?: string;
 };
