@@ -128,7 +128,7 @@ export async function redeemSignupCode(
       status: 403,
       error:
         settings.closedMessage?.trim() ||
-        "Member sign-ups are closed right now. Ask an officer to add you.",
+        "Member sign-ups are closed right now. Ask an admin to add you.",
     };
   }
 
@@ -142,7 +142,7 @@ export async function redeemSignupCode(
       ok: false,
       status: 429,
       error:
-        "Too many incorrect codes. Wait a few minutes and try again, or ask an officer to add you.",
+        "Too many incorrect codes. Wait a few minutes and try again, or ask an admin to add you.",
     };
   }
 
@@ -152,7 +152,7 @@ export async function redeemSignupCode(
     return {
       ok: false,
       status: 403,
-      error: "That access code is not right. Check it with an officer.",
+      error: "That access code is not right. Check it with an admin.",
     };
   }
 

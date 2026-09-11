@@ -202,7 +202,7 @@ export default function MemberSignup({
           type="text"
           value={accessCode}
           onChange={(event) => setAccessCode(event.target.value)}
-          placeholder="Enter the code from an officer"
+          placeholder="Enter the code from an admin"
           autoComplete="off"
           autoCapitalize="characters"
           spellCheck={false}
@@ -210,7 +210,7 @@ export default function MemberSignup({
           required
         />
         <p className="signup-hint">
-          Capitalization does not matter. Ask an officer if you do not have the
+          Capitalization does not matter. Ask an admin if you do not have the
           code.
         </p>
       </div>

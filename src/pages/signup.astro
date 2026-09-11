@@ -30,8 +30,7 @@ const { enabled, closedMessage } = await getSignupPageState();
           <p class="subtitle">Enter your access code, then sign in with Shoo</p>
           <p class="info-note">
             Your Shoo account is added to the approved member list as soon as
-            the code checks out — no form to fill in and no waiting on an
-            officer.
+            the code checks out — no form to fill in and no waiting on an admin.
           </p>
 
           <SignInOriginNotice path="/signup" />
@@ -51,7 +50,7 @@ const { enabled, closedMessage } = await getSignupPageState();
           <p class="subtitle">Sign-ups are closed right now</p>
           <p class="info-note">
             {closedMessage ||
-              "Ask a Mini-THON officer to add you to the member portal."}
+              "Ask a Mini-THON admin to add you to the member portal."}
           </p>
           <p class="info-note">
             Already approved? <a href={MEMBER_LOGIN_PATH}>Sign in here</a>.

@@ -416,6 +416,19 @@ const currentPath = Astro.url.pathname;
   </body>
 </html>
 
+<style is:global>
+  /* Scoped styles stop at this layout's own markup, so this one rule is global:
+     without it every page below the slot falls back to content-box, where
+     padding is added to a set width and cards run off the side of the screen.
+     Only box-sizing is global — the margin/padding reset stays scoped so page
+     styles keep their own spacing. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+</style>
+
 <style>
   :root {
     --brand-ink: #2c4672;
@@ -694,6 +707,12 @@ const currentPath = Astro.url.pathname;
     gap: 3rem;
     padding-bottom: 2.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  /* Grid items refuse to shrink below their content unless told to, which is
+     what pushed the footer past the right edge on a 320px screen. */
+  .footer-grid > * {
+    min-width: 0;
   }
 
   /* Brand column */

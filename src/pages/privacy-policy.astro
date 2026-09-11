@@ -132,55 +132,59 @@ const lastUpdated = "September 4, 2026";
 
       <section>
         <h2>Third-Party Services</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Service</th>
-              <th>Purpose</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Shoo</strong> (shoo.dev)</td>
-              <td>Member and admin portal authentication</td>
-            </tr>
-            <tr>
-              <td><strong>Vercel</strong></td>
-              <td>
-                Hosting, image optimization, web analytics, and speed insights
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Neon</strong></td>
-              <td>
-                Postgres database for site content, portal approval lists, and
-                the admin activity log
-              </td>
-            </tr>
-            <tr>
-              <td><strong>UploadThing</strong></td>
-              <td>Storage and delivery of images uploaded by administrators</td>
-            </tr>
-            <tr>
-              <td><strong>EmailOctopus</strong></td>
-              <td>Newsletter subscriptions and delivery</td>
-            </tr>
-            <tr>
-              <td><strong>Google Sheets</strong></td>
-              <td>
-                Optional administrator-managed member approval list, read as a
-                published CSV
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Google Fonts</strong></td>
-              <td>
-                Web fonts; your browser requests them directly from Google,
-                which receives your IP address
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Shoo</strong> (shoo.dev)</td>
+                <td>Member and admin portal authentication</td>
+              </tr>
+              <tr>
+                <td><strong>Vercel</strong></td>
+                <td>
+                  Hosting, image optimization, web analytics, and speed insights
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Neon</strong></td>
+                <td>
+                  Postgres database for site content, portal approval lists, and
+                  the admin activity log
+                </td>
+              </tr>
+              <tr>
+                <td><strong>UploadThing</strong></td>
+                <td
+                  >Storage and delivery of images uploaded by administrators</td
+                >
+              </tr>
+              <tr>
+                <td><strong>EmailOctopus</strong></td>
+                <td>Newsletter subscriptions and delivery</td>
+              </tr>
+              <tr>
+                <td><strong>Google Sheets</strong></td>
+                <td>
+                  Optional administrator-managed member approval list, read as a
+                  published CSV
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Google Fonts</strong></td>
+                <td>
+                  Web fonts; your browser requests them directly from Google,
+                  which receives your IP address
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <p>
           When you interact with these services through this site, their own
           privacy policies and terms of service also apply. We encourage you to
@@ -406,8 +410,16 @@ const lastUpdated = "September 4, 2026";
     font-weight: 600;
   }
 
+  /* A two-column table cannot wrap below about 340px, so let it scroll inside
+     its own box instead of pushing the whole page sideways. */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   table {
     width: 100%;
+    min-width: 18rem;
     border-collapse: collapse;
     border: 1px solid var(--border-soft);
     border-radius: 12px;
