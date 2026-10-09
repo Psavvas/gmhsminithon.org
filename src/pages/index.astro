@@ -5,23 +5,26 @@ import SocialPopup from "../components/SocialPopup.astro";
 import {
   applyContentCacheHeaders,
   getClubInfo,
-  getFundraising,
+  getFundraisingTotals,
 } from "../utils/content";
 import { getCurrentYearEvents } from "../utils/events";
 
 applyContentCacheHeaders(Astro.response);
 
 const [fundraisingData, clubInfo] = await Promise.all([
-  getFundraising(),
+  getFundraisingTotals(),
   getClubInfo(),
 ]);
 
-const currentTotal = fundraisingData.currentTotal.toLocaleString("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+const hasCurrentTotal = fundraisingData.currentTotal !== null;
+const raisedTotal = fundraisingData.currentTotal ?? 0;
+const currentTotal =
+  fundraisingData.currentTotal?.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }) ?? "Temporarily unavailable";
 
 const goalTotal = fundraisingData.goalTotal ?? 0;
 const goalTotalFormatted = goalTotal.toLocaleString("en-US", {
@@ -30,10 +33,9 @@ const goalTotalFormatted = goalTotal.toLocaleString("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 });
-const goalProgress =
-  goalTotal > 0 ? Math.min(fundraisingData.currentTotal / goalTotal, 1) : 0;
+const goalProgress = goalTotal > 0 ? Math.min(raisedTotal / goalTotal, 1) : 0;
 const goalProgressPercent = Math.round(goalProgress * 100);
-const remainingTotal = Math.max(goalTotal - fundraisingData.currentTotal, 0);
+const remainingTotal = Math.max(goalTotal - raisedTotal, 0);
 const remainingFormatted = remainingTotal.toLocaleString("en-US", {
   style: "currency",
   currency: "USD",
@@ -189,41 +191,60 @@ const heroBackgroundImages = [
       </div>
       <div class="grid-card highlight fundraising-card">
         <div class="fundraising-card-body">
-          <h2>DonorDrive Yearly Total</h2>
+          <h2>
+            {
+              fundraisingData.totalSource === "manual"
+                ? "Yearly Fundraising Total"
+                : "DonorDrive Yearly Total"
+            }
+          </h2>
           <p class="big-figure">{currentTotal}</p>
           <p class="muted">
-            Raised in the {fundraisingData.currentYear} school year through DonorDrive
-            to support pediatric cancer research & treatement.
-            <div class="fundraising-progress">
-              <div class="progress-header">
-                <span class="progress-label">Goal: {goalTotalFormatted}</span>
-                <span class="progress-value">{goalProgressPercent}%</span>
-              </div>
-              <div
-                class="progress-slider"
-                role="progressbar"
-                aria-label="Fundraising progress"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow={goalProgressPercent}
-              >
-                <div
-                  class="progress-track"
-                  style={`--progress: ${goalProgressPercent}%`}
-                >
-                  <div class="progress-fill"></div>
-                  <div class="progress-thumb"></div>
-                </div>
-              </div>
-              <p class="progress-caption">
-                {remainingFormatted} to reach goal.
-              </p>
-            </div>
-            <p>Grand total will be announced at the end of the school year.</p>
-            <a href={fundraisingData.donorDriveLink} class="button primary"
-              >Make a donation</a
-            >
+            {
+              hasCurrentTotal
+                ? `Raised in the ${fundraisingData.currentYear} school year${fundraisingData.totalSource === "donordrive" ? " through DonorDrive" : ""} to support pediatric cancer research & treatment.`
+                : "The current total could not be loaded. Please check DonorDrive or try again later."
+            }
           </p>
+          {
+            hasCurrentTotal && (
+              <div class="fundraising-progress">
+                <div class="progress-header">
+                  <span class="progress-label">Goal: {goalTotalFormatted}</span>
+                  <span class="progress-value">{goalProgressPercent}%</span>
+                </div>
+                <div
+                  class="progress-slider"
+                  role="progressbar"
+                  aria-label="Fundraising progress"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow={goalProgressPercent}
+                >
+                  <div
+                    class="progress-track"
+                    style={`--progress: ${goalProgressPercent}%`}
+                  >
+                    <div class="progress-fill" />
+                    <div class="progress-thumb" />
+                  </div>
+                </div>
+                <p class="progress-caption">
+                  {remainingFormatted} to reach goal.
+                </p>
+              </div>
+            )
+          }
+          {
+            fundraisingData.totalSource === "donordrive" && (
+              <p>
+                Grand total will be announced at the end of the school year.
+              </p>
+            )
+          }
+          <a href={fundraisingData.donorDriveLink} class="button primary"
+            >Make a donation</a
+          >
         </div>
       </div>
     </section>

@@ -37,6 +37,8 @@ export type TextFieldSpec = FieldBase & {
 export type NumberFieldSpec = FieldBase & {
   kind: "number";
   required?: boolean;
+  /** Preserve an empty optional input as null instead of zero. */
+  nullable?: boolean;
   min?: number;
   max?: number;
   integer?: boolean;
@@ -261,7 +263,7 @@ function coerceNumberField(
   value: unknown,
   path: string,
   issues: ValidationIssue[],
-): number {
+): number | null {
   const raw = typeof value === "string" ? value.trim() : value;
 
   if (raw === "" || raw === null || raw === undefined) {
@@ -269,7 +271,7 @@ function coerceNumberField(
       issues.push({ path, message: `${spec.label} is required.` });
     }
 
-    return 0;
+    return spec.nullable ? null : 0;
   }
 
   const parsed = typeof raw === "number" ? raw : Number(raw);
@@ -543,7 +545,7 @@ export function emptyValueForField(spec: FieldSpec): unknown {
     case "color":
       return "#1f5c9c";
     case "number":
-      return 0;
+      return spec.nullable ? null : 0;
     case "boolean":
       return false;
     case "stringList":
