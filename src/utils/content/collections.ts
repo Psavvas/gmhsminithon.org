@@ -142,6 +142,7 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     notes: [
       "The progress bar on the home page uses the current total and goal.",
       "Leave the manual total blank to use the current DonorDrive campaign total automatically.",
+      "Automatic totals refresh every 30 minutes when the site is visited. Use Refresh from DonorDrive to fetch an update sooner.",
     ],
     root: {
       kind: "object",

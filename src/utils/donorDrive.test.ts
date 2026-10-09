@@ -3,6 +3,9 @@ import {
   createDonorDriveClient,
   getDonorDriveEventId,
   resolveFundraisingTotal,
+  DONOR_DRIVE_REFRESH_MS,
+  type DonorDriveCacheStore,
+  type DonorDriveSnapshot,
 } from "./donorDrive";
 import {
   getCollectionSpec,
@@ -111,7 +114,7 @@ describe("DonorDrive totals", () => {
     }
   });
 
-  test("concurrent requests share a fetch and the cache refreshes after one minute", async () => {
+  test("concurrent requests share a fetch and the cache refreshes after 30 minutes", async () => {
     const fake = fakeDonorDrive();
     let time = 0;
     const read = createDonorDriveClient(fake.fetchPage, () => time);
@@ -119,7 +122,10 @@ describe("DonorDrive totals", () => {
     expect(fake.urls).toHaveLength(2);
     fake.state.total = 20;
     expect(await read()).toBe(10);
-    time = 60_001;
+    time = DONOR_DRIVE_REFRESH_MS - 1;
+    expect(await read()).toBe(10);
+    expect(fake.urls).toHaveLength(2);
+    time = DONOR_DRIVE_REFRESH_MS + 1;
     expect(await read()).toBe(20);
     expect(fake.urls).toHaveLength(4);
   });
@@ -130,11 +136,11 @@ describe("DonorDrive totals", () => {
     const read = createDonorDriveClient(fake.fetchPage, () => time);
     expect(await read()).toBe(10);
     fake.state.fail = true;
-    time = 60_001;
+    time = DONOR_DRIVE_REFRESH_MS + 1;
     expect(await read()).toBe(10);
     expect(await read()).toBe(10);
     expect(fake.urls).toHaveLength(3);
-    time = 15 * 60_000 + 1;
+    time = 24 * 60 * 60_000 + 1;
     expect(await read()).toBeNull();
     expect(await resolveFundraisingTotal({ currentTotal: null }, read)).toEqual(
       {
@@ -156,5 +162,169 @@ describe("DonorDrive totals", () => {
       throw new Error("Timeout");
     };
     expect(await createDonorDriveClient(fetchPage)()).toBeNull();
+  });
+});
+
+function sharedCache(now: () => number): DonorDriveCacheStore {
+  let value: DonorDriveSnapshot = {
+    total: null,
+    refreshedAt: null,
+    nextRefreshAt: 0,
+  };
+  let lease: string | null = null;
+  let sequence = 0;
+  return {
+    async read() {
+      return { ...value };
+    },
+    async claimRefresh(force) {
+      if (lease || (!force && value.nextRefreshAt > now())) return null;
+      lease = String(++sequence);
+      value = { ...value, nextRefreshAt: now() + DONOR_DRIVE_REFRESH_MS };
+      return lease;
+    },
+    async completeRefresh(token, total) {
+      if (lease !== token) throw new Error("Expired lease");
+      lease = null;
+      value = {
+        total,
+        refreshedAt: now(),
+        nextRefreshAt: now() + DONOR_DRIVE_REFRESH_MS,
+      };
+      return { ...value };
+    },
+    async failRefresh(token) {
+      if (lease === token) lease = null;
+    },
+  };
+}
+
+describe("shared DonorDrive refreshes", () => {
+  test("cold starts reuse persisted totals without fetching again", async () => {
+    const fake = fakeDonorDrive();
+    const store = sharedCache(() => 0);
+    const first = createDonorDriveClient(
+      fake.fetchPage,
+      () => 0,
+      async () => store,
+    );
+    expect(await first()).toBe(10);
+    for (let i = 0; i < 5; i++) {
+      const coldStart = createDonorDriveClient(
+        fake.fetchPage,
+        () => 0,
+        async () => store,
+      );
+      expect(await coldStart()).toBe(10);
+    }
+    expect(fake.urls).toHaveLength(2);
+  });
+
+  test("multiple instances claim only one refresh per 30-minute window", async () => {
+    const fake = fakeDonorDrive();
+    let time = 0;
+    const store = sharedCache(() => time);
+    const first = createDonorDriveClient(
+      fake.fetchPage,
+      () => time,
+      async () => store,
+    );
+    const second = createDonorDriveClient(
+      fake.fetchPage,
+      () => time,
+      async () => store,
+    );
+    await Promise.all([first(), second()]);
+    expect(fake.urls).toHaveLength(2);
+    time = DONOR_DRIVE_REFRESH_MS + 1;
+    fake.state.total = 20;
+    const results = await Promise.all([first(), second()]);
+    expect(results).toContain(20);
+    expect(fake.urls).toHaveLength(4);
+  });
+
+  test("admin refresh bypasses a fresh cache and resets the shared refresh window", async () => {
+    const fake = fakeDonorDrive();
+    let time = 0;
+    const store = sharedCache(() => time);
+    const read = createDonorDriveClient(
+      fake.fetchPage,
+      () => time,
+      async () => store,
+    );
+    expect(await read()).toBe(10);
+    time = 60_000;
+    fake.state.total = 25;
+    expect(await read({ forceRefresh: true })).toBe(25);
+    const snapshot = await store.read();
+    expect(snapshot.nextRefreshAt).toBe(time + DONOR_DRIVE_REFRESH_MS);
+    const coldStart = createDonorDriveClient(
+      fake.fetchPage,
+      () => time,
+      async () => store,
+    );
+    expect(await coldStart()).toBe(25);
+    expect(fake.urls).toHaveLength(4);
+  });
+
+  test("failed automatic refreshes wait 30 minutes across cold starts", async () => {
+    const fake = fakeDonorDrive();
+    fake.state.fail = true;
+    let time = 0;
+    const store = sharedCache(() => time);
+    expect(
+      await createDonorDriveClient(
+        fake.fetchPage,
+        () => time,
+        async () => store,
+      )(),
+    ).toBeNull();
+    time = DONOR_DRIVE_REFRESH_MS - 1;
+    expect(
+      await createDonorDriveClient(
+        fake.fetchPage,
+        () => time,
+        async () => store,
+      )(),
+    ).toBeNull();
+    expect(fake.urls).toHaveLength(1);
+    time = DONOR_DRIVE_REFRESH_MS + 1;
+    await createDonorDriveClient(
+      fake.fetchPage,
+      () => time,
+      async () => store,
+    )();
+    expect(fake.urls).toHaveLength(2);
+  });
+
+  test("failed admin refresh reports an error and retains the previous total", async () => {
+    const fake = fakeDonorDrive();
+    const store = sharedCache(() => 0);
+    const read = createDonorDriveClient(
+      fake.fetchPage,
+      () => 0,
+      async () => store,
+    );
+    await read();
+    fake.state.fail = true;
+    await expect(read({ forceRefresh: true })).rejects.toThrow("503");
+    expect((await store.read()).total).toBe(10);
+    expect(await read()).toBe(10);
+  });
+
+  test("a database outage never bypasses the shared lock to contact DonorDrive", async () => {
+    const fake = fakeDonorDrive();
+    const read = createDonorDriveClient(
+      fake.fetchPage,
+      () => 0,
+      async () => {
+        throw new Error("Database unavailable");
+      },
+    );
+    expect(await read()).toBeNull();
+    await expect(read({ forceRefresh: true })).rejects.toThrow(
+      "Database unavailable",
+    );
+    expect(fake.urls).toHaveLength(0);
   });
 });

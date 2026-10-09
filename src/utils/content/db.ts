@@ -63,6 +63,16 @@ async function createSchema(sql: Sql): Promise<void> {
       )
     `,
     sql`
+      create table if not exists donor_drive_cache (
+        campaign text primary key,
+        total double precision check (total >= 0),
+        refreshed_at timestamptz,
+        next_refresh_at timestamptz not null default '-infinity',
+        lease_token text,
+        lease_until timestamptz not null default '-infinity'
+      )
+    `,
+    sql`
       create table if not exists admin_users (
         shoo_sub text primary key,
         label text,

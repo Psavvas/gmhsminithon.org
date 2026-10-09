@@ -8,6 +8,7 @@
 import { readCollection, readCollectionData } from "./content/store";
 import type { RawMemberAnnouncement } from "./announcements";
 import { resolveFundraisingTotal } from "./donorDrive";
+import { getDonorDriveTotal } from "./fundraising";
 
 export type ClubInfo = {
   mission: string[];
@@ -157,7 +158,7 @@ export async function getFundraising(): Promise<FundraisingData> {
 
 /** Resolve totals only on pages that display them, rather than donation links. */
 export async function getFundraisingTotals() {
-  return resolveFundraisingTotal(await getFundraising());
+  return resolveFundraisingTotal(await getFundraising(), getDonorDriveTotal);
 }
 
 export async function getSponsors(): Promise<Sponsor[]> {

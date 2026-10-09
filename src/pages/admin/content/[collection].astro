@@ -1,6 +1,8 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import CollectionEditor from "../../../components/admin/CollectionEditor";
+import RefreshFundraising from "../../../components/admin/RefreshFundraising";
+import { getDonorDriveCacheStore } from "../../../utils/content/donorDriveCache";
 import {
   getCollectionSpec,
   toClientCollectionSpec,
@@ -31,6 +33,13 @@ if (!spec) {
 const record = await readCollection(spec.id, { forceRefresh: true });
 const databaseConfigured = isDatabaseConfigured();
 const uploadsConfigured = isUploadThingConfigured();
+// Opening the editor reads the cached status; only the button contacts DonorDrive.
+const donorDriveSnapshot =
+  spec.id === "fundraising" && databaseConfigured
+    ? await getDonorDriveCacheStore()
+        .then((store) => store?.read())
+        .catch(() => null)
+    : null;
 
 const saveDisabledReason = !databaseConfigured
   ? "No database is connected yet, so changes cannot be saved. Add DATABASE_URL in Vercel (a Neon Postgres connection string), redeploy, and this page becomes editable."
@@ -71,6 +80,17 @@ const saveDisabledReason = !databaseConfigured
         The database could not be read just now ({record.error}), so this shows
         the last content the site had.
       </p>
+    )
+  }
+
+  {
+    spec.id === "fundraising" && (
+      <RefreshFundraising
+        client:load
+        enabled={databaseConfigured}
+        initialTotal={donorDriveSnapshot?.total ?? null}
+        initialRefreshedAt={donorDriveSnapshot?.refreshedAt ?? null}
+      />
     )
   }
 
