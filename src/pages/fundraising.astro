@@ -1,17 +1,23 @@
 ---
 import PublicLayout from "../layouts/PublicLayout.astro";
-import { applyContentCacheHeaders, getFundraising } from "../utils/content";
+import {
+  applyContentCacheHeaders,
+  getFundraisingTotals,
+} from "../utils/content";
 
 applyContentCacheHeaders(Astro.response);
 
-const fundraisingData = await getFundraising();
+const fundraisingData = await getFundraisingTotals();
+const hasCurrentTotal = fundraisingData.currentTotal !== null;
+const raisedTotal = fundraisingData.currentTotal ?? 0;
 
-const currentTotal = fundraisingData.currentTotal.toLocaleString("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const currentTotal =
+  fundraisingData.currentTotal?.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }) ?? "Temporarily unavailable";
 
 const goalTotal = fundraisingData.goalTotal ?? 0;
 const goalTotalFormatted = goalTotal.toLocaleString("en-US", {
@@ -20,10 +26,9 @@ const goalTotalFormatted = goalTotal.toLocaleString("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 });
-const goalProgress =
-  goalTotal > 0 ? Math.min(fundraisingData.currentTotal / goalTotal, 1) : 0;
+const goalProgress = goalTotal > 0 ? Math.min(raisedTotal / goalTotal, 1) : 0;
 const goalProgressPercent = Math.round(goalProgress * 100);
-const remainingTotal = Math.max(goalTotal - fundraisingData.currentTotal, 0);
+const remainingTotal = Math.max(goalTotal - raisedTotal, 0);
 const remainingFormatted = remainingTotal.toLocaleString("en-US", {
   style: "currency",
   currency: "USD",
@@ -33,7 +38,7 @@ const remainingFormatted = remainingTotal.toLocaleString("en-US", {
 
 const allTimeTotal = fundraisingData.history.reduce(
   (sum, year) => sum + year.total,
-  fundraisingData.currentTotal,
+  raisedTotal,
 );
 const formattedAllTime = allTimeTotal.toLocaleString("en-US", {
   style: "currency",
@@ -49,41 +54,63 @@ const formattedAllTime = allTimeTotal.toLocaleString("en-US", {
   <section class="current-year">
     <h2>{fundraisingData.currentYear} Fundraising</h2>
     <div class="total-display">
-      <span class="label">Current DonorDrive Total</span>
+      <span class="label">
+        {
+          fundraisingData.totalSource === "manual"
+            ? "Current Year Total"
+            : "Current DonorDrive Total"
+        }
+      </span>
       <span class="amount">{currentTotal}</span>
-      <div class="fundraising-progress">
-        <div class="progress-header">
-          <span class="progress-label">{goalProgressPercent}% to goal</span>
-          <span class="progress-value">{currentTotal} raised</span>
-        </div>
-        <div
-          class="progress-slider"
-          role="progressbar"
-          aria-label="Fundraising progress"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuenow={goalProgressPercent}
-        >
-          <div
-            class="progress-track"
-            style={`--progress: ${goalProgressPercent}%`}
-          >
-            <div class="progress-fill"></div>
-            <div class="progress-thumb"></div>
+      {
+        hasCurrentTotal && (
+          <div class="fundraising-progress">
+            <div class="progress-header">
+              <span class="progress-label">{goalProgressPercent}% to goal</span>
+              <span class="progress-value">{currentTotal} raised</span>
+            </div>
+            <div
+              class="progress-slider"
+              role="progressbar"
+              aria-label="Fundraising progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow={goalProgressPercent}
+            >
+              <div
+                class="progress-track"
+                style={`--progress: ${goalProgressPercent}%`}
+              >
+                <div class="progress-fill" />
+                <div class="progress-thumb" />
+              </div>
+            </div>
+            <p class="progress-caption">{remainingFormatted} to reach goal.</p>
           </div>
-        </div>
-        <p class="progress-caption">{remainingFormatted} to reach goal.</p>
-      </div>
+        )
+      }
     </div>
     <p>
       Every dollar raised goes directly to Four Diamonds to support families
       fighting pediatric cancer.
     </p>
-    <p>
-      Please note that the amount above only refers to donations processed
-      through DonorDrive. The yearly grand total will be announced at the end of
-      the school year.
-    </p>
+    {
+      fundraisingData.totalSource === "donordrive" && (
+        <p>
+          Please note that the amount above only refers to donations processed
+          through DonorDrive. The yearly grand total will be announced at the
+          end of the school year.
+        </p>
+      )
+    }
+    {
+      fundraisingData.totalSource === "unavailable" && (
+        <p>
+          The current total could not be loaded. Please check DonorDrive or try
+          again later.
+        </p>
+      )
+    }
     <a
       href={fundraisingData.donorDriveLink}
       target="_blank"
@@ -97,7 +124,13 @@ const formattedAllTime = allTimeTotal.toLocaleString("en-US", {
   <section class="all-time">
     <h2>Our Impact</h2>
     <div class="impact-stat">
-      <span class="stat-label">All-Time Fundraising Total</span>
+      <span class="stat-label">
+        {
+          hasCurrentTotal
+            ? "All-Time Fundraising Total"
+            : "Previous Years' Fundraising Total"
+        }
+      </span>
       <span class="stat-amount">{formattedAllTime}</span>
     </div>
   </section>

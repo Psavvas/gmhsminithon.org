@@ -390,7 +390,24 @@ Edit `src/data/fundraising.json`:
 }
 ```
 
-- Update `currentTotal` as donations come in
+- Set `currentTotal` to a manual amount to override DonorDrive (including zero).
+  In the admin portal, clear **Manual total (optional)** and save to use the
+  current total from https://fourdiamonds.donordrive.com/gmhsmt automatically.
+  In JSON, use `"currentTotal": null` for automatic totals. Existing amounts
+  remain manual overrides until cleared.
+- The fundraising page and homepage share the selected total. Automatic totals
+  refresh on the first visit after 30 minutes, with no background polling.
+  With the admin database connected, the total and refresh lease are stored in
+  Neon and shared across server instances and cold starts. Failed attempts also
+  wait 30 minutes before an automatic retry. Without a database, the cache is
+  local to each server instance.
+- In **Admin → Fundraising totals**, use **Refresh from DonorDrive** to fetch
+  sooner. This updates the automatic cache and its next refresh time; it does
+  not overwrite a manual total or unsaved form edits. The panel shows the last
+  fetched amount and update time. Public pages may take about a minute to pick
+  up a refresh because of the existing content and CDN caches.
+- If DonorDrive cannot be reached, a previously fetched total may be used for
+  up to 24 hours; otherwise the total is shown as temporarily unavailable.
 - Update `goalTotal` at the start of each year
 - Add previous year totals to the `history` array
 - Update `currentYear` when a new fundraising cycle begins

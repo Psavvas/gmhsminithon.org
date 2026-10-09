@@ -141,6 +141,8 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
     defaults: fundraisingDefaults,
     notes: [
       "The progress bar on the home page uses the current total and goal.",
+      "Leave the manual total blank to use the current DonorDrive campaign total automatically.",
+      "Automatic totals refresh every 30 minutes when the site is visited. Use Refresh from DonorDrive to fetch an update sooner.",
     ],
     root: {
       kind: "object",
@@ -156,12 +158,12 @@ export const CONTENT_COLLECTIONS: Record<string, CollectionSpec> = {
         },
         currentTotal: {
           kind: "number",
-          label: "Raised so far",
-          required: true,
+          label: "Manual total (optional)",
+          nullable: true,
           min: 0,
           step: 0.01,
           prefix: "$",
-          help: "Update this as donations come in.",
+          help: "Enter an amount to override DonorDrive, or clear this field and save to use DonorDrive automatically. An entered zero is a manual total.",
         },
         goalTotal: {
           kind: "number",
