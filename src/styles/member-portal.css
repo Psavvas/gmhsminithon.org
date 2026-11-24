@@ -480,37 +480,6 @@ a.mp-card:hover {
   color: var(--mp-ink);
 }
 
-/* Event type chips keep the colours the public site uses. */
-.mp-type--gaming {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.mp-type--dine-to-donate {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.mp-type--fundraiser {
-  background: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.mp-type--sports {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.mp-type--race {
-  background: #e0f7fa;
-  color: #006064;
-}
-
-.mp-type--tournament {
-  background: #ede7f6;
-  color: #4527a0;
-}
-
 /* Announcements ----------------------------------------------------------- */
 
 .mp-announcement {
