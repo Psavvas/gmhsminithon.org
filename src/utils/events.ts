@@ -245,9 +245,11 @@ export function splitEventsByDate(
 ): SplitEvents {
   const todayTimestamp = getTodayTimestamp(referenceDate);
 
-  const pastEvents = events.filter(
-    (event) => getEventDayTimestamp(event.date) < todayTimestamp,
-  );
+  const pastEvents = events
+    .filter((event) => getEventDayTimestamp(event.date) < todayTimestamp)
+    .sort(
+      (a, b) => getEventDayTimestamp(b.date) - getEventDayTimestamp(a.date),
+    );
   const upcomingEvents = events.filter(
     (event) => getEventDayTimestamp(event.date) >= todayTimestamp,
   );

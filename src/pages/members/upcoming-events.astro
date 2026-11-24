@@ -17,7 +17,6 @@ if (!(await checkMemberAuth(Astro.request))) {
 const currentYear = new Date().getFullYear();
 const events = await getCurrentYearEvents();
 const { upcomingEvents, pastEvents } = splitEventsByDate(events);
-const pastEventsNewestFirst = [...pastEvents].reverse();
 
 const formatDescription = (content: string | string[] | undefined) => {
   if (!content) return "";
@@ -88,16 +87,14 @@ const getMemberEventUrl = (publicUrl: string | undefined) => {
           )}
         </section>
 
-        {pastEventsNewestFirst.length > 0 && (
+        {pastEvents.length > 0 && (
           <section class="mp-panel">
             <h2 class="mp-panel__title">
               Past
-              <span class="mp-badge mp-badge--muted">
-                {pastEventsNewestFirst.length}
-              </span>
+              <span class="mp-badge mp-badge--muted">{pastEvents.length}</span>
             </h2>
             <div class="mp-stack">
-              {pastEventsNewestFirst.map((event) => (
+              {pastEvents.map((event) => (
                 <article class="mp-event mp-event--past">
                   <div class="mp-event__head">
                     <span
